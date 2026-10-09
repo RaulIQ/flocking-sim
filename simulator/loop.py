@@ -5,19 +5,11 @@ import pygame
 from pygame import K_ESCAPE, KEYDOWN, QUIT
 
 from agent.command import Command
-from agent.instinct import Instinct
-from agent.shield import Shield
-from agent.vector import Vector
 from config import Settings
 from simulator.aim import Aim
 from simulator.baton import Baton
-from simulator.body import Body
 from simulator.control import Pilot
-from simulator.drone import Drone
-from simulator.flock import Flock
-from simulator.gate import Gate
-from simulator.muster import Muster
-from simulator.trail import Trail
+from simulator.stage import Stage
 from simulator.view import View
 
 
@@ -39,49 +31,26 @@ class Flight:
         )
         pilot = Pilot(self.settings.limits)
         aim = Aim(self.settings.limits, self.settings.picture.shape.radius)
-        instinct = Instinct(self.settings.swarm.cloud, self.settings.limits)
         baton = Baton(view, self.settings.swarm.bubbles.soft)
-        shield = Shield(self.settings.limits, self.settings.swarm.bubbles.hard)
-        walls = Gate(self.settings.barrier).walls()
+        stage = Stage(self.settings)
         clock = pygame.time.Clock()
-        lapse = 1.0 / self.settings.picture.window.rate
-        flock = Flock(
-            tuple(
-                Drone(
-                    Body(place, 0.0, Vector(0.0, 0.0), 0.0),
-                    Trail((), self.settings.picture.shape.trail),
-                    index == 0,
-                )
-                for index, place in enumerate(
-                    Muster(
-                        self.settings.swarm.count, self.settings.swarm.spacing
-                    ).places()
-                )
-            )
-        )
+        flock = stage.flock()
         events = pygame.event.get()
         while self.alive(events):
             clock.tick(self.settings.picture.window.rate)
             flock = baton.passed(flock, events)
-            flock = flock.moved(
-                shield.command(
-                    Command(
-                        pilot.velocity(tuple(pygame.key.get_pressed())),
-                        aim.spin(
-                            flock.leader().body,
-                            view.place(pygame.mouse.get_pos()),
-                            lapse,
-                        ),
+            flock = stage.after(
+                flock,
+                Command(
+                    pilot.velocity(tuple(pygame.key.get_pressed())),
+                    aim.spin(
+                        flock.leader().body,
+                        view.place(pygame.mouse.get_pos()),
+                        stage.lapse(),
                     ),
-                    flock.leader().body.velocity.turned(-flock.leader().body.heading),
-                    flock.felt(flock.leader(), walls),
                 ),
-                instinct,
-                walls,
-                self.settings.limits,
-                lapse,
             )
-            view.show(flock, walls)
+            view.show(flock, stage.walls())
             pygame.display.flip()
             events = pygame.event.get()
         pygame.quit()

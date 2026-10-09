@@ -53,12 +53,41 @@ a layout prints there, so the drone flies under a Cyrillic layout too.
 python -m pytest
 ```
 
+## Scenarios
+
+A scenario is a scripted flight: the leader follows a fixed route instead of the
+keyboard, so the same run can be repeated and compared after every change.
+Nothing in a run is random, the same scenario always gives the same numbers.
+
+```bash
+python -m scenarios                # list the scenarios
+python -m scenarios gap            # run one and print its summary
+python -m scenarios gap wall       # run several
+python -m scenarios all            # run every one
+python -m scenarios gap --watch    # run it, then play it in a window
+```
+
+Each run writes two files into `scenarios/logs/`:
+
+| File | Holds |
+|------|-------|
+| `<name>.txt` | the summary: closest pair, closest wall, breached frames, who got beyond the wall |
+| `<name>.csv` | where every drone was and how fast it flew, ten times a second |
+
+The summaries are small and kept in git, so `git diff scenarios/logs` shows how
+a change in the code moved the numbers. The traces are large and ignored.
+
+A frame counts as breached when two hard bubbles overlap or when a wall reaches
+into the hard bubble of a drone. New scenarios go into
+`scenarios/catalogue.py`.
+
 ## Layout
 
 | Path | Holds |
 |------|-------|
 | `agent/` | the algorithm of one drone, standard library only, blind to the simulator |
 | `simulator/` | the world, the dynamics and the picture |
+| `scenarios/` | scripted flights and their logs |
 | `tests/` | one test file per feature file |
 | `config.py` | every tunable number |
 | `run.py` | the interactive run |

@@ -18,12 +18,15 @@ class Shield:
     barrier of Ames 2017: the square root of twice the deceleration times the
     room left before the margin. The drone carries the whole duty, a wall
     cannot give way. Our own choices are to count on half of the deceleration
-    only, and to spend all of it on braking, whatever the request, once the
-    drone already closes faster than the bound.
+    only, to spend all of it on braking, whatever the request, once the drone
+    already closes faster than the bound, and never to allow more than the
+    room left in one tick, so that a drone that thinks in ticks cannot step
+    over the margin between two of them.
     """
 
     limits: Limits
     margin: float
+    lapse: float
 
     def command(self, command: Command, velocity: Vector, obstacles: tuple) -> Command:
         return Command(
@@ -39,7 +42,8 @@ class Shield:
         distance = offset.length()
         if distance == 0.0:
             return wanted
-        bound = sqrt(self.limits.push * max(0.0, distance - self.margin))
+        room = max(0.0, distance - self.margin)
+        bound = min(sqrt(self.limits.push * room), room / self.lapse)
         if velocity.dot(offset) / distance > bound:
             return velocity.minus(
                 offset.times((velocity.dot(offset) / distance - bound) / distance)
