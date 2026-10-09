@@ -15,7 +15,8 @@ class Flock:
     """Every drone in the air, the leader flown by the pilot and the rest by their instinct.
 
     Until the sensors are built, each follower is told the true places of the
-    others, already turned into its own frame, and nothing else. The lead is a
+    others and the nearest point of every wall, already turned into its own
+    frame, and nothing else. The lead is a
     mark on a drone, not a kind of drone, so it can move from one to another.
     """
 
@@ -39,6 +40,14 @@ class Flock:
             if other is not drone
         )
 
+    def felt(self, drone: Drone, walls: tuple) -> tuple:
+        return tuple(
+            wall.nearest(drone.body.position)
+            .minus(drone.body.position)
+            .turned(-drone.body.heading)
+            for wall in walls
+        )
+
     def led(self, index: int) -> "Flock":
         return Flock(
             tuple(
@@ -60,12 +69,19 @@ class Flock:
         return self.led(index)
 
     def moved(
-        self, command: Command, instinct: Instinct, limits: Limits, lapse: float
+        self,
+        command: Command,
+        instinct: Instinct,
+        walls: tuple,
+        limits: Limits,
+        lapse: float,
     ) -> "Flock":
         return Flock(
             tuple(
                 drone.moved(
-                    command if drone.leader else instinct.command(self.seen(drone)),
+                    command
+                    if drone.leader
+                    else instinct.command(self.seen(drone), self.felt(drone, walls)),
                     limits,
                     lapse,
                 )

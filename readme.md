@@ -4,11 +4,15 @@ A 2D simulator of a drone swarm that flies as a cloud behind its leader.
 The full plan lives in [docs/SPEC.md](docs/SPEC.md); this stage holds a leader
 flown from the keyboard and followers that fly after it as a cloud. Each
 follower is shoved away by close neighbours, pulled toward distant ones up to a
-limit, and pulled harder toward the leader. For now the followers are told the
-true places of the others; the noisy sensors come later.
+limit, pulled harder toward the leader, and shoved away by a wall that comes
+close. A wall with one gap stands across the way: fly the leader through the gap
+and the cloud stretches into a file, squeezes through and gathers again. For now
+the followers are told the true places of the others and the true nearest point
+of each wall; the noisy sensors come later. Walls only shove the followers away,
+nothing stops a drone that is flown into one, the leader included.
 
-On screen the red ring is the hard bubble, the blue ring is the soft one, and
-the amber drone is the leader.
+On screen the red ring is the hard bubble, the blue ring is the soft one, the
+amber drone is the leader and the pale line is the wall.
 
 ## Install
 

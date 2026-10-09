@@ -20,6 +20,9 @@ class Vector:
     def times(self, factor: float) -> "Vector":
         return Vector(self.x * factor, self.y * factor)
 
+    def dot(self, other: "Vector") -> float:
+        return self.x * other.x + self.y * other.y
+
     def turned(self, angle: float) -> "Vector":
         return Vector(
             self.x * cos(angle) - self.y * sin(angle),

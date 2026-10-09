@@ -2,7 +2,18 @@ from pygame import K_SPACE, K_TAB, KEYDOWN, MOUSEBUTTONDOWN, MOUSEMOTION, Surfac
 from pygame.event import Event
 
 from agent.vector import Vector
-from config import Bubbles, Cloud, Limits, Settings, Shape, Spring, Swarm, Window
+from config import (
+    Barrier,
+    Bubbles,
+    Cloud,
+    Limits,
+    Picture,
+    Settings,
+    Shape,
+    Spring,
+    Swarm,
+    Window,
+)
 from simulator.baton import Baton
 from simulator.body import Body
 from simulator.drone import Drone
@@ -19,9 +30,9 @@ def test_passes_the_lead_on_the_tab_key():
                 Surface((10, 10)),
                 Settings(
                     Limits(2.0, 4.0, 1.8, 8.0),
-                    Window(200, 200, 100.0, 60),
-                    Shape(0.1, 0.35, 5),
-                    Swarm(2, 1.2, Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), 6)),
+                    Picture(Window(200, 200, 100.0, 60), Shape(0.1, 0.35, 5)),
+                    Swarm(2, 1.2, Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6)),
+                    Barrier(4.0, 14.0, 1.2),
                 ),
             ),
             0.6,
@@ -47,9 +58,9 @@ def test_passes_the_lead_once_for_every_tab():
                 Surface((10, 10)),
                 Settings(
                     Limits(2.0, 4.0, 1.8, 8.0),
-                    Window(200, 200, 100.0, 60),
-                    Shape(0.1, 0.35, 5),
-                    Swarm(2, 1.2, Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), 6)),
+                    Picture(Window(200, 200, 100.0, 60), Shape(0.1, 0.35, 5)),
+                    Swarm(2, 1.2, Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6)),
+                    Barrier(4.0, 14.0, 1.2),
                 ),
             ),
             0.6,
@@ -76,9 +87,9 @@ def test_hands_the_lead_to_a_clicked_drone():
                 Surface((10, 10)),
                 Settings(
                     Limits(2.0, 4.0, 1.8, 8.0),
-                    Window(200, 200, 100.0, 60),
-                    Shape(0.1, 0.35, 5),
-                    Swarm(2, 1.2, Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), 6)),
+                    Picture(Window(200, 200, 100.0, 60), Shape(0.1, 0.35, 5)),
+                    Swarm(2, 1.2, Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6)),
+                    Barrier(4.0, 14.0, 1.2),
                 ),
             ),
             0.6,
@@ -104,9 +115,9 @@ def test_cannot_hand_the_lead_with_the_right_button():
                 Surface((10, 10)),
                 Settings(
                     Limits(2.0, 4.0, 1.8, 8.0),
-                    Window(200, 200, 100.0, 60),
-                    Shape(0.1, 0.35, 5),
-                    Swarm(2, 1.2, Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), 6)),
+                    Picture(Window(200, 200, 100.0, 60), Shape(0.1, 0.35, 5)),
+                    Swarm(2, 1.2, Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6)),
+                    Barrier(4.0, 14.0, 1.2),
                 ),
             ),
             0.6,
@@ -132,9 +143,9 @@ def test_cannot_pass_the_lead_on_other_events():
                 Surface((10, 10)),
                 Settings(
                     Limits(2.0, 4.0, 1.8, 8.0),
-                    Window(200, 200, 100.0, 60),
-                    Shape(0.1, 0.35, 5),
-                    Swarm(2, 1.2, Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), 6)),
+                    Picture(Window(200, 200, 100.0, 60), Shape(0.1, 0.35, 5)),
+                    Swarm(2, 1.2, Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6)),
+                    Barrier(4.0, 14.0, 1.2),
                 ),
             ),
             0.6,

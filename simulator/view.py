@@ -16,11 +16,15 @@ class View:
     surface: Surface
     settings: Settings
 
-    def show(self, flock: Flock) -> None:
-        shape = self.settings.shape
+    def show(self, flock: Flock, walls: tuple) -> None:
+        shape = self.settings.picture.shape
         bubbles = self.settings.swarm.bubbles
-        scale = self.settings.window.scale
+        scale = self.settings.picture.window.scale
         self.surface.fill((18, 19, 24))
+        for wall in walls:
+            draw.line(
+                self.surface, (176, 182, 196), self.spot(wall.start), self.spot(wall.end), 3
+            )
         for drone in flock.drones:
             if len(drone.trail.points) > 1:
                 draw.aalines(
@@ -56,14 +60,14 @@ class View:
             )
 
     def spot(self, place: Vector) -> tuple:
-        window = self.settings.window
+        window = self.settings.picture.window
         return (
             window.width / 2 + place.x * window.scale,
             window.height / 2 - place.y * window.scale,
         )
 
     def place(self, pixel) -> Vector:
-        window = self.settings.window
+        window = self.settings.picture.window
         return Vector(
             (pixel[0] - window.width / 2) / window.scale,
             (window.height / 2 - pixel[1]) / window.scale,

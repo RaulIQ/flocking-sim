@@ -14,6 +14,7 @@ from simulator.body import Body
 from simulator.control import Pilot
 from simulator.drone import Drone
 from simulator.flock import Flock
+from simulator.gate import Gate
 from simulator.muster import Muster
 from simulator.trail import Trail
 from simulator.view import View
@@ -31,21 +32,22 @@ class Flight:
         pygame.display.set_caption("flocking-sim")
         view = View(
             pygame.display.set_mode(
-                (self.settings.window.width, self.settings.window.height)
+                (self.settings.picture.window.width, self.settings.picture.window.height)
             ),
             self.settings,
         )
         pilot = Pilot(self.settings.limits)
-        aim = Aim(self.settings.limits, self.settings.shape.radius)
+        aim = Aim(self.settings.limits, self.settings.picture.shape.radius)
         instinct = Instinct(self.settings.swarm.cloud, self.settings.limits)
         baton = Baton(view, self.settings.swarm.bubbles.soft)
+        walls = Gate(self.settings.barrier).walls()
         clock = pygame.time.Clock()
-        lapse = 1.0 / self.settings.window.rate
+        lapse = 1.0 / self.settings.picture.window.rate
         flock = Flock(
             tuple(
                 Drone(
                     Body(place, 0.0, Vector(0.0, 0.0), 0.0),
-                    Trail((), self.settings.shape.trail),
+                    Trail((), self.settings.picture.shape.trail),
                     index == 0,
                 )
                 for index, place in enumerate(
@@ -57,7 +59,7 @@ class Flight:
         )
         events = pygame.event.get()
         while self.alive(events):
-            clock.tick(self.settings.window.rate)
+            clock.tick(self.settings.picture.window.rate)
             flock = baton.passed(flock, events).moved(
                 Command(
                     pilot.velocity(tuple(pygame.key.get_pressed())),
@@ -66,10 +68,11 @@ class Flight:
                     ),
                 ),
                 instinct,
+                walls,
                 self.settings.limits,
                 lapse,
             )
-            view.show(flock)
+            view.show(flock, walls)
             pygame.display.flip()
             events = pygame.event.get()
         pygame.quit()

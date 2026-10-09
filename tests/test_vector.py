@@ -55,3 +55,9 @@ def test_caps_a_motionless_vector_without_dividing_by_zero():
     assert Vector(0.0, 0.0).capped(2.5) == Vector(
         approx(0.0), approx(0.0)
     ), "a zero vector does not survive capping"
+
+
+def test_multiplies_two_vectors_into_a_number():
+    assert Vector(1.5, -2.0).dot(Vector(0.5, 3.0)) == approx(
+        -5.25
+    ), "two vectors do not multiply into the right number"

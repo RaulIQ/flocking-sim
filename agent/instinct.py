@@ -11,7 +11,7 @@ from config import Cloud, Limits
 @final
 @dataclass(frozen=True)
 class Instinct:
-    """What one follower wants: to keep its place among the nearest few and near the leader.
+    """What one follower wants: its place among the nearest few, near the leader, clear of walls.
 
     Counting only the nearest few peers instead of everyone in range follows
     the topological neighbourhood that Ballerini 2008 measured in starlings.
@@ -20,7 +20,7 @@ class Instinct:
     cloud: Cloud
     limits: Limits
 
-    def command(self, neighbours: tuple) -> Command:
+    def command(self, neighbours: tuple, obstacles: tuple) -> Command:
         return Command(
             reduce(
                 Vector.plus,
@@ -35,7 +35,8 @@ class Instinct:
                         (peer for peer in neighbours if not peer.leader),
                         key=lambda peer: peer.offset.length(),
                     )[: self.cloud.crowd]
-                ],
+                ]
+                + [Bond(self.cloud.walls).velocity(offset) for offset in obstacles],
                 Vector(0.0, 0.0),
             ).capped(self.limits.speed),
             0.0,
