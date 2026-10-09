@@ -4,15 +4,17 @@ from typing import final
 import pygame
 from pygame import K_ESCAPE, KEYDOWN, QUIT
 
+from agent.command import Command
+from agent.instinct import Instinct
+from agent.vector import Vector
 from config import Settings
 from simulator.aim import Aim
-from simulator.body import Body, Command
+from simulator.body import Body
 from simulator.control import Pilot
 from simulator.drone import Drone
 from simulator.flock import Flock
 from simulator.muster import Muster
 from simulator.trail import Trail
-from simulator.vector import Vector
 from simulator.view import View
 
 
@@ -34,6 +36,7 @@ class Flight:
         )
         pilot = Pilot(self.settings.limits)
         aim = Aim(self.settings.limits, self.settings.shape.radius)
+        instinct = Instinct(self.settings.swarm.cloud, self.settings.limits)
         clock = pygame.time.Clock()
         lapse = 1.0 / self.settings.window.rate
         flock = Flock(
@@ -59,6 +62,7 @@ class Flight:
                         flock.leader().body, view.place(pygame.mouse.get_pos()), lapse
                     ),
                 ),
+                instinct,
                 self.settings.limits,
                 lapse,
             )

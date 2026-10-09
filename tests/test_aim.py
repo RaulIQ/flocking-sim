@@ -5,7 +5,7 @@ from pytest import approx
 from config import Limits
 from simulator.aim import Aim
 from simulator.body import Body
-from simulator.vector import Vector
+from agent.vector import Vector
 
 
 def test_cannot_turn_toward_a_place_it_already_faces():

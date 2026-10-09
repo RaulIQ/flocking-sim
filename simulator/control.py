@@ -13,7 +13,7 @@ from pygame import (
 )
 
 from config import Limits
-from simulator.vector import Vector
+from agent.vector import Vector
 
 
 @final

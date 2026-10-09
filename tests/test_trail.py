@@ -1,5 +1,5 @@
 from simulator.trail import Trail
-from simulator.vector import Vector
+from agent.vector import Vector
 
 
 def test_remembers_a_fresh_point():

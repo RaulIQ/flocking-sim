@@ -15,7 +15,7 @@ from pytest import approx
 
 from config import Limits
 from simulator.control import Pilot
-from simulator.vector import Vector
+from agent.vector import Vector
 
 
 def test_asks_to_fly_forward():

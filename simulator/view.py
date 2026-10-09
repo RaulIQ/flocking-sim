@@ -3,9 +3,9 @@ from typing import final
 
 from pygame import Surface, draw
 
+from agent.vector import Vector
 from config import Settings
 from simulator.flock import Flock
-from simulator.vector import Vector
 
 
 @final
@@ -18,7 +18,7 @@ class View:
 
     def show(self, flock: Flock) -> None:
         shape = self.settings.shape
-        swarm = self.settings.swarm
+        bubbles = self.settings.swarm.bubbles
         scale = self.settings.window.scale
         self.surface.fill((18, 19, 24))
         for drone in flock.drones:
@@ -31,10 +31,10 @@ class View:
                 )
         for drone in flock.drones:
             draw.circle(
-                self.surface, (58, 110, 150), self.spot(drone.body.position), swarm.soft * scale, 1
+                self.surface, (58, 110, 150), self.spot(drone.body.position), bubbles.soft * scale, 1
             )
             draw.circle(
-                self.surface, (200, 80, 80), self.spot(drone.body.position), swarm.hard * scale, 1
+                self.surface, (200, 80, 80), self.spot(drone.body.position), bubbles.hard * scale, 1
             )
         for drone in flock.drones:
             draw.line(

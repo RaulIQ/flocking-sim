@@ -3,8 +3,9 @@ from math import pi
 from pytest import approx
 
 from config import Limits
-from simulator.body import Body, Command
-from simulator.vector import Vector
+from agent.command import Command
+from simulator.body import Body
+from agent.vector import Vector
 
 
 def test_accelerates_toward_the_request():

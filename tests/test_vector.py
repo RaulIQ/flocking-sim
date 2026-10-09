@@ -2,7 +2,7 @@ from math import pi
 
 from pytest import approx
 
-from simulator.vector import Vector
+from agent.vector import Vector
 
 
 def test_adds_two_vectors():

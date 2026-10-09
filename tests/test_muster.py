@@ -3,7 +3,7 @@ from itertools import combinations
 from pytest import approx
 
 from simulator.muster import Muster
-from simulator.vector import Vector
+from agent.vector import Vector
 
 
 def test_places_as_many_drones_as_asked():

@@ -4,7 +4,7 @@ from typing import final
 
 from config import Limits
 from simulator.body import Body
-from simulator.vector import Vector
+from agent.vector import Vector
 
 
 @final

@@ -2,7 +2,8 @@ from dataclasses import dataclass
 from typing import final
 
 from config import Limits
-from simulator.body import Body, Command
+from agent.command import Command
+from simulator.body import Body
 from simulator.trail import Trail
 
 

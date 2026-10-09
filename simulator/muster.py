@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from math import pi, sqrt
 from typing import final
 
-from simulator.vector import Vector
+from agent.vector import Vector
 
 
 @final

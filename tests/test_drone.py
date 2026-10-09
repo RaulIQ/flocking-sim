@@ -1,10 +1,11 @@
 from pytest import approx
 
 from config import Limits
-from simulator.body import Body, Command
+from agent.command import Command
+from simulator.body import Body
 from simulator.drone import Drone
 from simulator.trail import Trail
-from simulator.vector import Vector
+from agent.vector import Vector
 
 
 def test_flies_its_body_on_a_request():

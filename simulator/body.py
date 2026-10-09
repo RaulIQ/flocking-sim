@@ -3,16 +3,8 @@ from math import tau
 from typing import final
 
 from config import Limits
-from simulator.vector import Vector
-
-
-@final
-@dataclass(frozen=True)
-class Command:
-    """A request in the frame of one drone, x along its nose and y to its left."""
-
-    velocity: Vector
-    spin: float
+from agent.command import Command
+from agent.vector import Vector
 
 
 @final

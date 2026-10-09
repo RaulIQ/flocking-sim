@@ -2,9 +2,13 @@
 
 A 2D simulator of a drone swarm that flies as a cloud behind its leader.
 The full plan lives in [docs/SPEC.md](docs/SPEC.md); this stage holds a leader
-flown from the keyboard and followers that only hover, each drawn with its two
-bubbles: the red ring is the hard one, the blue ring is the soft one, and the
-amber drone is the leader.
+flown from the keyboard and followers that fly after it as a cloud. Each
+follower is shoved away by close neighbours, pulled toward distant ones up to a
+limit, and pulled harder toward the leader. For now the followers are told the
+true places of the others; the noisy sensors come later.
+
+On screen the red ring is the hard bubble, the blue ring is the soft one, and
+the amber drone is the leader.
 
 ## Install
 
@@ -43,7 +47,7 @@ python -m pytest
 
 | Path | Holds |
 |------|-------|
-| `agent/` | the algorithm of one drone, standard library only |
+| `agent/` | the algorithm of one drone, standard library only, blind to the simulator |
 | `simulator/` | the world, the dynamics and the picture |
 | `tests/` | one test file per feature file |
 | `config.py` | every tunable number |
