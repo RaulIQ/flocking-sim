@@ -8,8 +8,12 @@ limit, pulled harder toward the leader, and shoved away by a wall that comes
 close. A wall with one gap stands across the way: fly the leader through the gap
 and the cloud stretches into a file, squeezes through and gathers again. For now
 the followers are told the true places of the others and the true nearest point
-of each wall; the noisy sensors come later. Walls only shove the followers away,
-nothing stops a drone that is flown into one, the leader included.
+of each wall; the noisy sensors come later.
+
+The leader cannot be flown into a wall: its request is cut so that it never
+closes on a wall faster than it can brake, and it stops a hard bubble away. It
+still slides along the wall and flies away from it freely. The followers are
+only shoved away by walls, nothing yet guarantees that they keep clear.
 
 On screen the red ring is the hard bubble, the blue ring is the soft one, the
 amber drone is the leader and the pale line is the wall.

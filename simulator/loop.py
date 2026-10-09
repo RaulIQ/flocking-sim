@@ -6,6 +6,7 @@ from pygame import K_ESCAPE, KEYDOWN, QUIT
 
 from agent.command import Command
 from agent.instinct import Instinct
+from agent.shield import Shield
 from agent.vector import Vector
 from config import Settings
 from simulator.aim import Aim
@@ -40,6 +41,7 @@ class Flight:
         aim = Aim(self.settings.limits, self.settings.picture.shape.radius)
         instinct = Instinct(self.settings.swarm.cloud, self.settings.limits)
         baton = Baton(view, self.settings.swarm.bubbles.soft)
+        shield = Shield(self.settings.limits, self.settings.swarm.bubbles.hard)
         walls = Gate(self.settings.barrier).walls()
         clock = pygame.time.Clock()
         lapse = 1.0 / self.settings.picture.window.rate
@@ -60,12 +62,19 @@ class Flight:
         events = pygame.event.get()
         while self.alive(events):
             clock.tick(self.settings.picture.window.rate)
-            flock = baton.passed(flock, events).moved(
-                Command(
-                    pilot.velocity(tuple(pygame.key.get_pressed())),
-                    aim.spin(
-                        flock.leader().body, view.place(pygame.mouse.get_pos()), lapse
+            flock = baton.passed(flock, events)
+            flock = flock.moved(
+                shield.command(
+                    Command(
+                        pilot.velocity(tuple(pygame.key.get_pressed())),
+                        aim.spin(
+                            flock.leader().body,
+                            view.place(pygame.mouse.get_pos()),
+                            lapse,
+                        ),
                     ),
+                    flock.leader().body.velocity.turned(-flock.leader().body.heading),
+                    flock.felt(flock.leader(), walls),
                 ),
                 instinct,
                 walls,
