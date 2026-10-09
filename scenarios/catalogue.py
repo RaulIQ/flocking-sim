@@ -51,10 +51,27 @@ def catalogue() -> dict:
             60.0,
         ),
         "two_gaps": Scenario(
-            "The wall has two gaps 4 m apart and the leader takes the upper one",
-            replace(defaults(), barrier=replace(defaults().barrier, centres=(-2.0, 2.0))),
-            Route((Vector(3.0, 2.0), Vector(8.0, 2.0)), 1.0, 0.3),
-            40.0,
+            "Two gaps 1.6 m apart: the leader takes the upper one, flies 7 m on, and the cloud splits",
+            replace(
+                defaults(),
+                picture=replace(
+                    defaults().picture,
+                    window=replace(defaults().picture.window, scale=40.0),
+                ),
+                swarm=replace(defaults().swarm, count=10),
+                barrier=replace(defaults().barrier, span=20.0, centres=(-0.8, 0.8)),
+            ),
+            Route(
+                (
+                    Vector(2.6, 0.0),
+                    Vector(3.6, 0.8),
+                    Vector(5.0, 0.8),
+                    Vector(11.0, 0.0),
+                ),
+                1.0,
+                0.3,
+            ),
+            25.0,
         ),
         "wall": Scenario(
             "The leader is flown at full speed into the solid wall beside the gap",

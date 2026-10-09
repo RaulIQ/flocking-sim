@@ -1,3 +1,5 @@
+from itertools import pairwise
+
 from scenarios.catalogue import catalogue
 from scenarios.trial import Trial
 
@@ -37,3 +39,23 @@ def test_tells_a_story_for_every_scenario():
     assert all(
         scenario.story for scenario in catalogue().values()
     ), "a scenario comes without a story"
+
+
+def test_brings_the_whole_cloud_through_two_gaps(tmp_path):
+    assert (
+        Trial("two_gaps", catalogue()["two_gaps"], 6).run(tmp_path).tally.passage.count
+        == 10
+    ), "the scenario with two gaps leaves a drone behind the wall"
+
+
+def test_splits_the_cloud_between_the_two_gaps():
+    assert {
+        after.drones[index].body.position.y > 0.0
+        for (_, before), (_, after) in pairwise(
+            Trial("two_gaps", catalogue()["two_gaps"], 6).frames()
+        )
+        for index in range(len(after.drones))
+        if before.drones[index].body.position.x
+        < 4.0
+        <= after.drones[index].body.position.x
+    } == {True, False}, "the cloud does not use both gaps"
