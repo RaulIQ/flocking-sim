@@ -9,6 +9,7 @@ from agent.instinct import Instinct
 from agent.vector import Vector
 from config import Settings
 from simulator.aim import Aim
+from simulator.baton import Baton
 from simulator.body import Body
 from simulator.control import Pilot
 from simulator.drone import Drone
@@ -37,6 +38,7 @@ class Flight:
         pilot = Pilot(self.settings.limits)
         aim = Aim(self.settings.limits, self.settings.shape.radius)
         instinct = Instinct(self.settings.swarm.cloud, self.settings.limits)
+        baton = Baton(view, self.settings.swarm.bubbles.soft)
         clock = pygame.time.Clock()
         lapse = 1.0 / self.settings.window.rate
         flock = Flock(
@@ -53,9 +55,10 @@ class Flight:
                 )
             )
         )
-        while self.alive():
+        events = pygame.event.get()
+        while self.alive(events):
             clock.tick(self.settings.window.rate)
-            flock = flock.moved(
+            flock = baton.passed(flock, events).moved(
                 Command(
                     pilot.velocity(tuple(pygame.key.get_pressed())),
                     aim.spin(
@@ -68,11 +71,12 @@ class Flight:
             )
             view.show(flock)
             pygame.display.flip()
+            events = pygame.event.get()
         pygame.quit()
 
-    def alive(self) -> bool:
+    def alive(self, events) -> bool:
         return not [
             event
-            for event in pygame.event.get()
+            for event in events
             if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE)
         ]

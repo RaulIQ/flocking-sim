@@ -4,6 +4,7 @@ from typing import final
 from agent.command import Command
 from agent.instinct import Instinct
 from agent.neighbour import Neighbour
+from agent.vector import Vector
 from config import Limits
 from simulator.drone import Drone
 
@@ -14,7 +15,8 @@ class Flock:
     """Every drone in the air, the leader flown by the pilot and the rest by their instinct.
 
     Until the sensors are built, each follower is told the true places of the
-    others, already turned into its own frame, and nothing else.
+    others, already turned into its own frame, and nothing else. The lead is a
+    mark on a drone, not a kind of drone, so it can move from one to another.
     """
 
     drones: tuple
@@ -36,6 +38,26 @@ class Flock:
             for other in self.drones
             if other is not drone
         )
+
+    def led(self, index: int) -> "Flock":
+        return Flock(
+            tuple(
+                Drone(drone.body, drone.trail, place == index)
+                for place, drone in enumerate(self.drones)
+            )
+        )
+
+    def passed(self) -> "Flock":
+        return self.led((self.drones.index(self.leader()) + 1) % len(self.drones))
+
+    def picked(self, place: Vector, reach: float) -> "Flock":
+        index = min(
+            range(len(self.drones)),
+            key=lambda index: self.drones[index].body.position.minus(place).length(),
+        )
+        if self.drones[index].body.position.minus(place).length() > reach:
+            return self
+        return self.led(index)
 
     def moved(
         self, command: Command, instinct: Instinct, limits: Limits, lapse: float

@@ -28,7 +28,9 @@ python run.py
 |---------|---------|
 | `W` / `S` or `Up` / `Down` | forward and backward along the nose |
 | `A` / `D` or `Left` / `Right` | sideways, left and right |
-| mouse | the nose turns toward the pointer |
+| mouse | the nose of the leader turns toward the pointer |
+| `Tab` | pass the lead to the next drone |
+| left click | hand the lead to the drone under the pointer |
 | `Esc` | close the window |
 
 The pointer sets the heading the drone wants, not the heading it has: the nose

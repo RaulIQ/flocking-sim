@@ -219,3 +219,115 @@ def test_comes_to_rest_once_the_leader_hovers():
             ),
         ).drones
     ) < 0.01, "the cloud keeps trembling around a hovering leader"
+
+
+def test_passes_the_lead_to_the_next_drone():
+    assert [
+        drone.leader
+        for drone in Flock(
+            (
+                Drone(Body(Vector(1.3, 0.2), 0.0, Vector(0.0, 0.0), 0.0), Trail((), 5), True),
+                Drone(Body(Vector(-0.6, 0.9), 0.0, Vector(0.0, 0.0), 0.0), Trail((), 5), False),
+                Drone(Body(Vector(0.1, -1.4), 0.0, Vector(0.0, 0.0), 0.0), Trail((), 5), False),
+            )
+        )
+        .passed()
+        .drones
+    ] == [False, True, False], "the lead does not pass to the next drone"
+
+
+def test_passes_the_lead_from_the_last_drone_back_to_the_first():
+    assert [
+        drone.leader
+        for drone in Flock(
+            (
+                Drone(Body(Vector(1.3, 0.2), 0.0, Vector(0.0, 0.0), 0.0), Trail((), 5), False),
+                Drone(Body(Vector(-0.6, 0.9), 0.0, Vector(0.0, 0.0), 0.0), Trail((), 5), False),
+                Drone(Body(Vector(0.1, -1.4), 0.0, Vector(0.0, 0.0), 0.0), Trail((), 5), True),
+            )
+        )
+        .passed()
+        .drones
+    ] == [True, False, False], "the lead does not wrap around to the first drone"
+
+
+def test_cannot_move_a_drone_by_passing_the_lead():
+    assert Flock(
+        (
+            Drone(Body(Vector(1.3, 0.2), 0.7, Vector(0.4, -0.1), 0.3), Trail((), 5), True),
+            Drone(Body(Vector(-0.6, 0.9), 0.0, Vector(0.0, 0.0), 0.0), Trail((), 5), False),
+        )
+    ).passed().drones[0].body == Body(
+        Vector(1.3, 0.2), 0.7, Vector(0.4, -0.1), 0.3
+    ), "passing the lead disturbs the flight of a drone"
+
+
+def test_hands_the_lead_to_the_drone_under_a_place():
+    assert [
+        drone.leader
+        for drone in Flock(
+            (
+                Drone(Body(Vector(1.3, 0.2), 0.0, Vector(0.0, 0.0), 0.0), Trail((), 5), True),
+                Drone(Body(Vector(-0.6, 0.9), 0.0, Vector(0.0, 0.0), 0.0), Trail((), 5), False),
+                Drone(Body(Vector(0.1, -1.4), 0.0, Vector(0.0, 0.0), 0.0), Trail((), 5), False),
+            )
+        )
+        .picked(Vector(0.3, -1.1), 0.6)
+        .drones
+    ] == [False, False, True], "the drone under a place does not take the lead"
+
+
+def test_cannot_hand_the_lead_to_empty_sky():
+    assert [
+        drone.leader
+        for drone in Flock(
+            (
+                Drone(Body(Vector(1.3, 0.2), 0.0, Vector(0.0, 0.0), 0.0), Trail((), 5), True),
+                Drone(Body(Vector(-0.6, 0.9), 0.0, Vector(0.0, 0.0), 0.0), Trail((), 5), False),
+                Drone(Body(Vector(0.1, -1.4), 0.0, Vector(0.0, 0.0), 0.0), Trail((), 5), False),
+            )
+        )
+        .picked(Vector(4.0, 4.0), 0.6)
+        .drones
+    ] == [True, False, False], "a place in empty sky takes the lead away"
+
+
+def test_keeps_exactly_one_leader_after_a_handover():
+    assert sum(
+        drone.leader
+        for drone in Flock(
+            tuple(
+                Drone(Body(place, 0.0, Vector(0.0, 0.0), 0.0), Trail((), 2), index == 0)
+                for index, place in enumerate(Muster(8, 1.2).places())
+            )
+        )
+        .passed()
+        .picked(Vector(1.2, 0.0), 0.6)
+        .passed()
+        .drones
+    ) == 1, "a handover leaves the flock without exactly one leader"
+
+
+def test_gathers_around_a_new_leader():
+    flock = reduce(
+        lambda cloud, frame: cloud.moved(
+            Command(Vector(0.0, 2.0 if frame < 240 else 0.0), 0.0),
+            Instinct(
+                Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), 6),
+                Limits(2.0, 4.0, 1.8, 8.0),
+            ),
+            Limits(2.0, 4.0, 1.8, 8.0),
+            1.0 / 60,
+        ),
+        range(840),
+        Flock(
+            tuple(
+                Drone(Body(place, 0.0, Vector(0.0, 0.0), 0.0), Trail((), 2), index == 0)
+                for index, place in enumerate(Muster(8, 1.2).places())
+            )
+        ).picked(Vector(-2.9, 1.3), 0.6),
+    )
+    assert max(
+        drone.body.position.minus(flock.leader().body.position).length()
+        for drone in flock.drones
+    ) < 2.5, "the cloud does not gather around a new leader"
