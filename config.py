@@ -16,11 +16,12 @@ class Limits:
 @final
 @dataclass(frozen=True)
 class Window:
-    """The canvas in pixels and how many pixels cover one metre."""
+    """The canvas in pixels, the pixels that cover one metre and the frames per second."""
 
     width: int
     height: int
     scale: float
+    rate: int
 
 
 @final
@@ -35,19 +36,30 @@ class Shape:
 
 @final
 @dataclass(frozen=True)
+class Swarm:
+    """How many drones fly, how far apart they start and how wide both bubbles reach."""
+
+    count: int
+    spacing: float
+    hard: float
+    soft: float
+
+
+@final
+@dataclass(frozen=True)
 class Settings:
-    """Every tunable number of the simulation, with the frame rate in hertz."""
+    """Every tunable number of the simulation."""
 
     limits: Limits
     window: Window
     shape: Shape
-    rate: int
+    swarm: Swarm
 
 
 def defaults() -> Settings:
     return Settings(
         Limits(2.0, 4.0, 1.8, 8.0),
-        Window(1000, 700, 60.0),
+        Window(1000, 700, 60.0, 60),
         Shape(0.1, 0.35, 600),
-        60,
+        Swarm(8, 1.2, 0.25, 0.6),
     )

@@ -1,8 +1,10 @@
 # flocking-sim
 
 A 2D simulator of a drone swarm that flies as a cloud behind its leader.
-The full plan lives in [docs/SPEC.md](docs/SPEC.md); this stage holds one drone
-flown from the keyboard.
+The full plan lives in [docs/SPEC.md](docs/SPEC.md); this stage holds a leader
+flown from the keyboard and followers that only hover, each drawn with its two
+bubbles: the red ring is the hard one, the blue ring is the soft one, and the
+amber drone is the leader.
 
 ## Install
 

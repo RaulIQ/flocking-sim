@@ -1,11 +1,10 @@
 from dataclasses import dataclass
 from typing import final
 
-from pygame import Surface, display, draw
+from pygame import Surface, draw
 
 from config import Settings
-from simulator.body import Body
-from simulator.trail import Trail
+from simulator.flock import Flock
 from simulator.vector import Vector
 
 
@@ -17,30 +16,44 @@ class View:
     surface: Surface
     settings: Settings
 
-    def show(self, body: Body, trail: Trail) -> None:
+    def show(self, flock: Flock) -> None:
         shape = self.settings.shape
+        swarm = self.settings.swarm
+        scale = self.settings.window.scale
         self.surface.fill((18, 19, 24))
-        if len(trail.points) > 1:
-            draw.aalines(
-                self.surface,
-                (64, 82, 112),
-                False,
-                [self.spot(point) for point in trail.points],
+        for drone in flock.drones:
+            if len(drone.trail.points) > 1:
+                draw.aalines(
+                    self.surface,
+                    (64, 82, 112),
+                    False,
+                    [self.spot(point) for point in drone.trail.points],
+                )
+        for drone in flock.drones:
+            draw.circle(
+                self.surface, (58, 110, 150), self.spot(drone.body.position), swarm.soft * scale, 1
             )
-        draw.circle(
-            self.surface,
-            (232, 238, 248),
-            self.spot(body.position),
-            max(3.0, shape.radius * self.settings.window.scale),
-        )
-        draw.line(
-            self.surface,
-            (247, 168, 58),
-            self.spot(body.position),
-            self.spot(body.position.plus(Vector(shape.nose, 0.0).turned(body.heading))),
-            2,
-        )
-        display.flip()
+            draw.circle(
+                self.surface, (200, 80, 80), self.spot(drone.body.position), swarm.hard * scale, 1
+            )
+        for drone in flock.drones:
+            draw.line(
+                self.surface,
+                (247, 168, 58) if drone.leader else (150, 158, 172),
+                self.spot(drone.body.position),
+                self.spot(
+                    drone.body.position.plus(
+                        Vector(shape.nose, 0.0).turned(drone.body.heading)
+                    )
+                ),
+                2,
+            )
+            draw.circle(
+                self.surface,
+                (247, 168, 58) if drone.leader else (232, 238, 248),
+                self.spot(drone.body.position),
+                max(3.0, shape.radius * scale),
+            )
 
     def spot(self, place: Vector) -> tuple:
         window = self.settings.window
