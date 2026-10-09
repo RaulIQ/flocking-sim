@@ -39,7 +39,7 @@ class Flight:
             clock.tick(self.settings.rate)
             body = body.moved(
                 Command(
-                    pilot.velocity(pygame.key.get_pressed()),
+                    pilot.velocity(tuple(pygame.key.get_pressed())),
                     aim.spin(body, view.place(pygame.mouse.get_pos()), lapse),
                 ),
                 self.settings.limits,

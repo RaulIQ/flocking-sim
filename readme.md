@@ -28,6 +28,9 @@ python run.py
 The pointer sets the heading the drone wants, not the heading it has: the nose
 swings around under the same spin and twist limits as the rest of the flight.
 
+Keys are read by scancode, by the physical place of a key rather than the letter
+a layout prints there, so the drone flies under a Cyrillic layout too.
+
 ## Tests
 
 ```bash
