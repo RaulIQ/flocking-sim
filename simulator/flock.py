@@ -1,10 +1,11 @@
 from dataclasses import dataclass
+from math import atan2
 from typing import final
 
 from agent.command import Command
 from agent.mind import Mind
-from agent.neighbour import Neighbour
-from agent.senses import Senses
+from agent.senses import Motion, Senses
+from agent.signals import Bearing, Range, Role, Signals
 from agent.tuning import Limits
 from agent.vector import Vector
 from simulator.drone import Drone
@@ -15,9 +16,10 @@ from simulator.drone import Drone
 class Flock:
     """Every drone in the air, each flown by its own mind on what it alone senses.
 
-    Until the sensors are built, each drone is told its true velocity, the true
-    places of the others and the nearest point of every wall, already turned
-    into its own frame, and nothing else. The lead is a
+    Each drone is told how it moves itself, how far every other drone is, at
+    what angle from its nose it sees each of them, who says it leads, and the
+    nearest point of every wall. For now every measurement is exact, arrives
+    every tick and the camera sees all the way around. The lead is a
     mark on a drone, not a kind of drone, so it can move from one to another.
     """
 
@@ -29,16 +31,24 @@ class Flock:
                 return drone
         raise LookupError(f"There is no leader among {len(self.drones)} drones")
 
-    def seen(self, drone: Drone) -> tuple:
-        return tuple(
-            Neighbour(
+    def heard(self, drone: Drone) -> Signals:
+        others = tuple(
+            (
+                tag,
                 other.body.position.minus(drone.body.position).turned(
                     -drone.body.heading
                 ),
                 other.leader,
             )
-            for other in self.drones
+            for tag, other in enumerate(self.drones)
             if other is not drone
+        )
+        return Signals(
+            tuple(Range(tag, offset.length()) for tag, offset, leader in others),
+            tuple(
+                Bearing(tag, atan2(offset.y, offset.x)) for tag, offset, leader in others
+            ),
+            tuple(Role(tag, leader) for tag, offset, leader in others),
         )
 
     def felt(self, drone: Drone, walls: tuple) -> tuple:
@@ -52,7 +62,7 @@ class Flock:
     def led(self, index: int) -> "Flock":
         return Flock(
             tuple(
-                Drone(drone.body, drone.trail, place == index)
+                Drone(drone.body, drone.trail, place == index, drone.memory)
                 for place, drone in enumerate(self.drones)
             )
         )
@@ -71,8 +81,8 @@ class Flock:
 
     def sensed(self, drone: Drone, request: Command, walls: tuple) -> Senses:
         return Senses(
-            drone.body.velocity.turned(-drone.body.heading),
-            self.seen(drone),
+            Motion(drone.body.velocity.turned(-drone.body.heading), drone.body.spin),
+            self.heard(drone),
             self.felt(drone, walls),
             request,
         )
@@ -87,13 +97,7 @@ class Flock:
     ) -> "Flock":
         return Flock(
             tuple(
-                drone.moved(
-                    mind.led(drone.leader).command(
-                        self.sensed(drone, request, walls)
-                    ),
-                    limits,
-                    lapse,
-                )
+                drone.flown(mind, self.sensed(drone, request, walls), limits, lapse)
                 for drone in self.drones
             )
         )

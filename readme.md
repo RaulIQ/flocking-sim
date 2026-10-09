@@ -6,9 +6,14 @@ flown from the keyboard and followers that fly after it as a cloud. Each
 follower is shoved away by close neighbours, pulled toward distant ones up to a
 limit, pulled harder toward the leader, and shoved away by a wall that comes
 close. A wall with one gap stands across the way: fly the leader through the gap
-and the cloud stretches into a file, squeezes through and gathers again. For now
-the followers are told the true places of the others and the true nearest point
-of each wall; the noisy sensors come later.
+and the cloud stretches into a file, squeezes through and gathers again. A drone is
+never handed a ready vector to a neighbour. It gets a range (as from radio
+ranging), a bearing (as from a camera) and a role (as from the radio) as
+separate measurements, and its own tracker builds the vector, carrying it along
+with the drone's own flight and turn between measurements. A neighbour it has a
+range to but has never sighted takes no part in the pull and the shove; it only
+slows the drone down. For now every measurement is exact and arrives every
+tick, and the camera sees all the way around; noise comes later.
 
 The leader cannot be flown into a wall: its request is cut so that it never
 closes on a wall faster than it can brake, and it stops a hard bubble away. It

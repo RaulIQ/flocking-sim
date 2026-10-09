@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from functools import reduce
-from math import sqrt
+from math import inf, sqrt
 from typing import final
 
 from agent.command import Command
@@ -26,6 +26,10 @@ class Shield:
     the request gets the rest. The share shrinks smoothly, with no threshold
     for a rounding error to tip, so the answer does not depend on which way
     the drone happens to face.
+
+    A neighbour known by its distance alone may be anywhere around, so it
+    bounds the speed in every direction at once. The two drones share the
+    duty: each counts on half of the room between their two margins.
     """
 
     limits: Limits
@@ -42,12 +46,28 @@ class Shield:
             command.spin,
         )
 
+    def slowed(self, command: Command, distances: tuple) -> Command:
+        return Command(
+            command.velocity.capped(
+                min(
+                    (
+                        self.bound(max(0.0, distance / 2.0 - self.margin))
+                        for distance in distances
+                    ),
+                    default=inf,
+                )
+            ),
+            command.spin,
+        )
+
+    def bound(self, room: float) -> float:
+        return min(sqrt(self.limits.push * room), room / self.lapse)
+
     def clipped(self, wanted: Vector, velocity: Vector, offset: Vector) -> Vector:
         distance = offset.length()
         if distance == 0.0:
             return wanted
-        room = max(0.0, distance - self.margin)
-        bound = min(sqrt(self.limits.push * room), room / self.lapse)
+        bound = self.bound(max(0.0, distance - self.margin))
         allowed = wanted.minus(
             offset.times(max(0.0, wanted.dot(offset) / distance - bound) / distance)
         )

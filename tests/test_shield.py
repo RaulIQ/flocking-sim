@@ -116,6 +116,46 @@ def test_cannot_go_deaf_to_a_sideways_request_over_a_rounding_error():
     ), "a rounding error makes a drone deaf to a sideways request"
 
 
+def test_lets_a_request_through_with_every_neighbour_placed():
+    assert Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60).slowed(
+        Command(Vector(1.7, -0.4), 0.3), ()
+    ) == Command(
+        Vector(approx(1.7), approx(-0.4)), approx(0.3)
+    ), "a drone slows down with no unplaced neighbour around"
+
+
+def test_slows_down_near_a_neighbour_known_by_distance_alone():
+    assert Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60).slowed(
+        Command(Vector(1.2, -1.6), 0.0), (0.7,)
+    ).velocity == Vector(
+        approx(0.3795, abs=1e-4), approx(-0.5060, abs=1e-4)
+    ), "a drone does not slow down near a neighbour known by distance alone"
+
+
+def test_slows_down_for_the_closest_of_the_neighbours_it_cannot_place():
+    assert Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60).slowed(
+        Command(Vector(2.0, 0.0), 0.0), (3.0, 0.7, 1.5)
+    ).velocity == Vector(
+        approx(0.6325, abs=1e-4), approx(0.0)
+    ), "a drone does not slow down for the closest unplaced neighbour"
+
+
+def test_cannot_slow_down_for_a_distant_neighbour_known_by_distance_alone():
+    assert Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60).slowed(
+        Command(Vector(2.0, 0.0), 0.0), (3.0,)
+    ).velocity == Vector(
+        approx(2.0), approx(0.0)
+    ), "a distant unplaced neighbour slows a drone down"
+
+
+def test_stops_when_two_margins_touch_a_neighbour_known_by_distance_alone():
+    assert Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60).slowed(
+        Command(Vector(1.2, -1.6), 0.7), (0.5,)
+    ) == Command(
+        Vector(approx(0.0), approx(0.0)), approx(0.7)
+    ), "a drone keeps flying when its margin touches that of an unplaced neighbour"
+
+
 def test_cannot_change_the_turn_of_a_request():
     assert Shield(Limits(2.0, 2.0, 1.8, 8.0), 0.25, 1.0 / 60).command(
         Command(Vector(2.0, 0.0), 1.3), Vector(0.0, 0.0), (Vector(0.25, 0.0),)

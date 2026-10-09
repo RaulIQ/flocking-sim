@@ -5,6 +5,7 @@ from agent.command import Command
 from agent.instinct import Instinct
 from agent.mind import Mind
 from agent.shield import Shield
+from agent.tracker import Tracker
 from agent.vector import Vector
 from config import Settings
 from simulator.body import Body
@@ -54,6 +55,7 @@ class Stage:
             Shield(
                 self.settings.limits, self.settings.swarm.bubbles.hard, self.lapse()
             ),
+            Tracker(self.lapse()),
             False,
         )
 
