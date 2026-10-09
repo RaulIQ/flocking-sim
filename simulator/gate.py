@@ -9,18 +9,21 @@ from simulator.wall import Wall
 @final
 @dataclass(frozen=True)
 class Gate:
-    """A wall across the flight path, split in two by one gap in its middle."""
+    """A wall across the flight path, split into pieces by the gaps in it."""
 
     barrier: Barrier
 
     def walls(self) -> tuple:
-        return (
-            Wall(
-                Vector(self.barrier.across, -self.barrier.span / 2),
-                Vector(self.barrier.across, -self.barrier.gap / 2),
+        edges = (
+            -self.barrier.span / 2,
+            *(
+                centre + side * self.barrier.gap / 2
+                for centre in sorted(self.barrier.centres)
+                for side in (-1, 1)
             ),
-            Wall(
-                Vector(self.barrier.across, self.barrier.gap / 2),
-                Vector(self.barrier.across, self.barrier.span / 2),
-            ),
+            self.barrier.span / 2,
+        )
+        return tuple(
+            Wall(Vector(self.barrier.across, low), Vector(self.barrier.across, high))
+            for low, high in zip(edges[::2], edges[1::2])
         )

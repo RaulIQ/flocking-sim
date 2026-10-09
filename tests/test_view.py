@@ -31,7 +31,7 @@ def test_draws_the_origin_in_the_middle_of_the_window():
             Limits(2.0, 4.0, 1.8, 8.0),
             Picture(Window(1000, 700, 60.0, 60), Shape(0.1, 0.35, 600)),
             Swarm(8, 1.2, Bubbles(0.25, 0.6), Cloud(Spring(1.2, 2.0, 0.5, 1.0), Spring(1.2, 2.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6)),
-            Barrier(4.0, 14.0, 1.2),
+            Barrier(4.0, 14.0, 1.2, (0.0,)),
         ),
     ).spot(Vector(0.0, 0.0)) == (
         approx(500.0),
@@ -46,7 +46,7 @@ def test_draws_a_northern_place_above_the_middle():
             Limits(2.0, 4.0, 1.8, 8.0),
             Picture(Window(1000, 700, 60.0, 60), Shape(0.1, 0.35, 600)),
             Swarm(8, 1.2, Bubbles(0.25, 0.6), Cloud(Spring(1.2, 2.0, 0.5, 1.0), Spring(1.2, 2.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6)),
-            Barrier(4.0, 14.0, 1.2),
+            Barrier(4.0, 14.0, 1.2, (0.0,)),
         ),
     ).spot(Vector(0.0, 1.0)) == (
         approx(500.0),
@@ -61,7 +61,7 @@ def test_reads_the_middle_of_the_window_as_the_origin():
             Limits(2.0, 4.0, 1.8, 8.0),
             Picture(Window(1000, 700, 60.0, 60), Shape(0.1, 0.35, 600)),
             Swarm(8, 1.2, Bubbles(0.25, 0.6), Cloud(Spring(1.2, 2.0, 0.5, 1.0), Spring(1.2, 2.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6)),
-            Barrier(4.0, 14.0, 1.2),
+            Barrier(4.0, 14.0, 1.2, (0.0,)),
         ),
     ).place((500, 350)) == Vector(
         approx(0.0), approx(0.0)
@@ -75,7 +75,7 @@ def test_reads_a_pixel_right_of_the_middle_as_an_eastern_place():
             Limits(2.0, 4.0, 1.8, 8.0),
             Picture(Window(1000, 700, 60.0, 60), Shape(0.1, 0.35, 600)),
             Swarm(8, 1.2, Bubbles(0.25, 0.6), Cloud(Spring(1.2, 2.0, 0.5, 1.0), Spring(1.2, 2.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6)),
-            Barrier(4.0, 14.0, 1.2),
+            Barrier(4.0, 14.0, 1.2, (0.0,)),
         ),
     ).place((560, 350)) == Vector(
         approx(1.0), approx(0.0)
@@ -89,7 +89,7 @@ def test_reads_a_pixel_above_the_middle_as_a_northern_place():
             Limits(2.0, 4.0, 1.8, 8.0),
             Picture(Window(1000, 700, 60.0, 60), Shape(0.1, 0.35, 600)),
             Swarm(8, 1.2, Bubbles(0.25, 0.6), Cloud(Spring(1.2, 2.0, 0.5, 1.0), Spring(1.2, 2.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6)),
-            Barrier(4.0, 14.0, 1.2),
+            Barrier(4.0, 14.0, 1.2, (0.0,)),
         ),
     ).place((500, 290)) == Vector(
         approx(0.0), approx(1.0)
@@ -104,7 +104,7 @@ def test_paints_the_leader_in_its_own_colour():
             Limits(2.0, 4.0, 1.8, 8.0),
             Picture(Window(200, 200, 100.0, 60), Shape(0.1, 0.35, 5)),
             Swarm(2, 1.2, Bubbles(0.25, 0.6), Cloud(Spring(1.2, 2.0, 0.5, 1.0), Spring(1.2, 2.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6)),
-            Barrier(4.0, 14.0, 1.2),
+            Barrier(4.0, 14.0, 1.2, (0.0,)),
         ),
     ).show(
         Flock(
@@ -128,7 +128,7 @@ def test_paints_a_follower_brighter_than_the_sky():
             Limits(2.0, 4.0, 1.8, 8.0),
             Picture(Window(200, 200, 100.0, 60), Shape(0.1, 0.35, 5)),
             Swarm(2, 1.2, Bubbles(0.25, 0.6), Cloud(Spring(1.2, 2.0, 0.5, 1.0), Spring(1.2, 2.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6)),
-            Barrier(4.0, 14.0, 1.2),
+            Barrier(4.0, 14.0, 1.2, (0.0,)),
         ),
     ).show(
         Flock(
@@ -152,7 +152,7 @@ def test_rings_a_drone_with_its_hard_bubble():
             Limits(2.0, 4.0, 1.8, 8.0),
             Picture(Window(200, 200, 100.0, 60), Shape(0.1, 0.35, 5)),
             Swarm(2, 1.2, Bubbles(0.25, 0.6), Cloud(Spring(1.2, 2.0, 0.5, 1.0), Spring(1.2, 2.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6)),
-            Barrier(4.0, 14.0, 1.2),
+            Barrier(4.0, 14.0, 1.2, (0.0,)),
         ),
     ).show(
         Flock(
@@ -176,7 +176,7 @@ def test_rings_a_drone_with_its_soft_bubble():
             Limits(2.0, 4.0, 1.8, 8.0),
             Picture(Window(200, 200, 100.0, 60), Shape(0.1, 0.35, 5)),
             Swarm(2, 1.2, Bubbles(0.25, 0.6), Cloud(Spring(1.2, 2.0, 0.5, 1.0), Spring(1.2, 2.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6)),
-            Barrier(4.0, 14.0, 1.2),
+            Barrier(4.0, 14.0, 1.2, (0.0,)),
         ),
     ).show(
         Flock(
@@ -200,7 +200,7 @@ def test_paints_the_two_bubbles_in_different_colours():
             Limits(2.0, 4.0, 1.8, 8.0),
             Picture(Window(200, 200, 100.0, 60), Shape(0.1, 0.35, 5)),
             Swarm(2, 1.2, Bubbles(0.25, 0.6), Cloud(Spring(1.2, 2.0, 0.5, 1.0), Spring(1.2, 2.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6)),
-            Barrier(4.0, 14.0, 1.2),
+            Barrier(4.0, 14.0, 1.2, (0.0,)),
         ),
     ).show(
         Flock(
@@ -224,7 +224,7 @@ def test_draws_a_wall_against_the_sky():
             Limits(2.0, 4.0, 1.8, 8.0),
             Picture(Window(200, 200, 100.0, 60), Shape(0.1, 0.35, 5)),
             Swarm(2, 1.2, Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6)),
-            Barrier(4.0, 14.0, 1.2),
+            Barrier(4.0, 14.0, 1.2, (0.0,)),
         ),
     ).show(
         Flock(

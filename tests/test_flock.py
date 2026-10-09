@@ -386,7 +386,7 @@ def test_follows_the_leader_through_a_gap():
                     Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
                     Limits(2.0, 4.0, 1.8, 8.0),
                 ),
-                Gate(Barrier(4.0, 14.0, 1.2)).walls(),
+                Gate(Barrier(4.0, 14.0, 1.2, (0.0,))).walls(),
                 Limits(2.0, 4.0, 1.8, 8.0),
                 1.0 / 60,
             ),
@@ -414,7 +414,7 @@ def test_cannot_touch_a_wall_on_the_way_through_a_gap():
                     Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
                     Limits(2.0, 4.0, 1.8, 8.0),
                 ),
-                Gate(Barrier(4.0, 14.0, 1.2)).walls(),
+                Gate(Barrier(4.0, 14.0, 1.2, (0.0,))).walls(),
                 Limits(2.0, 4.0, 1.8, 8.0),
                 1.0 / 60,
             ),
@@ -426,5 +426,5 @@ def test_cannot_touch_a_wall_on_the_way_through_a_gap():
             ),
         )
         for drone in flock.drones
-        for wall in Gate(Barrier(4.0, 14.0, 1.2)).walls()
+        for wall in Gate(Barrier(4.0, 14.0, 1.2, (0.0,))).walls()
     ) > 0.1, "the hull of a drone touches a wall on the way through a gap"

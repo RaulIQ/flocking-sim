@@ -88,11 +88,12 @@ class Swarm:
 @final
 @dataclass(frozen=True)
 class Barrier:
-    """A wall standing across the x axis: where it stands, how long it is and how wide its gap is."""
+    """A wall standing across the x axis: where it stands, how long it is, how wide its gaps are and where."""
 
     across: float
     span: float
     gap: float
+    centres: tuple
 
 
 @final
@@ -121,5 +122,5 @@ def defaults() -> Settings:
                 6,
             ),
         ),
-        Barrier(4.0, 14.0, 1.2),
+        Barrier(4.0, 14.0, 1.2, (0.0,)),
     )

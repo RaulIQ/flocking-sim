@@ -26,7 +26,7 @@ def test_musters_as_many_drones_as_the_settings_ask():
                 Limits(2.0, 4.0, 1.8, 8.0),
                 Picture(Window(1000, 700, 60.0, 60), Shape(0.1, 0.35, 7)),
                 Swarm(5, 1.3, Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6)),
-                Barrier(4.0, 14.0, 1.2),
+                Barrier(4.0, 14.0, 1.2, (0.0,)),
             )
         )
         .flock()
@@ -43,7 +43,7 @@ def test_musters_the_drones_a_spacing_apart():
                     Limits(2.0, 4.0, 1.8, 8.0),
                     Picture(Window(1000, 700, 60.0, 60), Shape(0.1, 0.35, 7)),
                     Swarm(5, 1.3, Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6)),
-                    Barrier(4.0, 14.0, 1.2),
+                    Barrier(4.0, 14.0, 1.2, (0.0,)),
                 )
             )
             .flock()
@@ -61,7 +61,7 @@ def test_gives_the_lead_to_the_first_drone():
                 Limits(2.0, 4.0, 1.8, 8.0),
                 Picture(Window(1000, 700, 60.0, 60), Shape(0.1, 0.35, 7)),
                 Swarm(3, 1.3, Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6)),
-                Barrier(4.0, 14.0, 1.2),
+                Barrier(4.0, 14.0, 1.2, (0.0,)),
             )
         )
         .flock()
@@ -75,7 +75,7 @@ def test_builds_the_walls_of_its_barrier():
             Limits(2.0, 4.0, 1.8, 8.0),
             Picture(Window(1000, 700, 60.0, 60), Shape(0.1, 0.35, 7)),
             Swarm(3, 1.3, Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6)),
-            Barrier(3.5, 14.0, 1.2),
+            Barrier(3.5, 14.0, 1.2, (0.0,)),
         )
     ).walls()[1].start == Vector(
         approx(3.5), approx(0.6)
@@ -88,7 +88,7 @@ def test_ticks_as_often_as_the_window_refreshes():
             Limits(2.0, 4.0, 1.8, 8.0),
             Picture(Window(1000, 700, 60.0, 25), Shape(0.1, 0.35, 7)),
             Swarm(3, 1.3, Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6)),
-            Barrier(4.0, 14.0, 1.2),
+            Barrier(4.0, 14.0, 1.2, (0.0,)),
         )
     ).lapse() == approx(0.04), "a stage does not tick as often as the window refreshes"
 
@@ -99,7 +99,7 @@ def test_flies_the_leader_on_a_request():
             Limits(2.0, 100.0, 1.8, 8.0),
             Picture(Window(1000, 700, 60.0, 4), Shape(0.1, 0.35, 7)),
             Swarm(3, 1.3, Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6)),
-            Barrier(40.0, 14.0, 1.2),
+            Barrier(40.0, 14.0, 1.2, (0.0,)),
         )
     )
     assert stage.after(
@@ -115,7 +115,7 @@ def test_cannot_fly_the_leader_into_a_wall():
             Limits(2.0, 100.0, 1.8, 8.0),
             Picture(Window(1000, 700, 60.0, 4), Shape(0.1, 0.35, 7)),
             Swarm(1, 1.3, Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6)),
-            Barrier(0.2, 14.0, 0.0),
+            Barrier(0.2, 14.0, 0.0, (0.0,)),
         )
     )
     assert stage.after(

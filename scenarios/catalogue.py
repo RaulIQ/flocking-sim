@@ -50,6 +50,12 @@ def catalogue() -> dict:
             Route((Vector(5.5, 0.0), Vector(5.5, 4.0)), 1.5, 0.3),
             60.0,
         ),
+        "two_gaps": Scenario(
+            "The wall has two gaps 4 m apart and the leader takes the upper one",
+            replace(defaults(), barrier=replace(defaults().barrier, centres=(-2.0, 2.0))),
+            Route((Vector(3.0, 2.0), Vector(8.0, 2.0)), 1.0, 0.3),
+            40.0,
+        ),
         "wall": Scenario(
             "The leader is flown at full speed into the solid wall beside the gap",
             defaults(),
