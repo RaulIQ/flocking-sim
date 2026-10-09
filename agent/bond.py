@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import final
 
+from agent.tuning import Spring
 from agent.vector import Vector
-from config import Spring
 
 
 @final

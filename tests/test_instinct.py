@@ -2,8 +2,8 @@ from pytest import approx
 
 from agent.instinct import Instinct
 from agent.neighbour import Neighbour
+from agent.tuning import Cloud, Limits, Spring
 from agent.vector import Vector
-from config import Cloud, Limits, Spring
 
 
 def test_cannot_want_to_fly_alone():

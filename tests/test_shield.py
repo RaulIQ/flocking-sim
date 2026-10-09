@@ -5,8 +5,8 @@ from pytest import approx
 
 from agent.command import Command
 from agent.shield import Shield
+from agent.tuning import Limits
 from agent.vector import Vector
-from config import Limits
 from simulator.body import Body
 from simulator.wall import Wall
 

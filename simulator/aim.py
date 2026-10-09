@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from math import atan2, copysign, remainder, sqrt, tau
 from typing import final
 
-from config import Limits
+from agent.tuning import Limits
 from simulator.body import Body
 from agent.vector import Vector
 

@@ -2,7 +2,7 @@ from math import cos, pi, sin, tau
 
 from pytest import approx
 
-from config import Limits
+from agent.tuning import Limits
 from simulator.aim import Aim
 from simulator.body import Body
 from agent.vector import Vector

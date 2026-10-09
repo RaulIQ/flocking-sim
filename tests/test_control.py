@@ -13,7 +13,7 @@ from pygame import (
 )
 from pytest import approx
 
-from config import Limits
+from agent.tuning import Limits
 from simulator.control import Pilot
 from agent.vector import Vector
 

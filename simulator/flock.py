@@ -5,8 +5,8 @@ from agent.command import Command
 from agent.mind import Mind
 from agent.neighbour import Neighbour
 from agent.senses import Senses
+from agent.tuning import Limits
 from agent.vector import Vector
-from config import Limits
 from simulator.drone import Drone
 
 

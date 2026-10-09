@@ -2,19 +2,9 @@ from math import inf
 
 from pytest import approx
 
+from agent.tuning import Cloud, Limits, Spring
 from agent.vector import Vector
-from config import (
-    Barrier,
-    Bubbles,
-    Cloud,
-    Limits,
-    Picture,
-    Settings,
-    Shape,
-    Spring,
-    Swarm,
-    Window,
-)
+from config import Barrier, Bubbles, Picture, Settings, Shape, Swarm, Window
 from scenarios.tally import Passage, Tally
 from simulator.body import Body
 from simulator.drone import Drone

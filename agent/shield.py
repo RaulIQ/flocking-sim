@@ -4,8 +4,8 @@ from math import sqrt
 from typing import final
 
 from agent.command import Command
+from agent.tuning import Limits
 from agent.vector import Vector
-from config import Limits
 
 
 @final

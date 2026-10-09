@@ -2,8 +2,8 @@ from dataclasses import dataclass
 from math import tau
 from typing import final
 
-from config import Limits
 from agent.command import Command
+from agent.tuning import Limits
 from agent.vector import Vector
 
 

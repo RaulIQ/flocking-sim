@@ -1,19 +1,9 @@
 from pygame import K_SPACE, K_TAB, KEYDOWN, MOUSEBUTTONDOWN, MOUSEMOTION, Surface
 from pygame.event import Event
 
+from agent.tuning import Cloud, Limits, Spring
 from agent.vector import Vector
-from config import (
-    Barrier,
-    Bubbles,
-    Cloud,
-    Limits,
-    Picture,
-    Settings,
-    Shape,
-    Spring,
-    Swarm,
-    Window,
-)
+from config import Barrier, Bubbles, Picture, Settings, Shape, Swarm, Window
 from simulator.baton import Baton
 from simulator.body import Body
 from simulator.drone import Drone

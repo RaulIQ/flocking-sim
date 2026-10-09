@@ -89,5 +89,6 @@ into the hard bubble of a drone. New scenarios go into
 | `simulator/` | the world, the dynamics and the picture |
 | `scenarios/` | scripted flights and their logs |
 | `tests/` | one test file per feature file |
-| `config.py` | every tunable number |
+| `agent/tuning.py` | the kinds of numbers the agent is tuned by, so that it needs nothing from outside |
+| `config.py` | every tunable number, the agent's and the simulator's, in one `defaults()` |
 | `run.py` | the interactive run |

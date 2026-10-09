@@ -2,8 +2,8 @@ from math import pi
 
 from pytest import approx
 
-from config import Limits
 from agent.command import Command
+from agent.tuning import Limits
 from simulator.body import Body
 from agent.vector import Vector
 

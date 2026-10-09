@@ -10,8 +10,9 @@ from agent.mind import Mind
 from agent.neighbour import Neighbour
 from agent.senses import Senses
 from agent.shield import Shield
+from agent.tuning import Cloud, Limits, Spring
 from agent.vector import Vector
-from config import Barrier, Cloud, Limits, Spring
+from config import Barrier
 from simulator.body import Body
 from simulator.drone import Drone
 from simulator.flock import Flock

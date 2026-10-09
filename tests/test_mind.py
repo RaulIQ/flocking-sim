@@ -6,8 +6,8 @@ from agent.mind import Mind
 from agent.neighbour import Neighbour
 from agent.senses import Senses
 from agent.shield import Shield
+from agent.tuning import Cloud, Limits, Spring
 from agent.vector import Vector
-from config import Cloud, Limits, Spring
 
 
 def test_flies_a_follower_after_its_leader():

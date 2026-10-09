@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import final
 
-from config import Limits
 from agent.command import Command
+from agent.tuning import Limits
 from simulator.body import Body
 from simulator.trail import Trail
 

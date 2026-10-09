@@ -12,7 +12,7 @@ from pygame import (
     KSCAN_W,
 )
 
-from config import Limits
+from agent.tuning import Limits
 from agent.vector import Vector
 
 

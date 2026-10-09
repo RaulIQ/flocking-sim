@@ -4,8 +4,8 @@ from typing import final
 
 from agent.bond import Bond
 from agent.command import Command
+from agent.tuning import Cloud, Limits
 from agent.vector import Vector
-from config import Cloud, Limits
 
 
 @final

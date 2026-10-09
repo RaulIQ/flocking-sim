@@ -1,8 +1,8 @@
 from pytest import approx
 
 from agent.bond import Bond
+from agent.tuning import Spring
 from agent.vector import Vector
-from config import Spring
 
 
 def test_cannot_move_a_drone_at_the_rest_distance():
