@@ -3,6 +3,7 @@ from typing import final
 
 from agent.command import Command
 from agent.instinct import Instinct
+from agent.mind import Mind
 from agent.shield import Shield
 from agent.vector import Vector
 from config import Settings
@@ -47,18 +48,16 @@ class Stage:
             )
         )
 
-    def after(self, flock: Flock, command: Command) -> Flock:
-        leader = flock.leader().body
-        return flock.moved(
+    def mind(self) -> Mind:
+        return Mind(
+            Instinct(self.settings.swarm.cloud, self.settings.limits),
             Shield(
                 self.settings.limits, self.settings.swarm.bubbles.hard, self.lapse()
-            ).command(
-                command,
-                leader.velocity.turned(-leader.heading),
-                flock.felt(flock.leader(), self.walls()),
             ),
-            Instinct(self.settings.swarm.cloud, self.settings.limits),
-            self.walls(),
-            self.settings.limits,
-            self.lapse(),
+            False,
+        )
+
+    def after(self, flock: Flock, request: Command) -> Flock:
+        return flock.moved(
+            request, self.mind(), self.walls(), self.settings.limits, self.lapse()
         )

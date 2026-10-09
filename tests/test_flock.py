@@ -6,7 +6,10 @@ from pytest import approx, raises
 
 from agent.command import Command
 from agent.instinct import Instinct
+from agent.mind import Mind
 from agent.neighbour import Neighbour
+from agent.senses import Senses
+from agent.shield import Shield
 from agent.vector import Vector
 from config import Barrier, Cloud, Limits, Spring
 from simulator.body import Body
@@ -70,9 +73,10 @@ def test_flies_the_leader_on_the_request_of_the_pilot():
         )
     ).moved(
         Command(Vector(2.0, 0.0), 0.0),
-        Instinct(
-            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
-            Limits(2.0, 100.0, 1.8, 8.0),
+        Mind(
+            Instinct(Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), Limits(2.0, 100.0, 1.8, 8.0)),
+            Shield(Limits(2.0, 100.0, 1.8, 8.0), 0.25, 1.0 / 60),
+            False,
         ),
         (),
         Limits(2.0, 100.0, 1.8, 8.0),
@@ -90,9 +94,10 @@ def test_cannot_fly_a_follower_on_the_request_of_the_pilot():
         )
     ).moved(
         Command(Vector(0.0, 2.0), 1.2),
-        Instinct(
-            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
-            Limits(2.0, 100.0, 1.8, 8.0),
+        Mind(
+            Instinct(Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), Limits(2.0, 100.0, 1.8, 8.0)),
+            Shield(Limits(2.0, 100.0, 1.8, 8.0), 0.25, 1.0 / 60),
+            False,
         ),
         (),
         Limits(2.0, 100.0, 1.8, 8.0),
@@ -113,9 +118,10 @@ def test_flies_a_follower_toward_a_distant_leader_along_its_own_nose():
         )
     ).moved(
         Command(Vector(0.0, 0.0), 0.0),
-        Instinct(
-            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
-            Limits(2.0, 100.0, 1.8, 8.0),
+        Mind(
+            Instinct(Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), Limits(2.0, 100.0, 1.8, 8.0)),
+            Shield(Limits(2.0, 100.0, 1.8, 8.0), 0.25, 1.0 / 60),
+            False,
         ),
         (),
         Limits(2.0, 100.0, 1.8, 8.0),
@@ -136,9 +142,10 @@ def test_keeps_every_drone_after_a_move():
         )
         .moved(
             Command(Vector(2.0, 0.0), 0.0),
-            Instinct(
-                Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
-                Limits(2.0, 4.0, 1.8, 8.0),
+            Mind(
+                Instinct(Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), Limits(2.0, 4.0, 1.8, 8.0)),
+                Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+                False,
             ),
             (),
             Limits(2.0, 4.0, 1.8, 8.0),
@@ -152,9 +159,10 @@ def test_follows_the_leader_as_a_cloud():
     flock = reduce(
         lambda cloud, frame: cloud.moved(
             Command(Vector(2.0 if frame < 360 else 0.0, 0.0), 0.0),
-            Instinct(
-                Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
-                Limits(2.0, 4.0, 1.8, 8.0),
+            Mind(
+                Instinct(Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), Limits(2.0, 4.0, 1.8, 8.0)),
+                Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+                False,
             ),
             (),
             Limits(2.0, 4.0, 1.8, 8.0),
@@ -186,9 +194,10 @@ def test_cannot_let_two_drones_stick_together_in_flight():
                     ),
                     0.0,
                 ),
-                Instinct(
-                    Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
-                    Limits(2.0, 4.0, 1.8, 8.0),
+                Mind(
+                    Instinct(Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), Limits(2.0, 4.0, 1.8, 8.0)),
+                    Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+                    False,
                 ),
                 (),
                 Limits(2.0, 4.0, 1.8, 8.0),
@@ -211,9 +220,10 @@ def test_comes_to_rest_once_the_leader_hovers():
         for drone in reduce(
             lambda cloud, frame: cloud.moved(
                 Command(Vector(0.0, 0.0), 0.0),
-                Instinct(
-                    Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
-                    Limits(2.0, 4.0, 1.8, 8.0),
+                Mind(
+                    Instinct(Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), Limits(2.0, 4.0, 1.8, 8.0)),
+                    Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+                    False,
                 ),
                 (),
                 Limits(2.0, 4.0, 1.8, 8.0),
@@ -321,9 +331,10 @@ def test_gathers_around_a_new_leader():
     flock = reduce(
         lambda cloud, frame: cloud.moved(
             Command(Vector(0.0, 2.0 if frame < 240 else 0.0), 0.0),
-            Instinct(
-                Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
-                Limits(2.0, 4.0, 1.8, 8.0),
+            Mind(
+                Instinct(Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), Limits(2.0, 4.0, 1.8, 8.0)),
+                Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+                False,
             ),
             (),
             Limits(2.0, 4.0, 1.8, 8.0),
@@ -362,9 +373,10 @@ def test_cannot_fly_a_follower_into_a_wall_after_its_leader():
         )
     ).moved(
         Command(Vector(0.0, 0.0), 0.0),
-        Instinct(
-            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
-            Limits(2.0, 100.0, 1.8, 8.0),
+        Mind(
+            Instinct(Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), Limits(2.0, 100.0, 1.8, 8.0)),
+            Shield(Limits(2.0, 100.0, 1.8, 8.0), 0.25, 1.0 / 60),
+            False,
         ),
         (Wall(Vector(0.3, -4.0), Vector(0.3, 4.0)),),
         Limits(2.0, 100.0, 1.8, 8.0),
@@ -382,9 +394,10 @@ def test_follows_the_leader_through_a_gap():
                 Command(
                     Vector(1.0 if cloud.leader().body.position.x < 8.0 else 0.0, 0.0), 0.0
                 ),
-                Instinct(
-                    Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
-                    Limits(2.0, 4.0, 1.8, 8.0),
+                Mind(
+                    Instinct(Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), Limits(2.0, 4.0, 1.8, 8.0)),
+                    Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+                    False,
                 ),
                 Gate(Barrier(4.0, 14.0, 1.2, (0.0,))).walls(),
                 Limits(2.0, 4.0, 1.8, 8.0),
@@ -410,9 +423,10 @@ def test_cannot_touch_a_wall_on_the_way_through_a_gap():
                 Command(
                     Vector(1.0 if cloud.leader().body.position.x < 8.0 else 0.0, 0.0), 0.0
                 ),
-                Instinct(
-                    Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
-                    Limits(2.0, 4.0, 1.8, 8.0),
+                Mind(
+                    Instinct(Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), Limits(2.0, 4.0, 1.8, 8.0)),
+                    Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+                    False,
                 ),
                 Gate(Barrier(4.0, 14.0, 1.2, (0.0,))).walls(),
                 Limits(2.0, 4.0, 1.8, 8.0),
@@ -428,3 +442,42 @@ def test_cannot_touch_a_wall_on_the_way_through_a_gap():
         for drone in flock.drones
         for wall in Gate(Barrier(4.0, 14.0, 1.2, (0.0,))).walls()
     ) > 0.1, "the hull of a drone touches a wall on the way through a gap"
+
+
+def test_tells_a_drone_all_it_senses_in_its_own_frame():
+    assert Flock(
+        (
+            Drone(Body(Vector(1.0, 1.0), pi / 2, Vector(0.0, 0.7), 0.0), Trail((), 5), False),
+            Drone(Body(Vector(1.0, 3.5), 0.0, Vector(0.0, 0.0), 0.0), Trail((), 5), True),
+        )
+    ).sensed(
+        Drone(Body(Vector(1.0, 1.0), pi / 2, Vector(0.0, 0.7), 0.0), Trail((), 5), False),
+        Command(Vector(0.3, -0.2), 0.1),
+        (Wall(Vector(3.5, -4.0), Vector(3.5, 4.0)),),
+    ) == Senses(
+        Vector(approx(0.7), approx(0.0, abs=1e-9)),
+        (
+            Neighbour(Vector(approx(0.0, abs=1e-9), approx(0.0, abs=1e-9)), False),
+            Neighbour(Vector(approx(2.5), approx(0.0, abs=1e-9)), True),
+        ),
+        (Vector(approx(0.0, abs=1e-9), approx(-2.5)),),
+        Command(Vector(0.3, -0.2), 0.1),
+    ), "a drone is not told all it senses in its own frame"
+
+
+def test_cannot_fly_the_leader_into_a_wall_on_the_request_of_the_pilot():
+    assert Flock(
+        (Drone(Body(Vector(0.0, 0.0), 0.0, Vector(0.0, 0.0), 0.0), Trail((), 5), True),)
+    ).moved(
+        Command(Vector(2.0, 0.0), 0.0),
+        Mind(
+            Instinct(Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), Limits(2.0, 100.0, 1.8, 8.0)),
+            Shield(Limits(2.0, 100.0, 1.8, 8.0), 0.25, 0.25),
+            False,
+        ),
+        (Wall(Vector(0.2, -4.0), Vector(0.2, 4.0)),),
+        Limits(2.0, 100.0, 1.8, 8.0),
+        0.25,
+    ).leader().body.position == Vector(
+        approx(0.0), approx(0.0)
+    ), "a flock flies its leader into a wall on the request of the pilot"

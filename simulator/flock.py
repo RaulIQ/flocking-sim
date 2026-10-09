@@ -2,8 +2,9 @@ from dataclasses import dataclass
 from typing import final
 
 from agent.command import Command
-from agent.instinct import Instinct
+from agent.mind import Mind
 from agent.neighbour import Neighbour
+from agent.senses import Senses
 from agent.vector import Vector
 from config import Limits
 from simulator.drone import Drone
@@ -12,11 +13,11 @@ from simulator.drone import Drone
 @final
 @dataclass(frozen=True)
 class Flock:
-    """Every drone in the air, the leader flown by the pilot and the rest by their instinct.
+    """Every drone in the air, each flown by its own mind on what it alone senses.
 
-    Until the sensors are built, each follower is told the true places of the
-    others and the nearest point of every wall, already turned into its own
-    frame, and nothing else. The lead is a
+    Until the sensors are built, each drone is told its true velocity, the true
+    places of the others and the nearest point of every wall, already turned
+    into its own frame, and nothing else. The lead is a
     mark on a drone, not a kind of drone, so it can move from one to another.
     """
 
@@ -68,10 +69,18 @@ class Flock:
             return self
         return self.led(index)
 
+    def sensed(self, drone: Drone, request: Command, walls: tuple) -> Senses:
+        return Senses(
+            drone.body.velocity.turned(-drone.body.heading),
+            self.seen(drone),
+            self.felt(drone, walls),
+            request,
+        )
+
     def moved(
         self,
-        command: Command,
-        instinct: Instinct,
+        request: Command,
+        mind: Mind,
         walls: tuple,
         limits: Limits,
         lapse: float,
@@ -79,9 +88,9 @@ class Flock:
         return Flock(
             tuple(
                 drone.moved(
-                    command
-                    if drone.leader
-                    else instinct.command(self.seen(drone), self.felt(drone, walls)),
+                    mind.led(drone.leader).command(
+                        self.sensed(drone, request, walls)
+                    ),
                     limits,
                     lapse,
                 )
