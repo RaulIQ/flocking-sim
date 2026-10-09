@@ -48,3 +48,10 @@ class View:
             window.width / 2 + place.x * window.scale,
             window.height / 2 - place.y * window.scale,
         )
+
+    def place(self, pixel) -> Vector:
+        window = self.settings.window
+        return Vector(
+            (pixel[0] - window.width / 2) / window.scale,
+            (window.height / 2 - pixel[1]) / window.scale,
+        )

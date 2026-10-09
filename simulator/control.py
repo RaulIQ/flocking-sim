@@ -1,25 +1,21 @@
 from dataclasses import dataclass
 from typing import final
 
-from pygame import K_a, K_d, K_e, K_q, K_s, K_w
+from pygame import K_DOWN, K_LEFT, K_RIGHT, K_UP, K_a, K_d, K_s, K_w
 
 from config import Limits
-from simulator.body import Command
 from simulator.vector import Vector
 
 
 @final
 @dataclass(frozen=True)
 class Pilot:
-    """A human at the keyboard, asking one drone to fly in its own frame."""
+    """A human at the keyboard, sliding one drone around in its own frame."""
 
     limits: Limits
 
-    def command(self, keys) -> Command:
-        return Command(
-            Vector(
-                self.limits.speed * (keys[K_w] - keys[K_s]),
-                self.limits.speed * (keys[K_a] - keys[K_d]),
-            ).capped(self.limits.speed),
-            self.limits.spin * (keys[K_q] - keys[K_e]),
-        )
+    def velocity(self, keys) -> Vector:
+        return Vector(
+            keys[K_w] + keys[K_UP] - keys[K_s] - keys[K_DOWN],
+            keys[K_a] + keys[K_LEFT] - keys[K_d] - keys[K_RIGHT],
+        ).capped(1.0).times(self.limits.speed)

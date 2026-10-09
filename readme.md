@@ -18,12 +18,15 @@ python run.py
 
 ## Keys
 
-| Key | Meaning |
-|-----|---------|
-| `W` / `S` | forward and backward along the nose |
-| `A` / `D` | sideways, left and right |
-| `Q` / `E` | turn left and right |
+| Control | Meaning |
+|---------|---------|
+| `W` / `S` or `Up` / `Down` | forward and backward along the nose |
+| `A` / `D` or `Left` / `Right` | sideways, left and right |
+| mouse | the nose turns toward the pointer |
 | `Esc` | close the window |
+
+The pointer sets the heading the drone wants, not the heading it has: the nose
+swings around under the same spin and twist limits as the rest of the flight.
 
 ## Tests
 
