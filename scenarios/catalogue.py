@@ -50,6 +50,12 @@ def catalogue() -> dict:
             Route((Vector(5.5, 0.0), Vector(5.5, 4.0)), 1.5, 0.3),
             60.0,
         ),
+        "gap_back": Scenario(
+            "The leader passes the gap at full speed, turns back at once and meets the cloud inside the gap",
+            defaults(),
+            Route((Vector(5.0, 0.0), Vector(0.0, 0.0)), 2.0, 0.3),
+            25.0,
+        ),
         "two_gaps": Scenario(
             "Two gaps 1.6 m apart: the leader takes the upper one, flies 7 m on, and the cloud splits",
             replace(

@@ -1,5 +1,7 @@
 from itertools import pairwise
 
+from pytest import mark
+
 from scenarios.catalogue import catalogue
 from scenarios.trial import Trial
 
@@ -59,3 +61,13 @@ def test_splits_the_cloud_between_the_two_gaps():
         < 4.0
         <= after.drones[index].body.position.x
     } == {True, False}, "the cloud does not use both gaps"
+
+
+@mark.xfail(
+    strict=True,
+    reason="nothing yet keeps the leader clear of other drones, the safety filter will",
+)
+def test_cannot_fly_the_leader_through_a_follower_inside_the_gap(tmp_path):
+    assert (
+        Trial("gap_back", catalogue()["gap_back"], 6).run(tmp_path).tally.pair > 0.5
+    ), "the leader turning back into the gap breaches the hard bubble of a follower"
