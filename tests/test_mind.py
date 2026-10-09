@@ -159,3 +159,89 @@ def test_gives_the_lead_away():
     ).velocity == Vector(
         approx(0.0), approx(0.0)
     ), "a mind that gives the lead away still obeys the pilot"
+
+
+def test_asks_the_same_of_a_follower_whichever_way_it_faces():
+    wanted = (
+        Mind(
+            Instinct(
+                Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
+                Limits(2.0, 4.0, 1.8, 8.0),
+            ),
+            Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+            False,
+        )
+        .command(
+            Senses(
+                Vector(0.3, -0.2),
+                (
+                    Neighbour(Vector(2.2, 0.4), True),
+                    Neighbour(Vector(-0.7, 0.5), False),
+                    Neighbour(Vector(0.2, -1.9), False),
+                ),
+                (Vector(0.1, -0.5),),
+                Command(Vector(0.0, 0.0), 0.0),
+            )
+        )
+        .velocity.turned(1.1)
+    )
+    assert Mind(
+        Instinct(
+            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
+            Limits(2.0, 4.0, 1.8, 8.0),
+        ),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        False,
+    ).command(
+        Senses(
+            Vector(0.3, -0.2).turned(1.1),
+            (
+                Neighbour(Vector(2.2, 0.4).turned(1.1), True),
+                Neighbour(Vector(-0.7, 0.5).turned(1.1), False),
+                Neighbour(Vector(0.2, -1.9).turned(1.1), False),
+            ),
+            (Vector(0.1, -0.5).turned(1.1),),
+            Command(Vector(0.0, 0.0), 0.0),
+        )
+    ).velocity == Vector(
+        approx(wanted.x), approx(wanted.y)
+    ), "a follower asks for something else when all it senses is turned"
+
+
+def test_asks_the_same_of_a_leader_whichever_way_it_faces():
+    wanted = (
+        Mind(
+            Instinct(
+                Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
+                Limits(2.0, 4.0, 1.8, 8.0),
+            ),
+            Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+            True,
+        )
+        .command(
+            Senses(
+                Vector(1.6, 0.3),
+                (Neighbour(Vector(-0.7, 0.5), False),),
+                (Vector(0.4, 0.1), Vector(-0.2, 0.6)),
+                Command(Vector(1.8, -0.6), 0.0),
+            )
+        )
+        .velocity.turned(-2.3)
+    )
+    assert Mind(
+        Instinct(
+            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
+            Limits(2.0, 4.0, 1.8, 8.0),
+        ),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        True,
+    ).command(
+        Senses(
+            Vector(1.6, 0.3).turned(-2.3),
+            (Neighbour(Vector(-0.7, 0.5).turned(-2.3), False),),
+            (Vector(0.4, 0.1).turned(-2.3), Vector(-0.2, 0.6).turned(-2.3)),
+            Command(Vector(1.8, -0.6).turned(-2.3), 0.0),
+        )
+    ).velocity == Vector(
+        approx(wanted.x), approx(wanted.y)
+    ), "a leader asks for something else when all it senses is turned"

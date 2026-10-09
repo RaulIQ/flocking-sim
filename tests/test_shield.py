@@ -1,3 +1,4 @@
+from functools import reduce
 from itertools import accumulate
 from math import pi
 
@@ -99,6 +100,22 @@ def test_cannot_cover_more_than_the_room_left_in_one_tick():
     ), "a drone may step over the margin within one tick"
 
 
+def test_spends_on_the_request_what_braking_leaves_of_one_tick():
+    assert Shield(Limits(2.0, 2.0, 1.8, 8.0), 0.25, 0.5).command(
+        Command(Vector(0.0, 2.0), 0.0), Vector(1.4, 0.0), (Vector(0.75, 0.0),)
+    ).velocity == Vector(
+        approx(0.7317, abs=1e-4), approx(0.5367, abs=1e-4)
+    ), "a drone that brakes a little spends nothing on the request"
+
+
+def test_cannot_go_deaf_to_a_sideways_request_over_a_rounding_error():
+    assert Shield(Limits(2.0, 2.0, 1.8, 8.0), 0.25, 1.0 / 60).command(
+        Command(Vector(0.0, 1.5), 0.0), Vector(1e-17, 0.0), (Vector(0.25, 0.0),)
+    ).velocity == Vector(
+        approx(0.0), approx(2.0 / 60)
+    ), "a rounding error makes a drone deaf to a sideways request"
+
+
 def test_cannot_change_the_turn_of_a_request():
     assert Shield(Limits(2.0, 2.0, 1.8, 8.0), 0.25, 1.0 / 60).command(
         Command(Vector(2.0, 0.0), 1.3), Vector(0.0, 0.0), (Vector(0.25, 0.0),)
@@ -127,3 +144,37 @@ def test_cannot_let_a_drone_fly_into_a_wall_at_full_speed():
             initial=Body(Vector(0.0, 0.3), pi / 7, Vector(0.0, 0.0), 0.0),
         )
     ) > 0.2, "a drone flown at a wall at full speed comes too close to it"
+
+
+def test_slides_along_a_wall_to_where_the_pilot_asks_whichever_way_it_faces():
+    assert max(
+        abs(
+            reduce(
+                lambda body, frame: body.moved(
+                    Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60).command(
+                        Command(
+                            Vector(8.0, 3.0)
+                            .minus(body.position)
+                            .times(2.0 / 0.3)
+                            .capped(2.0)
+                            .turned(-body.heading),
+                            0.0,
+                        ),
+                        body.velocity.turned(-body.heading),
+                        (
+                            Wall(Vector(4.0, -7.0), Vector(4.0, 7.0))
+                            .nearest(body.position)
+                            .minus(body.position)
+                            .turned(-body.heading),
+                        ),
+                    ),
+                    Limits(2.0, 4.0, 1.8, 8.0),
+                    1.0 / 60,
+                ),
+                range(1200),
+                Body(Vector(0.0, 0.0), heading, Vector(0.0, 0.0), 0.0),
+            ).position.y
+            - 3.0
+        )
+        for heading in (0.7, 1.0, 1.9, 3.3, 4.4, 5.5)
+    ) < 0.01, "a turned drone pressed against a wall does not stop where the pilot asks"

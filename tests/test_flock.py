@@ -482,3 +482,92 @@ def test_cannot_fly_the_leader_into_a_wall_on_the_request_of_the_pilot():
     ).leader().body.position == Vector(
         approx(0.0), approx(0.0)
     ), "a flock flies its leader into a wall on the request of the pilot"
+
+
+def test_flies_the_same_whichever_way_its_drones_face():
+    flown = lambda flock: reduce(
+        lambda cloud, frame: cloud.moved(
+            Command(
+                Vector(
+                    1.0 if cloud.leader().body.position.x < 8.0 else 0.0, 0.0
+                ).turned(-cloud.leader().body.heading),
+                0.0,
+            ),
+            Mind(
+                Instinct(Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), Limits(2.0, 4.0, 1.8, 8.0)),
+                Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+                False,
+            ),
+            Gate(Barrier(4.0, 14.0, 1.2, (0.0,))).walls(),
+            Limits(2.0, 4.0, 1.8, 8.0),
+            1.0 / 60,
+        ),
+        range(900),
+        flock,
+    )
+    assert max(
+        turned.body.position.minus(straight.body.position).length()
+        for turned, straight in zip(
+            flown(
+                Flock(
+                    tuple(
+                        Drone(
+                            Body(place, 0.7 + 2.4 * index, Vector(0.0, 0.0), 0.0),
+                            Trail((), 2),
+                            index == 0,
+                        )
+                        for index, place in enumerate(Muster(8, 1.2).places())
+                    )
+                )
+            ).drones,
+            flown(
+                Flock(
+                    tuple(
+                        Drone(Body(place, 0.0, Vector(0.0, 0.0), 0.0), Trail((), 2), index == 0)
+                        for index, place in enumerate(Muster(8, 1.2).places())
+                    )
+                )
+            ).drones,
+        )
+    ) < 1e-6, "the flight depends on which way the drones face"
+
+
+def test_flies_the_same_wherever_in_the_world_it_is():
+    flown = lambda shift: reduce(
+        lambda cloud, frame: cloud.moved(
+            Command(
+                Vector(
+                    1.0 if cloud.leader().body.position.x < 8.0 + shift.x else 0.0, 0.0
+                ),
+                0.0,
+            ),
+            Mind(
+                Instinct(Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), Limits(2.0, 4.0, 1.8, 8.0)),
+                Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+                False,
+            ),
+            tuple(
+                Wall(wall.start.plus(shift), wall.end.plus(shift))
+                for wall in Gate(Barrier(4.0, 14.0, 1.2, (0.0,))).walls()
+            ),
+            Limits(2.0, 4.0, 1.8, 8.0),
+            1.0 / 60,
+        ),
+        range(900),
+        Flock(
+            tuple(
+                Drone(
+                    Body(place.plus(shift), 0.0, Vector(0.0, 0.0), 0.0),
+                    Trail((), 2),
+                    index == 0,
+                )
+                for index, place in enumerate(Muster(8, 1.2).places())
+            )
+        ),
+    )
+    assert max(
+        moved.body.position.minus(Vector(37.5, -21.25)).minus(home.body.position).length()
+        for moved, home in zip(
+            flown(Vector(37.5, -21.25)).drones, flown(Vector(0.0, 0.0)).drones
+        )
+    ) < 1e-6, "the flight depends on where in the world it happens"

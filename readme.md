@@ -85,7 +85,7 @@ into the hard bubble of a drone. New scenarios go into
 
 | Path | Holds |
 |------|-------|
-| `agent/` | the algorithm of one drone: `Mind.command(Senses)` gives a `Command`; standard library only, blind to the simulator |
+| `agent/` | the algorithm of one drone: `Mind.command(Senses)` gives a `Command`; everything in `Senses` is in the drone's own frame, no map and no shared direction; standard library only, blind to the simulator |
 | `simulator/` | the world, the dynamics and the picture |
 | `scenarios/` | scripted flights and their logs |
 | `tests/` | one test file per feature file |
