@@ -35,6 +35,10 @@ amber drone is the leader and the pale line is the wall.
 pip install -r requirements.txt
 ```
 
+This is enough for the built-in formula. Flying on ArduPilot SITL copters
+also needs ArduPilot itself, built for SITL with `./waf configure --board sitl`
+and `./waf copter` in its own folder.
+
 ## Run
 
 ```bash
@@ -81,6 +85,8 @@ python -m pytest
 A scenario is a scripted flight: the leader follows a fixed route instead of the
 keyboard, so the same run can be repeated and compared after every change.
 Nothing in a run is random, the same scenario always gives the same numbers.
+The scenarios fly on the built-in formula, which answers as late as a copter
+does.
 
 ```bash
 python -m scenarios                # list the scenarios
@@ -100,6 +106,11 @@ Each run writes two files into `scenarios/logs/`:
 The summaries are small and kept in git, so `git diff scenarios/logs` shows how
 a change in the code moved the numbers. The traces are large and ignored.
 
+A drone that answers late does not yet fly every scenario clean. The cloud
+hovers and cruises without a breach, but in the gap some hard bubbles still
+overlap for a while. Three checks in `tests/test_catalogue.py` are marked as
+expected to fail for this reason, each with what goes wrong.
+
 A frame counts as breached when two hard bubbles overlap or when a wall reaches
 into the hard bubble of a drone. New scenarios go into
 `scenarios/catalogue.py`.
@@ -114,5 +125,5 @@ into the hard bubble of a drone. New scenarios go into
 | `scenarios/` | scripted flights and their logs |
 | `tests/` | one test file per feature file |
 | `agent/tuning.py` | the kinds of numbers the agent is tuned by, so that it needs nothing from outside |
-| `config.py` | every tunable number, the agent's and the simulator's, in one `defaults()` |
-| `run.py` | the interactive run |
+| `config.py` | every tunable number: `defaults()` for the agent and the simulator, `kinematics()` for how late the formula answers, `copters()` and `sortie()` for a flight on SITL |
+| `run.py` | the interactive run on the built-in formula |
