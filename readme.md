@@ -53,12 +53,12 @@ minute, and then the window opens. The plan of this stage lives in
 |---------|---------|
 | `W` / `S` or `Up` / `Down` | forward and backward along the nose |
 | `A` / `D` or `Left` / `Right` | sideways, left and right |
-| mouse | the nose of the leader turns toward the pointer |
+| `Q` / `E` | turn the nose left and right |
 | `Tab` | pass the lead to the next drone |
 | left click | hand the lead to the drone under the pointer |
 | `Esc` | close the window |
 
-The pointer sets the heading the drone wants, not the heading it has: the nose
+A turning key sets the spin the drone wants, not the spin it has: the nose
 swings around under the same spin and twist limits as the rest of the flight.
 
 Keys are read by scancode, by the physical place of a key rather than the letter
