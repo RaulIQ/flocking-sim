@@ -53,11 +53,18 @@ SITL output before relying on it.
 
 Start one instance per drone with its own number and system id, and with a
 start location that matches `Muster.places()`, so that the copters stand where
-the kinematic drones start:
+the kinematic drones start. The built copter is run directly, without
+`sim_vehicle.py`, so that nothing is rebuilt at the start and every instance
+is a child process that can be stopped:
 
-    sim_vehicle.py -v ArduCopter -I 0 --sysid 1 --no-mavproxy --custom-location=LAT,LON,0,0
+    build/sitl/bin/arducopter --wipe --model + --speedup 1 --base-port 5760 -I 0 --sysid 1 --home LAT,LON,0,90 --defaults Tools/autotest/default_params/copter.parm
 
-A script in the repository starts all of them from the settings.
+The yaw of 90 degrees points the nose to the east, where the kinematic drones
+look at the start.
+
+`python -m autopilot` starts all of them from the settings and stops them on
+Ctrl-C. Each instance keeps its files and its output in a folder of its own
+under `autopilot/logs/`.
 
 ## Frames
 

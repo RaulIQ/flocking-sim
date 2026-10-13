@@ -7,3 +7,4 @@ venv/
 .vscode/
 *.gif
 scenarios/logs/*.csv
+autopilot/logs/

@@ -1,7 +1,9 @@
 from dataclasses import dataclass
+from pathlib import Path
 from typing import final
 
 from agent.tuning import Cloud, Limits, Spring
+from autopilot.spot import Spot
 
 
 @final
@@ -76,6 +78,17 @@ class Settings:
     barrier: Barrier
 
 
+@final
+@dataclass(frozen=True)
+class Fleet:
+    """The copters ArduPilot simulates: how many, their first port, the spot under the first one and where ArduPilot is built."""
+
+    count: int
+    port: int
+    origin: Spot
+    source: Path
+
+
 def defaults() -> Settings:
     return Settings(
         Limits(2.0, 4.0, 1.8, 8.0),
@@ -92,4 +105,10 @@ def defaults() -> Settings:
             ),
         ),
         Barrier(4.0, 14.0, 1.2, (0.0,)),
+    )
+
+
+def fleet() -> Fleet:
+    return Fleet(
+        3, 5760, Spot(-35.3632607, 149.1652351), Path.home() / "code" / "ardupilot"
     )

@@ -1,0 +1,59 @@
+from contextlib import contextmanager
+from dataclasses import dataclass
+from pathlib import Path
+from subprocess import STDOUT, Popen
+from typing import final
+
+from autopilot.spot import Spot
+
+
+@final
+@dataclass(frozen=True)
+class Sitl:
+    """One copter that ArduPilot simulates on this machine, standing at its home.
+
+    The copter starts with the nose to the east, where the kinematic drones
+    look at the start, with its memory wiped and with no MAVProxy in front of
+    it. It keeps its files in a folder of its own and runs only while asked.
+    """
+
+    source: Path
+    number: int
+    home: Spot
+    base: int
+
+    def port(self) -> int:
+        return self.base + 10 * self.number
+
+    def words(self) -> tuple:
+        return (
+            str(self.source / "build" / "sitl" / "bin" / "arducopter"),
+            "--wipe",
+            "--model",
+            "+",
+            "--speedup",
+            "1",
+            "--base-port",
+            str(self.base),
+            "-I",
+            str(self.number),
+            "--sysid",
+            str(self.number + 1),
+            "--home",
+            f"{self.home.latitude:.7f},{self.home.longitude:.7f},0,90",
+            "--defaults",
+            str(self.source / "Tools" / "autotest" / "default_params" / "copter.parm"),
+        )
+
+    @contextmanager
+    def running(self, folder: Path):
+        (folder / str(self.number)).mkdir(parents=True, exist_ok=True)
+        with open(folder / str(self.number) / "sitl.log", "w") as log:
+            process = Popen(
+                self.words(), cwd=folder / str(self.number), stdout=log, stderr=STDOUT
+            )
+            try:
+                yield process
+            finally:
+                process.terminate()
+                process.wait(timeout=5)
