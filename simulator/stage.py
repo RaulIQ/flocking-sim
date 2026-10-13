@@ -12,20 +12,20 @@ from simulator.body import Body
 from simulator.drone import Drone
 from simulator.flock import Flock
 from simulator.gate import Gate
-from simulator.muster import Muster
 from simulator.trail import Trail
 
 
 @final
 @dataclass(frozen=True)
 class Stage:
-    """The simulated world under one set of settings: who starts where and what one tick does.
+    """The world under one set of settings and in one air: who starts where and what one tick does.
 
     The window and every scripted scenario step the world through this one
-    class, so that a scenario replays exactly what a pilot would see.
+    class, so that a scenario flies the way a pilot would see it.
     """
 
     settings: Settings
+    air: object
 
     def lapse(self) -> float:
         return 1.0 / self.settings.picture.window.rate
@@ -41,11 +41,7 @@ class Stage:
                     Trail((), self.settings.picture.shape.trail),
                     index == 0,
                 )
-                for index, place in enumerate(
-                    Muster(
-                        self.settings.swarm.count, self.settings.swarm.spacing
-                    ).places()
-                )
+                for index, place in enumerate(self.settings.swarm.muster.places())
             )
         )
 
@@ -53,13 +49,14 @@ class Stage:
         return Mind(
             Instinct(self.settings.swarm.cloud, self.settings.limits),
             Shield(
-                self.settings.limits, self.settings.swarm.bubbles.hard, self.lapse()
+                self.settings.limits,
+                self.settings.swarm.bubbles.hard,
+                self.lapse(),
+                self.settings.swarm.reaction,
             ),
             Tracker(self.lapse()),
             False,
         )
 
     def after(self, flock: Flock, request: Command) -> Flock:
-        return flock.moved(
-            request, self.mind(), self.walls(), self.settings.limits, self.lapse()
-        )
+        return flock.moved(request, self.mind(), self.walls(), self.air)

@@ -15,10 +15,16 @@ range to but has never sighted takes no part in the pull and the shove; it only
 slows the drone down. For now every measurement is exact and arrives every
 tick, and the camera sees all the way around; noise comes later.
 
+A drone does not obey at once. The built-in formula answers a command as
+late as a small ArduPilot copter was measured to: nothing for 0.15 s, then
+most of the way within the next second. The agent is told how late its drone answers,
+so a follower flies along with its leader, corrects its place gently and
+keeps the room it will cover before its command takes effect.
+
 The leader cannot be flown into a wall: its request is cut so that it never
 closes on a wall faster than it can brake, and it stops a hard bubble away. It
 still slides along the wall and flies away from it freely. The followers are
-only shoved away by walls, nothing yet guarantees that they keep clear.
+held back from walls and from each other the same way.
 
 On screen the red ring is the hard bubble, the blue ring is the soft one, the
 amber drone is the leader and the pale line is the wall.
@@ -29,11 +35,27 @@ amber drone is the leader and the pale line is the wall.
 pip install -r requirements.txt
 ```
 
+This is enough for the built-in formula. Flying on ArduPilot SITL copters
+also needs ArduPilot itself, built for SITL with `./waf configure --board sitl`
+and `./waf copter` in its own folder.
+
 ## Run
 
 ```bash
 python run.py
 ```
+
+To fly the same window on ArduPilot SITL copters instead of the built-in
+formula, build ArduPilot for SITL, point `sortie()` in `config.py` at it and
+run:
+
+```bash
+python -m autopilot
+```
+
+Four copters start, learn where they are and take off, which takes about a
+minute, and then the window opens. The plan of this stage lives in
+[docs/SITL.md](docs/SITL.md).
 
 ## Keys
 
@@ -41,12 +63,12 @@ python run.py
 |---------|---------|
 | `W` / `S` or `Up` / `Down` | forward and backward along the nose |
 | `A` / `D` or `Left` / `Right` | sideways, left and right |
-| mouse | the nose of the leader turns toward the pointer |
+| `Q` / `E` | turn the nose left and right |
 | `Tab` | pass the lead to the next drone |
 | left click | hand the lead to the drone under the pointer |
 | `Esc` | close the window |
 
-The pointer sets the heading the drone wants, not the heading it has: the nose
+A turning key sets the spin the drone wants, not the spin it has: the nose
 swings around under the same spin and twist limits as the rest of the flight.
 
 Keys are read by scancode, by the physical place of a key rather than the letter
@@ -63,6 +85,8 @@ python -m pytest
 A scenario is a scripted flight: the leader follows a fixed route instead of the
 keyboard, so the same run can be repeated and compared after every change.
 Nothing in a run is random, the same scenario always gives the same numbers.
+The scenarios fly on the built-in formula, which answers as late as a copter
+does.
 
 ```bash
 python -m scenarios                # list the scenarios
@@ -82,6 +106,11 @@ Each run writes two files into `scenarios/logs/`:
 The summaries are small and kept in git, so `git diff scenarios/logs` shows how
 a change in the code moved the numbers. The traces are large and ignored.
 
+A drone that answers late does not yet fly every scenario clean. The cloud
+hovers and cruises without a breach, but in the gap some hard bubbles still
+overlap for a while. Three checks in `tests/test_catalogue.py` are marked as
+expected to fail for this reason, each with what goes wrong.
+
 A frame counts as breached when two hard bubbles overlap or when a wall reaches
 into the hard bubble of a drone. New scenarios go into
 `scenarios/catalogue.py`.
@@ -92,8 +121,9 @@ into the hard bubble of a drone. New scenarios go into
 |------|-------|
 | `agent/` | the algorithm of one drone: `Mind.command(Senses)` gives a `Command`; everything in `Senses` is in the drone's own frame, no map and no shared direction; standard library only, blind to the simulator |
 | `simulator/` | the world, the dynamics and the picture |
+| `autopilot/` | the same drones on ArduPilot SITL copters: MAVLink, frames, takeoff and the real air |
 | `scenarios/` | scripted flights and their logs |
 | `tests/` | one test file per feature file |
 | `agent/tuning.py` | the kinds of numbers the agent is tuned by, so that it needs nothing from outside |
-| `config.py` | every tunable number, the agent's and the simulator's, in one `defaults()` |
-| `run.py` | the interactive run |
+| `config.py` | every tunable number: `defaults()` for the agent and the simulator, `kinematics()` for how late the formula answers, `copters()` and `sortie()` for a flight on SITL |
+| `run.py` | the interactive run on the built-in formula |

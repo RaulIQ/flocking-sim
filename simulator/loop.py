@@ -6,7 +6,6 @@ from pygame import K_ESCAPE, KEYDOWN, QUIT
 
 from agent.command import Command
 from config import Settings
-from simulator.aim import Aim
 from simulator.baton import Baton
 from simulator.control import Pilot
 from simulator.stage import Stage
@@ -16,9 +15,10 @@ from simulator.view import View
 @final
 @dataclass(frozen=True)
 class Flight:
-    """One interactive run: a window, a keyboard and a swarm behind its leader."""
+    """One interactive run: a window, a keyboard and a swarm behind its leader in one air."""
 
     settings: Settings
+    air: object
 
     def run(self) -> None:
         pygame.init()
@@ -30,9 +30,8 @@ class Flight:
             self.settings,
         )
         pilot = Pilot(self.settings.limits)
-        aim = Aim(self.settings.limits, self.settings.picture.shape.radius)
         baton = Baton(view, self.settings.swarm.bubbles.soft)
-        stage = Stage(self.settings)
+        stage = Stage(self.settings, self.air)
         clock = pygame.time.Clock()
         flock = stage.flock()
         events = pygame.event.get()
@@ -43,11 +42,7 @@ class Flight:
                 flock,
                 Command(
                     pilot.velocity(tuple(pygame.key.get_pressed())),
-                    aim.spin(
-                        flock.leader().body,
-                        view.place(pygame.mouse.get_pos()),
-                        stage.lapse(),
-                    ),
+                    pilot.spin(tuple(pygame.key.get_pressed())),
                 ),
             )
             view.show(flock, stage.walls())

@@ -1,0 +1,174 @@
+from random import uniform
+
+from pymavlink import mavutil
+from pytest import approx, raises
+
+from agent.command import Command
+from agent.vector import Vector
+from autopilot.hold import Hold
+from autopilot.spot import Spot
+from autopilot.squad import Squad
+from tests.decoy import Decoy
+
+
+def test_sees_every_copter_at_its_metres_from_the_origin():
+    origin = Spot(uniform(-60.0, 60.0), uniform(-170.0, 170.0))
+    places = (
+        Vector(uniform(-50.0, 50.0), uniform(-50.0, 50.0)),
+        Vector(uniform(-50.0, 50.0), uniform(-50.0, 50.0)),
+    )
+    links = ()
+    for system, place in enumerate(places, 1):
+        decoy = Decoy(mavutil.mavlink_connection("tcpin:127.0.0.1:0", source_system=system))
+        links += (decoy.link(system),)
+        decoy.fix(
+            round(origin.shifted(place).latitude * 1e7),
+            round(origin.shifted(place).longitude * 1e7),
+            0,
+            0,
+        )
+        decoy.attitude(uniform(-3.0, 3.0), uniform(-2.0, 2.0))
+    assert tuple(body.position for body in Squad(links, origin).bodies()) == tuple(
+        Vector(approx(place.x, abs=0.02), approx(place.y, abs=0.02)) for place in places
+    ), "a copter is not seen at its metres from the origin"
+
+
+def test_asks_every_copter_for_its_telemetry():
+    decoys = tuple(
+        Decoy(mavutil.mavlink_connection("tcpin:127.0.0.1:0", source_system=system))
+        for system in (1, 2, 3)
+    )
+    links = tuple(decoy.link(system) for system, decoy in enumerate(decoys, 1))
+    for decoy in decoys:
+        decoy.beat()
+        decoy.fix(1, 2, 3, 4)
+        decoy.attitude(uniform(-3.0, 3.0), uniform(-2.0, 2.0))
+        decoy.estimate(831)
+    Squad(links, Spot(uniform(-60.0, 60.0), uniform(-170.0, 170.0))).tune(
+        uniform(10.0, 50.0), 5.0
+    )
+    assert None not in [
+        decoy.asked() for decoy in decoys
+    ], "a copter is not asked for its telemetry"
+
+
+def test_cannot_tune_a_copter_that_stays_silent():
+    link = Decoy(
+        mavutil.mavlink_connection("tcpin:127.0.0.1:0", source_system=6)
+    ).link(6)
+    with raises(TimeoutError, match="Copter 6 sent no HEARTBEAT"):
+        Squad((link,), Spot(uniform(-60.0, 60.0), uniform(-170.0, 170.0))).tune(
+            uniform(10.0, 50.0), 0.2
+        )
+
+
+def test_cannot_tune_a_copter_that_beats_but_tells_nothing():
+    decoy = Decoy(mavutil.mavlink_connection("tcpin:127.0.0.1:0", source_system=6))
+    link = decoy.link(6)
+    decoy.beat()
+    with raises(TimeoutError, match="Copter 6 sent no GLOBAL_POSITION_INT"):
+        Squad((link,), Spot(uniform(-60.0, 60.0), uniform(-170.0, 170.0))).tune(
+            uniform(10.0, 50.0), 0.2
+        )
+
+
+def test_cannot_tune_a_copter_that_never_learns_where_it_is():
+    decoy = Decoy(mavutil.mavlink_connection("tcpin:127.0.0.1:0", source_system=6))
+    link = decoy.link(6)
+    decoy.beat()
+    decoy.fix(1, 2, 3, 4)
+    decoy.attitude(uniform(-3.0, 3.0), uniform(-2.0, 2.0))
+    decoy.estimate(167)
+    with raises(TimeoutError, match="Copter 6 has no steady position estimate after 0.2 seconds"):
+        Squad((link,), Spot(uniform(-60.0, 60.0), uniform(-170.0, 170.0))).tune(
+            uniform(10.0, 50.0), 0.2
+        )
+
+
+def test_lifts_every_copter_that_obeys():
+    decoys = tuple(
+        Decoy(mavutil.mavlink_connection("tcpin:127.0.0.1:0", source_system=system))
+        for system in (1, 2)
+    )
+    links = tuple(decoy.link(system) for system, decoy in enumerate(decoys, 1))
+    for decoy in decoys:
+        decoy.state(4, True)
+        decoy.climb(3000)
+    Squad(links, Spot(uniform(-60.0, 60.0), uniform(-170.0, 170.0))).lift(3.0, 5.0)
+    assert [
+        [decoy.asked().command for ask in range(3)] for decoy in decoys
+    ] == [
+        [
+            mavutil.mavlink.MAV_CMD_DO_SET_MODE,
+            mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
+            mavutil.mavlink.MAV_CMD_NAV_TAKEOFF,
+        ]
+    ] * 2, "a copter is not guided, armed and sent up in this order"
+
+
+def test_cannot_lift_a_copter_that_refuses_the_guided_mode():
+    decoy = Decoy(mavutil.mavlink_connection("tcpin:127.0.0.1:0", source_system=2))
+    link = decoy.link(2)
+    decoy.state(0, False)
+    with raises(TimeoutError, match="Copter 2 is not guided after 0.2 seconds"):
+        Squad((link,), Spot(uniform(-60.0, 60.0), uniform(-170.0, 170.0))).lift(3.0, 0.2)
+
+
+def test_cannot_lift_a_copter_that_refuses_to_arm():
+    decoy = Decoy(mavutil.mavlink_connection("tcpin:127.0.0.1:0", source_system=2))
+    link = decoy.link(2)
+    decoy.state(4, False)
+    with raises(TimeoutError, match="Copter 2 is not armed after 0.2 seconds"):
+        Squad((link,), Spot(uniform(-60.0, 60.0), uniform(-170.0, 170.0))).lift(3.0, 0.2)
+
+
+def test_cannot_lift_a_copter_that_stays_low():
+    decoy = Decoy(mavutil.mavlink_connection("tcpin:127.0.0.1:0", source_system=2))
+    link = decoy.link(2)
+    decoy.state(4, True)
+    decoy.climb(1200)
+    with raises(TimeoutError, match="Copter 2 is not at 3.0 metres after 0.2 seconds"):
+        Squad((link,), Spot(uniform(-60.0, 60.0), uniform(-170.0, 170.0))).lift(3.0, 0.2)
+
+
+def test_flies_every_copter_by_its_own_command():
+    decoys = tuple(
+        Decoy(mavutil.mavlink_connection("tcpin:127.0.0.1:0", source_system=system))
+        for system in (1, 2)
+    )
+    links = tuple(decoy.link(system) for system, decoy in enumerate(decoys, 1))
+    for decoy in decoys:
+        decoy.climb(3000)
+    Squad(links, Spot(uniform(-60.0, 60.0), uniform(-170.0, 170.0))).fly(
+        (Command(Vector(1.25, 0.0), 0.0), Command(Vector(-0.75, 0.0), 0.0)),
+        Hold(3.0, 1.0, 1.0),
+    )
+    assert [decoy.steered().vx for decoy in decoys] == [
+        approx(1.25),
+        approx(-0.75),
+    ], "a copter does not fly by its own command"
+
+
+def test_flies_a_low_copter_up_to_the_altitude():
+    decoy = Decoy(mavutil.mavlink_connection("tcpin:127.0.0.1:0", source_system=1))
+    link = decoy.link(1)
+    decoy.climb(2600)
+    Squad((link,), Spot(uniform(-60.0, 60.0), uniform(-170.0, 170.0))).fly(
+        (Command(Vector(uniform(-3.0, 3.0), uniform(-3.0, 3.0)), uniform(-2.0, 2.0)),),
+        Hold(3.0, 0.5, 1.0),
+    )
+    assert decoy.steered().vz == approx(-0.2), "a low copter is not flown up to the altitude"
+
+
+def test_cannot_fly_with_a_command_short():
+    decoys = tuple(
+        Decoy(mavutil.mavlink_connection("tcpin:127.0.0.1:0", source_system=system))
+        for system in (1, 2)
+    )
+    links = tuple(decoy.link(system) for system, decoy in enumerate(decoys, 1))
+    for decoy in decoys:
+        decoy.climb(3000)
+    with raises(ValueError):
+        Squad(links, Spot(uniform(-60.0, 60.0), uniform(-170.0, 170.0))).fly(
+            (Command(Vector(1.0, 0.0), 0.0),), Hold(3.0, 1.0, 1.0)
+        )

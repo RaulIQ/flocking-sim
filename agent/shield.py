@@ -4,6 +4,7 @@ from math import inf, sqrt
 from typing import final
 
 from agent.command import Command
+from agent.neighbour import Neighbour
 from agent.tuning import Limits
 from agent.vector import Vector
 
@@ -22,10 +23,21 @@ class Shield:
     drone that thinks in ticks cannot step over the margin between two of them.
 
     A drone that already closes faster than the bound brakes first: of the
-    change in velocity it can make in one tick, braking takes what it needs and
-    the request gets the rest. The share shrinks smoothly, with no threshold
+    change in velocity it can make in one tick and one reaction, braking takes
+    what it needs and the request gets the rest. The share shrinks smoothly, with no threshold
     for a rounding error to tip, so the answer does not depend on which way
     the drone happens to face.
+
+    A drone that answers late keeps flying as it flew for its reaction time.
+    The room it covers meanwhile is counted out before the bound is taken, and
+    the last stretch is never closed faster than the room left in one tick and
+    one reaction, so that the late answer still comes in time.
+
+    A neighbour that is sighted leaves a half-plane too, but one that moves
+    with it: only the speed at which the two close is bounded, so a drone may
+    follow a neighbour that flies away and must give way to one that comes at
+    it. The two share the duty, each counting on half of the room between
+    their two margins.
 
     A neighbour known by its distance alone may be anywhere around, so it
     bounds the speed in every direction at once. The two drones share the
@@ -35,12 +47,23 @@ class Shield:
     limits: Limits
     margin: float
     lapse: float
+    reaction: float
 
     def command(self, command: Command, velocity: Vector, obstacles: tuple) -> Command:
         return Command(
             reduce(
                 lambda wanted, offset: self.clipped(wanted, velocity, offset),
                 obstacles,
+                command.velocity,
+            ),
+            command.spin,
+        )
+
+    def kept(self, command: Command, velocity: Vector, neighbours: tuple) -> Command:
+        return Command(
+            reduce(
+                lambda wanted, neighbour: self.yielded(wanted, velocity, neighbour),
+                neighbours,
                 command.velocity,
             ),
             command.spin,
@@ -61,13 +84,38 @@ class Shield:
         )
 
     def bound(self, room: float) -> float:
-        return min(sqrt(self.limits.push * room), room / self.lapse)
+        return min(sqrt(self.limits.push * room), room / (self.lapse + self.reaction))
+
+    def room(self, distance: float, closing: float) -> float:
+        return max(0.0, distance - self.margin - max(0.0, closing) * self.reaction)
+
+    def yielded(self, wanted: Vector, velocity: Vector, neighbour: Neighbour) -> Vector:
+        distance = neighbour.offset.length()
+        if distance == 0.0:
+            return wanted
+        return wanted.minus(
+            neighbour.offset.times(
+                max(
+                    0.0,
+                    wanted.minus(neighbour.velocity).dot(neighbour.offset) / distance
+                    - self.bound(
+                        self.room(
+                            distance - self.margin,
+                            velocity.minus(neighbour.velocity).dot(neighbour.offset)
+                            / distance,
+                        )
+                        / 2.0
+                    ),
+                )
+                / distance
+            )
+        )
 
     def clipped(self, wanted: Vector, velocity: Vector, offset: Vector) -> Vector:
         distance = offset.length()
         if distance == 0.0:
             return wanted
-        bound = self.bound(max(0.0, distance - self.margin))
+        bound = self.bound(self.room(distance, velocity.dot(offset) / distance))
         allowed = wanted.minus(
             offset.times(max(0.0, wanted.dot(offset) / distance - bound) / distance)
         )
@@ -77,6 +125,6 @@ class Shield:
         braked = velocity.minus(offset.times(excess / distance))
         return braked.plus(
             allowed.minus(braked).capped(
-                max(0.0, self.limits.push * self.lapse - excess)
+                max(0.0, self.limits.push * (self.lapse + self.reaction) - excess)
             )
         )

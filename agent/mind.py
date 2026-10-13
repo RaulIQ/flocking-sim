@@ -15,9 +15,10 @@ class Mind:
     """The whole algorithm of one drone: what it senses goes in, the velocity it asks for comes out.
 
     The lead is a state of the mind, not another kind of mind. A leader flies
-    what its pilot asks, kept clear of walls; a follower flies by its instinct
-    among the neighbours it can place. Either one slows down near a neighbour
-    it knows only by distance. What a drone remembers of its neighbours lives
+    what its pilot asks; a follower flies by its instinct among the neighbours
+    it can place, and is kept from closing on any of them too fast. Either one
+    is kept clear of walls and slows down near a neighbour it knows only by
+    distance. What a drone remembers of its neighbours lives
     outside the mind, in the tracks it is handed and hands back.
     """
 
@@ -35,9 +36,15 @@ class Mind:
     def command(self, tracks: Tracks, senses: Senses) -> Command:
         return self.shield.slowed(
             self.shield.command(
-                senses.request, senses.motion.velocity, senses.obstacles
-            )
-            if self.leader
-            else self.instinct.command(tracks.sighted(), senses.obstacles),
+                senses.request
+                if self.leader
+                else self.shield.kept(
+                    self.instinct.command(tracks.sighted(), senses.obstacles),
+                    senses.motion.velocity,
+                    tracks.sighted(),
+                ),
+                senses.motion.velocity,
+                senses.obstacles,
+            ),
             tracks.blind(),
         )

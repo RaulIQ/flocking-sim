@@ -5,7 +5,9 @@ from pygame import (
     KSCAN_A,
     KSCAN_D,
     KSCAN_DOWN,
+    KSCAN_E,
     KSCAN_LEFT,
+    KSCAN_Q,
     KSCAN_RIGHT,
     KSCAN_S,
     KSCAN_UP,
@@ -19,7 +21,7 @@ from agent.vector import Vector
 @final
 @dataclass(frozen=True)
 class Pilot:
-    """A human at the keyboard, sliding one drone around in its own frame.
+    """A human at the keyboard, sliding and turning one drone in its own frame.
 
     Keys arrive by scancode, one slot per physical place on the keyboard, so
     that a Cyrillic layout, under which no key prints a w, still flies.
@@ -36,3 +38,6 @@ class Pilot:
             .capped(1.0)
             .times(self.limits.speed)
         )
+
+    def spin(self, keys) -> float:
+        return (keys[KSCAN_Q] - keys[KSCAN_E]) * self.limits.spin

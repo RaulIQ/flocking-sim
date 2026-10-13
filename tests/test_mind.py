@@ -7,6 +7,7 @@ from agent.senses import Motion, Senses
 from agent.shield import Shield
 from agent.signals import Bearing, Range, Role, Signals
 from agent.tracker import Tracker
+from agent.neighbour import Neighbour
 from agent.tracks import Track, Tracks
 from agent.tuning import Cloud, Limits, Spring
 from agent.vector import Vector
@@ -18,11 +19,11 @@ def test_flies_a_follower_after_its_leader():
             Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
-        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
         Tracker(1.0 / 60),
         False,
     ).command(
-        Tracks((Track(0, Vector(2.2, 0.0), True, True),)),
+        Tracks((Track(0, Neighbour(Vector(2.2, 0.0), Vector(0.0, 0.0), True), True),)),
         Senses(Motion(Vector(0.0, 0.0), 0.0), Signals((), (), ()), (), Command(Vector(0.0, 0.0), 0.0)),
     ).velocity == Vector(approx(1.5), approx(0.0)), "a follower does not fly after its leader"
 
@@ -33,7 +34,7 @@ def test_cannot_fly_a_follower_on_the_request_of_the_pilot():
             Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
-        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
         Tracker(1.0 / 60),
         False,
     ).command(
@@ -48,7 +49,7 @@ def test_keeps_a_follower_clear_of_a_wall():
             Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
-        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
         Tracker(1.0 / 60),
         False,
     ).command(
@@ -63,11 +64,11 @@ def test_cannot_pull_a_follower_toward_a_leader_it_has_never_sighted():
             Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
-        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
         Tracker(1.0 / 60),
         False,
     ).command(
-        Tracks((Track(0, Vector(5.0, 0.0), False, True),)),
+        Tracks((Track(0, Neighbour(Vector(5.0, 0.0), Vector(0.0, 0.0), True), False),)),
         Senses(Motion(Vector(0.0, 0.0), 0.0), Signals((), (), ()), (), Command(Vector(0.0, 0.0), 0.0)),
     ).velocity == Vector(approx(0.0), approx(0.0)), "a follower flies toward a leader it cannot place"
 
@@ -78,11 +79,11 @@ def test_cannot_shove_a_follower_away_from_a_peer_it_has_never_sighted():
             Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
-        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
         Tracker(1.0 / 60),
         False,
     ).command(
-        Tracks((Track(4, Vector(0.9, 0.0), False, False),)),
+        Tracks((Track(4, Neighbour(Vector(0.9, 0.0), Vector(0.0, 0.0), False), False),)),
         Senses(Motion(Vector(0.0, 0.0), 0.0), Signals((), (), ()), (), Command(Vector(0.0, 0.0), 0.0)),
     ).velocity == Vector(approx(0.0), approx(0.0)), "a follower backs away from a peer it cannot place"
 
@@ -93,11 +94,11 @@ def test_slows_a_follower_near_a_neighbour_it_has_never_sighted():
             Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
-        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
         Tracker(1.0 / 60),
         False,
     ).command(
-        Tracks((Track(0, Vector(9.0, 0.0), True, True), Track(4, Vector(0.7, 0.0), False, False))),
+        Tracks((Track(0, Neighbour(Vector(9.0, 0.0), Vector(0.0, 0.0), True), True), Track(4, Neighbour(Vector(0.7, 0.0), Vector(0.0, 0.0), False), False))),
         Senses(Motion(Vector(0.0, 0.0), 0.0), Signals((), (), ()), (), Command(Vector(0.0, 0.0), 0.0)),
     ).velocity == Vector(approx(0.6325, abs=1e-4), approx(0.0)), "a follower does not slow down near a neighbour it cannot place"
 
@@ -108,11 +109,11 @@ def test_stops_a_follower_two_margins_from_a_neighbour_it_has_never_sighted():
             Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
-        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
         Tracker(1.0 / 60),
         False,
     ).command(
-        Tracks((Track(0, Vector(9.0, 0.0), True, True), Track(4, Vector(0.5, 0.0), False, False))),
+        Tracks((Track(0, Neighbour(Vector(9.0, 0.0), Vector(0.0, 0.0), True), True), Track(4, Neighbour(Vector(0.5, 0.0), Vector(0.0, 0.0), False), False))),
         Senses(Motion(Vector(0.0, 0.0), 0.0), Signals((), (), ()), (), Command(Vector(0.0, 0.0), 0.0)),
     ).velocity == Vector(approx(0.0), approx(0.0)), "a follower keeps flying two margins from a neighbour it cannot place"
 
@@ -123,7 +124,7 @@ def test_flies_a_leader_on_the_request_of_the_pilot():
             Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
-        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
         Tracker(1.0 / 60),
         True,
     ).command(
@@ -138,11 +139,11 @@ def test_cannot_pull_a_leader_toward_its_followers():
             Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
-        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
         Tracker(1.0 / 60),
         True,
     ).command(
-        Tracks((Track(1, Vector(2.2, 0.0), True, False), Track(2, Vector(0.0, 0.4), True, False))),
+        Tracks((Track(1, Neighbour(Vector(2.2, 0.0), Vector(0.0, 0.0), False), True), Track(2, Neighbour(Vector(0.0, 0.4), Vector(0.0, 0.0), False), True))),
         Senses(Motion(Vector(0.0, 0.0), 0.0), Signals((), (), ()), (), Command(Vector(0.0, 0.0), 0.0)),
     ).velocity == Vector(approx(0.0), approx(0.0)), "a leader is moved by its followers"
 
@@ -153,7 +154,7 @@ def test_cannot_fly_a_leader_into_a_wall():
             Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
-        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
         Tracker(1.0 / 60),
         True,
     ).command(
@@ -168,7 +169,7 @@ def test_brakes_a_leader_by_its_own_velocity():
             Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 2.0, 1.8, 8.0),
         ),
-        Shield(Limits(2.0, 2.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        Shield(Limits(2.0, 2.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
         Tracker(1.0 / 60),
         True,
     ).command(
@@ -183,11 +184,11 @@ def test_slows_a_leader_near_a_neighbour_it_has_never_sighted():
             Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
-        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
         Tracker(1.0 / 60),
         True,
     ).command(
-        Tracks((Track(4, Vector(0.7, 0.0), False, False),)),
+        Tracks((Track(4, Neighbour(Vector(0.7, 0.0), Vector(0.0, 0.0), False), False),)),
         Senses(Motion(Vector(0.0, 0.0), 0.0), Signals((), (), ()), (), Command(Vector(0.0, -2.0), 0.4)),
     ) == Command(Vector(approx(0.0), approx(-0.6325, abs=1e-4)), approx(0.4)), "a leader does not slow down near a neighbour it cannot place"
 
@@ -198,7 +199,7 @@ def test_takes_the_lead():
             Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
-        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
         Tracker(1.0 / 60),
         False,
     ).led(True).command(
@@ -213,7 +214,7 @@ def test_gives_the_lead_away():
             Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
-        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
         Tracker(1.0 / 60),
         True,
     ).led(False).command(
@@ -228,13 +229,13 @@ def test_remembers_a_neighbour_it_is_told_of():
             Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
-        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
         Tracker(1.0 / 60),
         False,
     ).recalled(
         Tracks(()),
         Senses(Motion(Vector(0.0, 0.0), 0.0), Signals((Range(3, 2.5),), (Bearing(3, 0.0),), (Role(3, True),)), (), Command(Vector(0.0, 0.0), 0.0)),
-    ) == Tracks((Track(3, Vector(approx(2.5), approx(0.0)), True, True),)), "a mind does not remember a neighbour it is told of"
+    ) == Tracks((Track(3, Neighbour(Vector(approx(2.5), approx(0.0)), Vector(0.0, 0.0), True), True),)), "a mind does not remember a neighbour it is told of"
 
 
 def test_remembers_the_same_whether_it_leads_or_follows():
@@ -243,7 +244,7 @@ def test_remembers_the_same_whether_it_leads_or_follows():
             Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
-        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
         Tracker(1.0 / 60),
         True,
     ).recalled(
@@ -259,12 +260,12 @@ def test_asks_the_same_of_a_follower_whichever_way_it_faces():
             Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
-        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
         Tracker(1.0 / 60),
         False,
     )
         .command(
-            Tracks((Track(0, Vector(2.2, 0.4), True, True), Track(1, Vector(-0.7, 0.5), True, False), Track(2, Vector(0.2, -1.9), True, False),)),
+            Tracks((Track(0, Neighbour(Vector(2.2, 0.4), Vector(0.0, 0.0), True), True), Track(1, Neighbour(Vector(-0.7, 0.5), Vector(0.0, 0.0), False), True), Track(2, Neighbour(Vector(0.2, -1.9), Vector(0.0, 0.0), False), True),)),
             Senses(Motion(Vector(0.3, -0.2), 0.0), Signals((), (), ()), (Vector(0.1, -0.5),), Command(Vector(0.0, 0.0), 0.0)),
         )
         .velocity.turned(1.1)
@@ -274,11 +275,11 @@ def test_asks_the_same_of_a_follower_whichever_way_it_faces():
             Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
-        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
         Tracker(1.0 / 60),
         False,
     ).command(
-        Tracks((Track(0, Vector(2.2, 0.4).turned(1.1), True, True), Track(1, Vector(-0.7, 0.5).turned(1.1), True, False), Track(2, Vector(0.2, -1.9).turned(1.1), True, False),)),
+        Tracks((Track(0, Neighbour(Vector(2.2, 0.4).turned(1.1), Vector(0.0, 0.0), True), True), Track(1, Neighbour(Vector(-0.7, 0.5).turned(1.1), Vector(0.0, 0.0), False), True), Track(2, Neighbour(Vector(0.2, -1.9).turned(1.1), Vector(0.0, 0.0), False), True),)),
         Senses(Motion(Vector(0.3, -0.2).turned(1.1), 0.0), Signals((), (), ()), (Vector(0.1, -0.5).turned(1.1),), Command(Vector(0.0, 0.0).turned(1.1), 0.0)),
     ).velocity == Vector(
         approx(wanted.x), approx(wanted.y)
@@ -292,12 +293,12 @@ def test_asks_the_same_of_a_leader_whichever_way_it_faces():
             Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
-        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
         Tracker(1.0 / 60),
         True,
     )
         .command(
-            Tracks((Track(1, Vector(-0.7, 0.5), True, False),)),
+            Tracks((Track(1, Neighbour(Vector(-0.7, 0.5), Vector(0.0, 0.0), False), True),)),
             Senses(Motion(Vector(1.6, 0.3), 0.0), Signals((), (), ()), (Vector(0.4, 0.1), Vector(-0.2, 0.6),), Command(Vector(1.8, -0.6), 0.0)),
         )
         .velocity.turned(-2.3)
@@ -307,12 +308,47 @@ def test_asks_the_same_of_a_leader_whichever_way_it_faces():
             Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
-        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
         Tracker(1.0 / 60),
         True,
     ).command(
-        Tracks((Track(1, Vector(-0.7, 0.5).turned(-2.3), True, False),)),
+        Tracks((Track(1, Neighbour(Vector(-0.7, 0.5).turned(-2.3), Vector(0.0, 0.0), False), True),)),
         Senses(Motion(Vector(1.6, 0.3).turned(-2.3), 0.0), Signals((), (), ()), (Vector(0.4, 0.1).turned(-2.3), Vector(-0.2, 0.6).turned(-2.3),), Command(Vector(1.8, -0.6).turned(-2.3), 0.0)),
     ).velocity == Vector(
         approx(wanted.x), approx(wanted.y)
     ), "a leader asks for something else when all it knows is turned"
+
+
+def test_cannot_pull_a_follower_into_a_wall_after_its_leader():
+    assert Mind(
+        Instinct(
+            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 0.0, 0.0, 0.0), 6),
+            Limits(2.0, 4.0, 1.8, 8.0),
+        ),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
+        Tracker(1.0 / 60),
+        False,
+    ).command(
+        Tracks((Track(1, Neighbour(Vector(3.0, 0.0), Vector(0.0, 0.0), True), True),)),
+        Senses(Motion(Vector(0.0, 0.0), 0.0), Signals((), (), ()), (Vector(0.25, 0.0),), Command(Vector(0.0, 0.0), 0.0)),
+    ).velocity == Vector(approx(0.0), approx(0.0)), "a leader pulls its follower into a wall"
+
+
+def test_cannot_pull_a_follower_into_a_peer_after_its_leader():
+    assert Mind(
+        Instinct(
+            Cloud(Spring(1.2, 0.0, 0.0, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
+            Limits(2.0, 4.0, 1.8, 8.0),
+        ),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
+        Tracker(1.0 / 60),
+        False,
+    ).command(
+        Tracks(
+            (
+                Track(1, Neighbour(Vector(3.0, 0.0), Vector(0.0, 0.0), True), True),
+                Track(2, Neighbour(Vector(0.5, 0.0), Vector(0.0, 0.0), False), True),
+            )
+        ),
+        Senses(Motion(Vector(0.0, 0.0), 0.0), Signals((), (), ()), (), Command(Vector(0.0, 0.0), 0.0)),
+    ).velocity == Vector(approx(0.0), approx(0.0)), "a leader pulls its follower into a peer"

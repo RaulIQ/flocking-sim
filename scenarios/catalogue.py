@@ -40,7 +40,12 @@ def catalogue() -> dict:
         ),
         "gap_ten": Scenario(
             "Ten drones follow the leader through the gap",
-            replace(defaults(), swarm=replace(defaults().swarm, count=10)),
+            replace(
+                defaults(),
+                swarm=replace(
+                    defaults().swarm, muster=replace(defaults().swarm.muster, count=10)
+                ),
+            ),
             Route((Vector(8.0, 0.0),), 1.0, 0.3),
             40.0,
         ),
@@ -64,7 +69,9 @@ def catalogue() -> dict:
                     defaults().picture,
                     window=replace(defaults().picture.window, scale=40.0),
                 ),
-                swarm=replace(defaults().swarm, count=10),
+                swarm=replace(
+                defaults().swarm, muster=replace(defaults().swarm.muster, count=10)
+            ),
                 barrier=replace(defaults().barrier, span=20.0, centres=(-0.8, 0.8)),
             ),
             Route(

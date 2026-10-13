@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import final
 
+from agent.neighbour import Neighbour
 from agent.senses import Senses
 from agent.tracks import Track, Tracks
 from agent.vector import Vector
@@ -13,8 +14,9 @@ class Tracker:
 
     Each track is first carried along with the drone's own turn and flight,
     as if the neighbour stood still, and then corrected: a range sets its
-    length, a bearing sets its direction. A neighbour ranged but never sighted
-    stays without a direction. This is the plainest filter that does the job;
+    length, a bearing sets its direction. What a sighting adds to the carried
+    place is how far the neighbour itself flew, which gives its velocity. A
+    neighbour ranged but never sighted stays without a direction. This is the plainest filter that does the job;
     the uncertainty and the gains of an alpha-beta or a Kalman filter belong
     behind the same method.
     """
@@ -37,21 +39,29 @@ class Tracker:
         sighted = tag in bearings or (tag in known and known[tag].sighted)
         carried = (
             known[tag]
-            .offset.turned(-senses.motion.spin * self.lapse)
+            .neighbour.offset.turned(-senses.motion.spin * self.lapse)
             .minus(senses.motion.velocity.times(self.lapse))
             if tag in known and known[tag].sighted
-            else known[tag].offset
+            else known[tag].neighbour.offset
             if tag in known
             else Vector(ranges[tag], 0.0)
         )
         length = ranges.get(tag, carried.length())
-        return Track(
-            tag,
+        offset = (
             Vector(length, 0.0).turned(bearings[tag])
             if tag in bearings
             else carried.times(length / carried.length())
             if sighted and carried.length() > 0.0
-            else Vector(length, 0.0),
+            else Vector(length, 0.0)
+        )
+        return Track(
+            tag,
+            Neighbour(
+                offset,
+                offset.minus(carried).times(1.0 / self.lapse)
+                if tag in bearings and tag in known and known[tag].sighted
+                else Vector(0.0, 0.0),
+                roles.get(tag, tag in known and known[tag].neighbour.leader),
+            ),
             sighted,
-            roles.get(tag, tag in known and known[tag].leader),
         )

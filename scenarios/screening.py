@@ -36,6 +36,6 @@ class Screening:
             ]:
                 break
             clock.tick(settings.picture.window.rate)
-            view.show(flock, Stage(settings).walls())
+            view.show(flock, Stage(settings, self.trial.air).walls())
             pygame.display.flip()
         pygame.quit()

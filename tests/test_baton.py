@@ -10,6 +10,7 @@ from simulator.drone import Drone
 from simulator.flock import Flock
 from simulator.trail import Trail
 from simulator.view import View
+from simulator.muster import Muster
 
 
 def test_passes_the_lead_on_the_tab_key():
@@ -21,7 +22,7 @@ def test_passes_the_lead_on_the_tab_key():
                 Settings(
                     Limits(2.0, 4.0, 1.8, 8.0),
                     Picture(Window(200, 200, 100.0, 60), Shape(0.1, 0.35, 5)),
-                    Swarm(2, 1.2, Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6)),
+                    Swarm(Muster(2, 1.2), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
                     Barrier(4.0, 14.0, 1.2, (0.0,)),
                 ),
             ),
@@ -49,7 +50,7 @@ def test_passes_the_lead_once_for_every_tab():
                 Settings(
                     Limits(2.0, 4.0, 1.8, 8.0),
                     Picture(Window(200, 200, 100.0, 60), Shape(0.1, 0.35, 5)),
-                    Swarm(2, 1.2, Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6)),
+                    Swarm(Muster(2, 1.2), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
                     Barrier(4.0, 14.0, 1.2, (0.0,)),
                 ),
             ),
@@ -78,7 +79,7 @@ def test_hands_the_lead_to_a_clicked_drone():
                 Settings(
                     Limits(2.0, 4.0, 1.8, 8.0),
                     Picture(Window(200, 200, 100.0, 60), Shape(0.1, 0.35, 5)),
-                    Swarm(2, 1.2, Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6)),
+                    Swarm(Muster(2, 1.2), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
                     Barrier(4.0, 14.0, 1.2, (0.0,)),
                 ),
             ),
@@ -106,7 +107,7 @@ def test_cannot_hand_the_lead_with_the_right_button():
                 Settings(
                     Limits(2.0, 4.0, 1.8, 8.0),
                     Picture(Window(200, 200, 100.0, 60), Shape(0.1, 0.35, 5)),
-                    Swarm(2, 1.2, Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6)),
+                    Swarm(Muster(2, 1.2), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
                     Barrier(4.0, 14.0, 1.2, (0.0,)),
                 ),
             ),
@@ -134,7 +135,7 @@ def test_cannot_pass_the_lead_on_other_events():
                 Settings(
                     Limits(2.0, 4.0, 1.8, 8.0),
                     Picture(Window(200, 200, 100.0, 60), Shape(0.1, 0.35, 5)),
-                    Swarm(2, 1.2, Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6)),
+                    Swarm(Muster(2, 1.2), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
                     Barrier(4.0, 14.0, 1.2, (0.0,)),
                 ),
             ),

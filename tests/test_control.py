@@ -4,11 +4,14 @@ from pygame import (
     KSCAN_A,
     KSCAN_D,
     KSCAN_DOWN,
+    KSCAN_E,
     KSCAN_LEFT,
+    KSCAN_Q,
     KSCAN_RIGHT,
     KSCAN_S,
     KSCAN_UP,
     KSCAN_W,
+    K_q,
     K_w,
 )
 from pytest import approx
@@ -102,3 +105,33 @@ def test_cannot_fly_from_the_keycode_a_layout_prints():
     ) == Vector(
         approx(0.0), approx(0.0)
     ), "the keycode of a letter still flies the drone"
+
+
+def test_asks_to_turn_left():
+    assert Pilot(Limits(2.0, 4.0, 1.3, 6.0)).spin(
+        defaultdict(bool, {KSCAN_Q: True})
+    ) == approx(1.3), "the q place does not turn left"
+
+
+def test_asks_to_turn_right():
+    assert Pilot(Limits(2.0, 4.0, 1.3, 6.0)).spin(
+        defaultdict(bool, {KSCAN_E: True})
+    ) == approx(-1.3), "the e place does not turn right"
+
+
+def test_cannot_turn_with_both_turning_keys_down():
+    assert Pilot(Limits(2.0, 4.0, 1.3, 6.0)).spin(
+        defaultdict(bool, {KSCAN_Q: True, KSCAN_E: True})
+    ) == approx(0.0), "two opposite turning keys still turn the drone"
+
+
+def test_cannot_turn_with_no_keys_down():
+    assert Pilot(Limits(2.0, 4.0, 1.3, 6.0)).spin(
+        defaultdict(bool)
+    ) == approx(0.0), "a drone turns with no keys down"
+
+
+def test_cannot_turn_from_the_keycode_a_layout_prints():
+    assert Pilot(Limits(2.0, 4.0, 1.3, 6.0)).spin(
+        defaultdict(bool, {K_q: True})
+    ) == approx(0.0), "a keycode turns the drone as if it were a scancode"
