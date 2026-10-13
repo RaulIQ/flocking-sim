@@ -6,6 +6,7 @@ from typing import final
 
 from pymavlink import mavutil
 
+from autopilot.fleet import Fleet
 from autopilot.link import Link
 from autopilot.spot import Spot
 
@@ -17,27 +18,27 @@ class Sitl:
 
     The copter starts with the nose to the east, where the kinematic drones
     look at the start, with its memory wiped and with no MAVProxy in front of
-    it. It keeps its files in a folder of its own and runs only while asked.
+    it, and with the tuning of its fleet laid over the defaults of the copter.
+    It keeps its files in a folder of its own and runs only while asked.
     """
 
-    source: Path
+    fleet: Fleet
     number: int
     home: Spot
-    base: int
 
     def port(self) -> int:
-        return self.base + 10 * self.number
+        return self.fleet.port + 10 * self.number
 
     def words(self) -> tuple:
         return (
-            str(self.source / "build" / "sitl" / "bin" / "arducopter"),
+            str(self.fleet.source / "build" / "sitl" / "bin" / "arducopter"),
             "--wipe",
             "--model",
             "+",
             "--speedup",
             "1",
             "--base-port",
-            str(self.base),
+            str(self.fleet.port),
             "-I",
             str(self.number),
             "--sysid",
@@ -45,7 +46,8 @@ class Sitl:
             "--home",
             f"{self.home.latitude:.7f},{self.home.longitude:.7f},0,90",
             "--defaults",
-            str(self.source / "Tools" / "autotest" / "default_params" / "copter.parm"),
+            f"{self.fleet.source / 'Tools' / 'autotest' / 'default_params' / 'copter.parm'}"
+            f",{self.fleet.tuning}",
         )
 
     def link(self) -> Link:

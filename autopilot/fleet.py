@@ -8,8 +8,9 @@ from autopilot.spot import Spot
 @final
 @dataclass(frozen=True)
 class Fleet:
-    """What every simulated copter shares: the first port, the spot under the first copter and where ArduPilot is built."""
+    """What every simulated copter shares: the first port, the spot under the first copter, where ArduPilot is built and the file of parameters laid over its defaults."""
 
     port: int
     origin: Spot
     source: Path
+    tuning: Path

@@ -22,12 +22,7 @@ class Hangar:
 
     def copters(self) -> tuple:
         return tuple(
-            Sitl(
-                self.fleet.source,
-                number,
-                self.fleet.origin.shifted(place),
-                self.fleet.port,
-            )
+            Sitl(self.fleet, number, self.fleet.origin.shifted(place))
             for number, place in enumerate(self.muster.places())
         )
 

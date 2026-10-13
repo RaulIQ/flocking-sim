@@ -133,6 +133,7 @@ def sortie(settings: Settings) -> Sortie:
                 5760,
                 Spot(-35.3632607, 149.1652351),
                 Path.home() / "code" / "ardupilot",
+                Path(__file__).parent / "autopilot" / "copter.parm",
             ),
             settings.swarm.muster,
         ),

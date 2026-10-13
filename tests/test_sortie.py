@@ -1,3 +1,4 @@
+from pathlib import Path
 from random import uniform
 
 from pytest import raises
@@ -20,6 +21,7 @@ def test_cannot_fly_copters_that_do_not_listen(tmp_path):
                     23450,
                     Spot(uniform(-60.0, 60.0), uniform(-170.0, 170.0)),
                     Stub(tmp_path / "ardupilot", "exec sleep 30").built(),
+                    Path("/nowhere/tuning.parm"),
                 ),
                 Muster(2, 1.3),
             ),
