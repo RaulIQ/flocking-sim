@@ -55,12 +55,12 @@ class Bubbles:
 @final
 @dataclass(frozen=True)
 class Swarm:
-    """How many drones fly, how far apart they start, their bubbles and their ties."""
+    """Where the drones start, their bubbles, their ties and how late they are taken to answer, in seconds."""
 
-    count: int
-    spacing: float
+    muster: Muster
     bubbles: Bubbles
     cloud: Cloud
+    reaction: float
 
 
 @final
@@ -90,8 +90,7 @@ def defaults() -> Settings:
         Limits(2.0, 4.0, 1.8, 8.0),
         Picture(Window(1000, 700, 60.0, 60), Shape(0.1, 0.35, 600)),
         Swarm(
-            8,
-            1.2,
+            Muster(8, 1.2),
             Bubbles(0.25, 0.6),
             Cloud(
                 Spring(1.2, 4.0, 0.5, 1.0),
@@ -99,6 +98,7 @@ def defaults() -> Settings:
                 Spring(0.6, 8.0, 0.0, 0.0),
                 6,
             ),
+            0.0,
         ),
         Barrier(4.0, 14.0, 1.2, (0.0,)),
     )
@@ -108,7 +108,9 @@ def copters() -> Settings:
     return replace(
         defaults(),
         picture=Picture(Window(1000, 700, 60.0, 20), Shape(0.1, 0.35, 200)),
-        swarm=replace(defaults().swarm, count=4),
+        swarm=replace(
+            defaults().swarm, muster=replace(defaults().swarm.muster, count=4)
+        ),
     )
 
 
@@ -124,7 +126,7 @@ def sortie(settings: Settings) -> Sortie:
                 Spot(-35.3632607, 149.1652351),
                 Path.home() / "code" / "ardupilot",
             ),
-            Muster(settings.swarm.count, settings.swarm.spacing),
+            settings.swarm.muster,
         ),
         Hold(3.0, 1.0, 1.0),
         Pulse(settings.picture.window.rate),

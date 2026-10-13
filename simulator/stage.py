@@ -12,7 +12,6 @@ from simulator.body import Body
 from simulator.drone import Drone
 from simulator.flock import Flock
 from simulator.gate import Gate
-from simulator.muster import Muster
 from simulator.trail import Trail
 
 
@@ -42,11 +41,7 @@ class Stage:
                     Trail((), self.settings.picture.shape.trail),
                     index == 0,
                 )
-                for index, place in enumerate(
-                    Muster(
-                        self.settings.swarm.count, self.settings.swarm.spacing
-                    ).places()
-                )
+                for index, place in enumerate(self.settings.swarm.muster.places())
             )
         )
 
@@ -57,7 +52,7 @@ class Stage:
                 self.settings.limits,
                 self.settings.swarm.bubbles.hard,
                 self.lapse(),
-                0.0,
+                self.settings.swarm.reaction,
             ),
             Tracker(self.lapse()),
             False,
