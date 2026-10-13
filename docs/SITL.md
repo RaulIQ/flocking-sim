@@ -65,7 +65,7 @@ the kinematic drones start. The built copter is run directly, without
 `sim_vehicle.py`, so that nothing is rebuilt at the start and every instance
 is a child process that can be stopped:
 
-    build/sitl/bin/arducopter --wipe --model + --speedup 1 --base-port 5760 -I 0 --sysid 1 --home LAT,LON,0,90 --defaults Tools/autotest/default_params/copter.parm
+    build/sitl/bin/arducopter --wipe --model +:frame.json --speedup 1 --base-port 5760 -I 0 --sysid 1 --home LAT,LON,0,90 --defaults Tools/autotest/default_params/copter.parm,autopilot/freestyle/copter.parm
 
 The yaw of 90 degrees points the nose to the east, where the kinematic drones
 look at the start.
@@ -151,31 +151,41 @@ which telemetry counts as stale comes with the safety milestone.
 
 ## Lag
 
-A SITL copter answers a speed command late. Measured on one copter at 20 Hz
-with ArduPilot's own limits, a step of 1 m/s shows nothing for 0.2 to 0.3 s,
-half of the speed after 0.6 s and nine tenths after 1.0 s; `Body.moved` alone
-gets there in 0.25 s.
+A SITL copter answers a speed command late, and how late depends on the
+frame. Measured on one copter at 20 Hz for a step of 1 m/s:
 
-`autopilot/copter.parm` is laid over ArduPilot's defaults for every copter.
-It raises the horizontal acceleration `WP_ACC` to 5 m/s/s and the jerk
-`PSC_JERK_NE` to 50 m/s/s/s, the tops of their ranges. Half of the speed then
-comes after 0.45 s and nine tenths after 0.7 s, with an overshoot of about a
-twentieth. The dead time stays. These are the names in ArduCopter 4.8; older
-versions call them `WPNAV_ACCEL` and `PSC_JERK_XY` and count in centimetres.
+| Copter | Nothing for | Half of the speed | Nine tenths |
+|--------|-------------|-------------------|-------------|
+| ArduPilot's default frame, 3 kg | 0.2 to 0.3 s | 0.6 s | 1.0 s |
+| the same with `WP_ACC` 5 and `PSC_JERK_NE` 50 | 0.2 to 0.3 s | 0.45 s | 0.7 s |
+| the freestyle frame, 0.8 kg, as tuned here | 0.1 to 0.15 s | 0.35 s | 0.9 s |
+
+`Body.moved` alone gets there in 0.25 s with no dead time.
+
+The copters fly the freestyle frame. `autopilot/freestyle/` holds its
+`frame.json` and its `copter.parm`, both taken from
+`Tools/autotest/models/` of ArduPilot. Three lines are added to the
+parameters: `PSC_JERK_NE` 50, `PSC_NE_VEL_P` 3 and `PSC_NE_VEL_I` 1. Without
+the stronger speed control this frame crept to a speed target more slowly
+than the heavy one. These are the names in ArduCopter 4.8.
+
+ArduPilot reads a frame only from the folder a copter runs in, so the frame
+is copied there before each start. Another drone is another folder with the
+same two files, named in `sortie()` in `config.py`.
 
 `Lag` in `simulator/` puts the same lateness into the formula: a dead time of
-0.3 s and a first-order lag of 0.2 s, fitted to the answer with the raised
-limits. `kinematics()` in `config.py` wraps the formula in it, so the
-scenarios show in seconds what the copters show in minutes.
+0.15 s and a first-order lag of 0.33 s, which follows the measured answer of
+the freestyle frame closely. `kinematics()` in `config.py` wraps the formula
+in it, so the scenarios show in seconds what the copters show in minutes.
 
-The agent is told how late its drone answers through `Swarm.reaction`, 0.7 s.
+The agent is told how late its drone answers through `Swarm.reaction`, 0.5 s.
 It flies along with its leader and only corrects its place on top of that,
 its pulls and shoves are gentle, and its shield counts out the room covered
 before a command takes effect, against walls and against sighted neighbours.
 
-A loop at 50 Hz instead of 20 Hz was tried and brought nothing: the copter
-answers a step the same way, and the cloud flew no better. The rate stays at
-20 Hz.
+A loop at 50 Hz instead of 20 Hz was tried on the default frame and brought
+nothing: the copter answered a step the same way, and the cloud flew no
+better. The rate stays at 20 Hz.
 
 ## Expected surprises
 

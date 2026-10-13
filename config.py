@@ -101,7 +101,7 @@ def defaults() -> Settings:
                 Spring(0.6, 1.0, 0.0, 0.0),
                 6,
             ),
-            0.7,
+            0.5,
         ),
         Barrier(4.0, 14.0, 1.2, (0.0,)),
     )
@@ -121,8 +121,8 @@ def kinematics(settings: Settings) -> Lag:
     return Lag(
         Kinematics(settings.limits, 1.0 / settings.picture.window.rate),
         deque(),
-        round(0.3 * settings.picture.window.rate),
-        1.0 - exp(-1.0 / (0.2 * settings.picture.window.rate)),
+        round(0.15 * settings.picture.window.rate),
+        1.0 - exp(-1.0 / (0.33 * settings.picture.window.rate)),
     )
 
 
@@ -133,7 +133,7 @@ def sortie(settings: Settings) -> Sortie:
                 5760,
                 Spot(-35.3632607, 149.1652351),
                 Path.home() / "code" / "ardupilot",
-                Path(__file__).parent / "autopilot" / "copter.parm",
+                Path(__file__).parent / "autopilot" / "freestyle",
             ),
             settings.swarm.muster,
         ),
