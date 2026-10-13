@@ -1,4 +1,6 @@
+from collections import deque
 from dataclasses import dataclass, replace
+from math import exp
 from pathlib import Path
 from typing import final
 
@@ -10,6 +12,7 @@ from autopilot.pulse import Pulse
 from autopilot.sortie import Sortie
 from autopilot.spot import Spot
 from simulator.kinematics import Kinematics
+from simulator.lag import Lag
 from simulator.muster import Muster
 
 
@@ -93,12 +96,12 @@ def defaults() -> Settings:
             Muster(8, 1.2),
             Bubbles(0.25, 0.6),
             Cloud(
-                Spring(1.2, 4.0, 0.5, 1.0),
-                Spring(1.2, 4.0, 1.5, 1.5),
-                Spring(0.6, 8.0, 0.0, 0.0),
+                Spring(1.2, 0.5, 0.15, 1.0),
+                Spring(1.2, 1.0, 0.4, 1.5),
+                Spring(0.6, 1.0, 0.0, 0.0),
                 6,
             ),
-            0.0,
+            0.7,
         ),
         Barrier(4.0, 14.0, 1.2, (0.0,)),
     )
@@ -114,8 +117,13 @@ def copters() -> Settings:
     )
 
 
-def kinematics(settings: Settings) -> Kinematics:
-    return Kinematics(settings.limits, 1.0 / settings.picture.window.rate)
+def kinematics(settings: Settings) -> Lag:
+    return Lag(
+        Kinematics(settings.limits, 1.0 / settings.picture.window.rate),
+        deque(),
+        round(0.4 * settings.picture.window.rate),
+        1.0 - exp(-1.0 / (0.33 * settings.picture.window.rate)),
+    )
 
 
 def sortie(settings: Settings) -> Sortie:

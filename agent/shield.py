@@ -23,8 +23,8 @@ class Shield:
     drone that thinks in ticks cannot step over the margin between two of them.
 
     A drone that already closes faster than the bound brakes first: of the
-    change in velocity it can make in one tick, braking takes what it needs and
-    the request gets the rest. The share shrinks smoothly, with no threshold
+    change in velocity it can make in one tick and one reaction, braking takes
+    what it needs and the request gets the rest. The share shrinks smoothly, with no threshold
     for a rounding error to tip, so the answer does not depend on which way
     the drone happens to face.
 
@@ -125,6 +125,6 @@ class Shield:
         braked = velocity.minus(offset.times(excess / distance))
         return braked.plus(
             allowed.minus(braked).capped(
-                max(0.0, self.limits.push * self.lapse - excess)
+                max(0.0, self.limits.push * (self.lapse + self.reaction) - excess)
             )
         )

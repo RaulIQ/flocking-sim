@@ -299,3 +299,11 @@ def test_cannot_change_a_request_with_no_neighbours_around():
     ) == Command(
         Vector(1.3, -0.4), 0.7
     ), "a drone with no neighbours around does not fly what it asks"
+
+
+def test_leaves_a_late_drone_that_closes_too_fast_a_share_of_its_request():
+    assert Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 0.05, 0.5).command(
+        Command(Vector(0.0, 1.0), 0.0), Vector(2.0, 0.0), (Vector(1.25, 0.0),)
+    ).velocity == Vector(
+        approx(0.0), approx(0.2)
+    ), "a late drone that closes too fast gets no share of its request"

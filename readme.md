@@ -15,10 +15,16 @@ range to but has never sighted takes no part in the pull and the shove; it only
 slows the drone down. For now every measurement is exact and arrives every
 tick, and the camera sees all the way around; noise comes later.
 
+A drone does not obey at once. The built-in formula answers a command as
+late as an ArduPilot copter was measured to: nothing for 0.4 s, then most of
+the way within another second. The agent is told how late its drone answers,
+so a follower flies along with its leader, corrects its place gently and
+keeps the room it will cover before its command takes effect.
+
 The leader cannot be flown into a wall: its request is cut so that it never
 closes on a wall faster than it can brake, and it stops a hard bubble away. It
 still slides along the wall and flies away from it freely. The followers are
-only shoved away by walls, nothing yet guarantees that they keep clear.
+held back from walls and from each other the same way.
 
 On screen the red ring is the hard bubble, the blue ring is the soft one, the
 amber drone is the leader and the pale line is the wall.

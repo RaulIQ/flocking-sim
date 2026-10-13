@@ -149,6 +149,22 @@ which telemetry counts as stale comes with the safety milestone.
 5. Scenarios: `hover`, `cruise` and `gap` on SITL, three runs each.
 6. Safety: the landing key, the stale telemetry rule, landing on close.
 
+## Lag
+
+A SITL copter answers a speed command late. Measured on one copter at 20 Hz,
+a step of 1 m/s shows nothing for 0.2 to 0.3 s, half of the speed after 0.6 s
+and nine tenths after 1.0 s; `Body.moved` alone gets there in 0.25 s.
+
+`Lag` in `simulator/` puts the same lateness into the formula: a dead time of
+0.4 s and a first-order lag of 0.33 s, fitted to the measured answer within
+3 %. `kinematics()` in `config.py` wraps the formula in it, so the scenarios
+show in seconds what the copters show in minutes.
+
+The agent is told how late its drone answers through `Swarm.reaction`, 0.7 s.
+It flies along with its leader and only corrects its place on top of that,
+its pulls and shoves are gentle, and its shield counts out the room covered
+before a command takes effect, against walls and against sighted neighbours.
+
 ## Expected surprises
 
 - ArduPilot accelerates and turns slower than the kinematic body, so followers
