@@ -30,6 +30,7 @@ class Link:
         for kind in (
             mavutil.mavlink.MAVLINK_MSG_ID_GLOBAL_POSITION_INT,
             mavutil.mavlink.MAVLINK_MSG_ID_ATTITUDE,
+            mavutil.mavlink.MAVLINK_MSG_ID_EKF_STATUS_REPORT,
         ):
             self.wire.mav.command_long_send(
                 self.system,

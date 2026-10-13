@@ -41,5 +41,9 @@ class Decoy:
         self.wire.recv_msg()
         self.wire.mav.attitude_send(0, 0.0, 0.0, yaw, 0.0, 0.0, rate)
 
+    def estimate(self, flags: int) -> None:
+        self.wire.recv_msg()
+        self.wire.mav.ekf_status_report_send(flags, 0.0, 0.0, 0.0, 0.0, 0.0)
+
     def asked(self):
         return self.wire.recv_match(type="COMMAND_LONG", blocking=True, timeout=5)

@@ -68,15 +68,16 @@ def test_cannot_tell_anything_from_a_position_alone():
         link.telemetry()
 
 
-def test_asks_for_the_position_and_the_attitude():
+def test_asks_for_the_position_the_attitude_and_the_estimate():
     decoy = Decoy(mavutil.mavlink_connection("tcpin:127.0.0.1:0", source_system=7))
     link = decoy.link(7)
     decoy.beat()
     link.subscribe(uniform(10.0, 50.0))
-    assert {decoy.asked().param1, decoy.asked().param1} == {
+    assert {decoy.asked().param1, decoy.asked().param1, decoy.asked().param1} == {
         mavutil.mavlink.MAVLINK_MSG_ID_GLOBAL_POSITION_INT,
         mavutil.mavlink.MAVLINK_MSG_ID_ATTITUDE,
-    }, "the position and the attitude are not both asked for"
+        mavutil.mavlink.MAVLINK_MSG_ID_EKF_STATUS_REPORT,
+    }, "the position, the attitude and the estimate are not all asked for"
 
 
 def test_asks_for_the_pause_that_gives_the_rate():

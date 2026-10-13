@@ -10,7 +10,7 @@ if __name__ == "__main__":
     with hangar.opened(Path(__file__).parent / "logs"):
         squad = Squad(tuple(copter.link() for copter in hangar.copters()), fleet().origin)
         try:
-            squad.tune(20.0, 30.0)
+            squad.tune(20.0, 90.0)
             while True:
                 print(
                     "   ".join(

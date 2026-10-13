@@ -41,6 +41,7 @@ def test_asks_every_copter_for_its_telemetry():
         decoy.beat()
         decoy.fix(1, 2, 3, 4)
         decoy.attitude(uniform(-3.0, 3.0), uniform(-2.0, 2.0))
+        decoy.estimate(831)
     Squad(links, Spot(uniform(-60.0, 60.0), uniform(-170.0, 170.0))).tune(
         uniform(10.0, 50.0), 5.0
     )
@@ -64,6 +65,19 @@ def test_cannot_tune_a_copter_that_beats_but_tells_nothing():
     link = decoy.link(6)
     decoy.beat()
     with raises(TimeoutError, match="Copter 6 sent no GLOBAL_POSITION_INT"):
+        Squad((link,), Spot(uniform(-60.0, 60.0), uniform(-170.0, 170.0))).tune(
+            uniform(10.0, 50.0), 0.2
+        )
+
+
+def test_cannot_tune_a_copter_that_never_learns_where_it_is():
+    decoy = Decoy(mavutil.mavlink_connection("tcpin:127.0.0.1:0", source_system=6))
+    link = decoy.link(6)
+    decoy.beat()
+    decoy.fix(1, 2, 3, 4)
+    decoy.attitude(uniform(-3.0, 3.0), uniform(-2.0, 2.0))
+    decoy.estimate(167)
+    with raises(TimeoutError, match="Copter 6 has no steady position estimate after 0.2 seconds"):
         Squad((link,), Spot(uniform(-60.0, 60.0), uniform(-170.0, 170.0))).tune(
             uniform(10.0, 50.0), 0.2
         )
