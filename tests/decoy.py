@@ -62,3 +62,8 @@ class Decoy:
 
     def asked(self):
         return self.wire.recv_match(type="COMMAND_LONG", blocking=True, timeout=5)
+
+    def steered(self):
+        return self.wire.recv_match(
+            type="SET_POSITION_TARGET_LOCAL_NED", blocking=True, timeout=5
+        )

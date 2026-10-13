@@ -3,7 +3,10 @@ from random import randint, uniform
 from pymavlink import mavutil
 from pytest import approx, raises
 
+from agent.command import Command
+from agent.vector import Vector
 from autopilot.spot import Spot
+from autopilot.target import Target
 from tests.decoy import Decoy
 
 
@@ -131,3 +134,51 @@ def test_cannot_wait_for_a_silent_copter_beyond_its_patience():
     ).link(3)
     with raises(TimeoutError, match="Copter 3 sent no HEARTBEAT in 0.2 seconds"):
         link.expect("HEARTBEAT", 0.2)
+
+
+def test_steers_with_the_speeds_of_the_target():
+    decoy = Decoy(mavutil.mavlink_connection("tcpin:127.0.0.1:0", source_system=7))
+    target = Target(Command(Vector(uniform(-3.0, 3.0), uniform(-3.0, 3.0)), uniform(-2.0, 2.0)))
+    decoy.link(7).steer(target, uniform(-1.0, 1.0))
+    steered = decoy.steered()
+    assert (steered.vx, steered.vy, steered.yaw_rate) == (
+        approx(target.forward()),
+        approx(target.right()),
+        approx(target.rate()),
+    ), "the copter is not steered with the speeds of the target"
+
+
+def test_steers_up_with_a_negative_speed_down():
+    decoy = Decoy(mavutil.mavlink_connection("tcpin:127.0.0.1:0", source_system=7))
+    climb = uniform(0.1, 1.0)
+    decoy.link(7).steer(Target(Command(Vector(0.0, 0.0), 0.0)), climb)
+    assert decoy.steered().vz == approx(-climb), "a climb is not sent as a negative speed down"
+
+
+def test_steers_in_the_frame_of_the_copter():
+    decoy = Decoy(mavutil.mavlink_connection("tcpin:127.0.0.1:0", source_system=7))
+    decoy.link(7).steer(
+        Target(Command(Vector(uniform(-3.0, 3.0), uniform(-3.0, 3.0)), uniform(-2.0, 2.0))),
+        uniform(-1.0, 1.0),
+    )
+    assert (
+        decoy.steered().coordinate_frame == mavutil.mavlink.MAV_FRAME_BODY_NED
+    ), "the speeds are not sent in the frame of the copter"
+
+
+def test_steers_by_the_speeds_and_the_yaw_rate_alone():
+    decoy = Decoy(mavutil.mavlink_connection("tcpin:127.0.0.1:0", source_system=7))
+    decoy.link(7).steer(
+        Target(Command(Vector(uniform(-3.0, 3.0), uniform(-3.0, 3.0)), uniform(-2.0, 2.0))),
+        uniform(-1.0, 1.0),
+    )
+    assert (
+        decoy.steered().type_mask == 0b010111000111
+    ), "the copter is told to obey more than the speeds and the yaw rate"
+
+
+def test_steers_the_copter_it_talks_to():
+    system = randint(1, 9)
+    decoy = Decoy(mavutil.mavlink_connection("tcpin:127.0.0.1:0", source_system=system))
+    decoy.link(system).steer(Target(Command(Vector(0.0, 0.0), 0.0)), 0.0)
+    assert decoy.steered().target_system == system, "another copter is steered"

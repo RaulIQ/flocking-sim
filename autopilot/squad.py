@@ -2,8 +2,10 @@ from dataclasses import dataclass
 from typing import final
 
 from autopilot.copter import Copter
+from autopilot.hold import Hold
 from autopilot.patience import Patience
 from autopilot.spot import Spot
+from autopilot.target import Target
 
 
 @final
@@ -44,3 +46,7 @@ class Squad:
                 lambda: Copter(link).height() >= 0.95 * altitude,
                 f"Copter {link.system} is not at {altitude} metres",
             )
+
+    def fly(self, commands: tuple, hold: Hold) -> None:
+        for link, command in zip(self.links, commands, strict=True):
+            link.steer(Target(command), hold.climb(Copter(link).height()))

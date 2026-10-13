@@ -6,6 +6,7 @@ from pymavlink import mavutil
 from autopilot.attitude import Attitude
 from autopilot.fix import Fix
 from autopilot.spot import Spot
+from autopilot.target import Target
 from autopilot.telemetry import Telemetry
 
 
@@ -32,6 +33,32 @@ class Link:
             0,
             *values,
             *(0,) * (7 - len(values)),
+        )
+
+    def steer(self, target: Target, climb: float) -> None:
+        self.wire.mav.set_position_target_local_ned_send(
+            0,
+            self.system,
+            mavutil.mavlink.MAV_COMP_ID_AUTOPILOT1,
+            mavutil.mavlink.MAV_FRAME_BODY_NED,
+            mavutil.mavlink.POSITION_TARGET_TYPEMASK_X_IGNORE
+            | mavutil.mavlink.POSITION_TARGET_TYPEMASK_Y_IGNORE
+            | mavutil.mavlink.POSITION_TARGET_TYPEMASK_Z_IGNORE
+            | mavutil.mavlink.POSITION_TARGET_TYPEMASK_AX_IGNORE
+            | mavutil.mavlink.POSITION_TARGET_TYPEMASK_AY_IGNORE
+            | mavutil.mavlink.POSITION_TARGET_TYPEMASK_AZ_IGNORE
+            | mavutil.mavlink.POSITION_TARGET_TYPEMASK_YAW_IGNORE,
+            0,
+            0,
+            0,
+            target.forward(),
+            target.right(),
+            -climb,
+            0,
+            0,
+            0,
+            0,
+            target.rate(),
         )
 
     def subscribe(self, rate: float) -> None:

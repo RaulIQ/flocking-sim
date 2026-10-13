@@ -3,7 +3,9 @@ from random import uniform
 from pymavlink import mavutil
 from pytest import approx, raises
 
+from agent.command import Command
 from agent.vector import Vector
+from autopilot.hold import Hold
 from autopilot.spot import Spot
 from autopilot.squad import Squad
 from tests.decoy import Decoy
@@ -127,3 +129,46 @@ def test_cannot_lift_a_copter_that_stays_low():
     decoy.climb(1200)
     with raises(TimeoutError, match="Copter 2 is not at 3.0 metres after 0.2 seconds"):
         Squad((link,), Spot(uniform(-60.0, 60.0), uniform(-170.0, 170.0))).lift(3.0, 0.2)
+
+
+def test_flies_every_copter_by_its_own_command():
+    decoys = tuple(
+        Decoy(mavutil.mavlink_connection("tcpin:127.0.0.1:0", source_system=system))
+        for system in (1, 2)
+    )
+    links = tuple(decoy.link(system) for system, decoy in enumerate(decoys, 1))
+    for decoy in decoys:
+        decoy.climb(3000)
+    Squad(links, Spot(uniform(-60.0, 60.0), uniform(-170.0, 170.0))).fly(
+        (Command(Vector(1.25, 0.0), 0.0), Command(Vector(-0.75, 0.0), 0.0)),
+        Hold(3.0, 1.0, 1.0),
+    )
+    assert [decoy.steered().vx for decoy in decoys] == [
+        approx(1.25),
+        approx(-0.75),
+    ], "a copter does not fly by its own command"
+
+
+def test_flies_a_low_copter_up_to_the_altitude():
+    decoy = Decoy(mavutil.mavlink_connection("tcpin:127.0.0.1:0", source_system=1))
+    link = decoy.link(1)
+    decoy.climb(2600)
+    Squad((link,), Spot(uniform(-60.0, 60.0), uniform(-170.0, 170.0))).fly(
+        (Command(Vector(uniform(-3.0, 3.0), uniform(-3.0, 3.0)), uniform(-2.0, 2.0)),),
+        Hold(3.0, 0.5, 1.0),
+    )
+    assert decoy.steered().vz == approx(-0.2), "a low copter is not flown up to the altitude"
+
+
+def test_cannot_fly_with_a_command_short():
+    decoys = tuple(
+        Decoy(mavutil.mavlink_connection("tcpin:127.0.0.1:0", source_system=system))
+        for system in (1, 2)
+    )
+    links = tuple(decoy.link(system) for system, decoy in enumerate(decoys, 1))
+    for decoy in decoys:
+        decoy.climb(3000)
+    with raises(ValueError):
+        Squad(links, Spot(uniform(-60.0, 60.0), uniform(-170.0, 170.0))).fly(
+            (Command(Vector(1.0, 0.0), 0.0),), Hold(3.0, 1.0, 1.0)
+        )
