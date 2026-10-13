@@ -1,6 +1,7 @@
 from argparse import ArgumentParser
 from pathlib import Path
 
+from config import kinematics
 from scenarios.catalogue import catalogue
 from scenarios.trial import Trial
 
@@ -18,7 +19,7 @@ if __name__ == "__main__":
     for name in catalogue() if arguments.names == ["all"] else arguments.names:
         if name not in catalogue():
             parser.error(f"There is no scenario named {name}")
-        trial = Trial(name, catalogue()[name], 6)
+        trial = Trial(name, catalogue()[name], 6, kinematics(catalogue()[name].settings))
         print("\n".join(trial.run(Path(__file__).parent / "logs").lines()[:-1]), end="\n\n")
         if arguments.watch:
             from scenarios.screening import Screening

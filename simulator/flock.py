@@ -6,7 +6,6 @@ from agent.command import Command
 from agent.mind import Mind
 from agent.senses import Motion, Senses
 from agent.signals import Bearing, Range, Role, Signals
-from agent.tuning import Limits
 from agent.vector import Vector
 from simulator.drone import Drone
 
@@ -15,6 +14,9 @@ from simulator.drone import Drone
 @dataclass(frozen=True)
 class Flock:
     """Every drone in the air, each flown by its own mind on what it alone senses.
+
+    In one move every drone first decides by itself, then all the decisions
+    go into the air at once and the air tells where every drone is now.
 
     Each drone is told how it moves itself, how far every other drone is, at
     what angle from its nose it sees each of them, who says it leads, and the
@@ -87,17 +89,24 @@ class Flock:
             request,
         )
 
-    def moved(
-        self,
-        request: Command,
-        mind: Mind,
-        walls: tuple,
-        limits: Limits,
-        lapse: float,
-    ) -> "Flock":
+    def moved(self, request: Command, mind: Mind, walls: tuple, air) -> "Flock":
+        minded = tuple(
+            drone.recalled(mind, self.sensed(drone, request, walls))
+            for drone in self.drones
+        )
         return Flock(
             tuple(
-                drone.flown(mind, self.sensed(drone, request, walls), limits, lapse)
-                for drone in self.drones
+                drone.placed(body)
+                for drone, body in zip(
+                    minded,
+                    air.moved(
+                        tuple(drone.body for drone in self.drones),
+                        tuple(
+                            after.command(mind, self.sensed(before, request, walls))
+                            for before, after in zip(self.drones, minded)
+                        ),
+                    ),
+                    strict=True,
+                )
             )
         )

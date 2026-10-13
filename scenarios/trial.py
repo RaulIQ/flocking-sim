@@ -15,16 +15,17 @@ from simulator.stage import Stage
 class Trial:
     """One run of a scenario, written down as a trace of every drone and a summary.
 
-    The trace keeps one frame out of every stride. Nothing in a run is random,
-    so the same scenario always writes the same two files.
+    The trace keeps one frame out of every stride. A trial adds no chance of
+    its own, so two runs differ only by what the air does.
     """
 
     name: str
     scenario: Scenario
     stride: int
+    air: object
 
     def frames(self):
-        stage = Stage(self.scenario.settings)
+        stage = Stage(self.scenario.settings, self.air)
         route = self.scenario.route
         flock = stage.flock()
         for frame in range(round(self.scenario.seconds / stage.lapse())):
@@ -35,7 +36,7 @@ class Trial:
     def run(self, folder: Path) -> Report:
         folder.mkdir(parents=True, exist_ok=True)
         tally = Tally(inf, inf, 0, Passage(0, 0.0))
-        flock = Stage(self.scenario.settings).flock()
+        flock = Stage(self.scenario.settings, self.air).flock()
         with open(folder / f"{self.name}.csv", "w", newline="") as file:
             writer = csv.writer(file)
             writer.writerow(("time", "drone", "leader", "x", "y", "heading", "vx", "vy"))

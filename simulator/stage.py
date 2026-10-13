@@ -19,13 +19,14 @@ from simulator.trail import Trail
 @final
 @dataclass(frozen=True)
 class Stage:
-    """The simulated world under one set of settings: who starts where and what one tick does.
+    """The world under one set of settings and in one air: who starts where and what one tick does.
 
     The window and every scripted scenario step the world through this one
-    class, so that a scenario replays exactly what a pilot would see.
+    class, so that a scenario flies the way a pilot would see it.
     """
 
     settings: Settings
+    air: object
 
     def lapse(self) -> float:
         return 1.0 / self.settings.picture.window.rate
@@ -60,6 +61,4 @@ class Stage:
         )
 
     def after(self, flock: Flock, request: Command) -> Flock:
-        return flock.moved(
-            request, self.mind(), self.walls(), self.settings.limits, self.lapse()
-        )
+        return flock.moved(request, self.mind(), self.walls(), self.air)

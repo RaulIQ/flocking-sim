@@ -35,6 +35,18 @@ pip install -r requirements.txt
 python run.py
 ```
 
+To fly the same window on ArduPilot SITL copters instead of the built-in
+formula, build ArduPilot for SITL, point `sortie()` in `config.py` at it and
+run:
+
+```bash
+python -m autopilot
+```
+
+Four copters start, learn where they are and take off, which takes about a
+minute, and then the window opens. The plan of this stage lives in
+[docs/SITL.md](docs/SITL.md).
+
 ## Keys
 
 | Control | Meaning |
@@ -92,6 +104,7 @@ into the hard bubble of a drone. New scenarios go into
 |------|-------|
 | `agent/` | the algorithm of one drone: `Mind.command(Senses)` gives a `Command`; everything in `Senses` is in the drone's own frame, no map and no shared direction; standard library only, blind to the simulator |
 | `simulator/` | the world, the dynamics and the picture |
+| `autopilot/` | the same drones on ArduPilot SITL copters: MAVLink, frames, takeoff and the real air |
 | `scenarios/` | scripted flights and their logs |
 | `tests/` | one test file per feature file |
 | `agent/tuning.py` | the kinds of numbers the agent is tuned by, so that it needs nothing from outside |

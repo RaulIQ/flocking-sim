@@ -31,15 +31,23 @@ steps.
 
 ## Architecture
 
-The motion of the drones becomes an interface with two implementations.
+The motion of the drones is an air with two kinds. In one tick every drone
+first decides by itself, then all the commands go into the air at once, and
+the air tells where every drone is now.
 
-- The kinematic one is today's `Body.moved`. It stays the default, and every
-  existing test and scenario keeps running on it unchanged.
-- The autopilot one sends each drone's command to its SITL copter and builds
-  the drone's next `Body` from the latest telemetry of that copter.
+- `Kinematics` in `simulator/` is the air as a formula, today's `Body.moved`.
+  It stays the default, and every existing test and scenario keeps running on
+  it unchanged.
+- `Air` in `autopilot/` sends each drone's command to its SITL copter, lets
+  one beat of real time pass and builds every drone's next `Body` from the
+  latest telemetry of its copter. It computes no motion of its own.
 
-`Stage` picks one of them from the settings. Nothing in `agent/` changes, and
-`agent/` keeps importing nothing from the simulator.
+The entry point picks the air and hands it to `Stage`: `python run.py` flies
+on the formula, `python -m autopilot` flies the same window on SITL. Nothing
+in `agent/` changes, and `agent/` keeps importing nothing from the simulator.
+
+The leader is a copter too: a flight on SITL has one leader and three
+followers.
 
 ## Transport
 
@@ -124,9 +132,11 @@ number.
 
 ## Settings
 
-A new block in `config.py` holds: the number of copters, the base port, the
-reference point, the altitude, the loop rate, the altitude gain and its cap,
-and the age after which telemetry counts as stale.
+`config.py` holds them next to the kinematic ones: `copters()` gives the
+settings of a flight on SITL, four drones at 20 ticks a second, and
+`sortie()` holds the base port, the reference point, where ArduPilot is
+built, the altitude with its gain and cap, and the loop rate. The age after
+which telemetry counts as stale comes with the safety milestone.
 
 ## Milestones
 

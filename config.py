@@ -1,10 +1,16 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import final
 
 from agent.tuning import Cloud, Limits, Spring
+from autopilot.fleet import Fleet
+from autopilot.hangar import Hangar
 from autopilot.hold import Hold
+from autopilot.pulse import Pulse
+from autopilot.sortie import Sortie
 from autopilot.spot import Spot
+from simulator.kinematics import Kinematics
+from simulator.muster import Muster
 
 
 @final
@@ -79,17 +85,6 @@ class Settings:
     barrier: Barrier
 
 
-@final
-@dataclass(frozen=True)
-class Fleet:
-    """The copters ArduPilot simulates: how many, their first port, the spot under the first one and where ArduPilot is built."""
-
-    count: int
-    port: int
-    origin: Spot
-    source: Path
-
-
 def defaults() -> Settings:
     return Settings(
         Limits(2.0, 4.0, 1.8, 8.0),
@@ -109,11 +104,28 @@ def defaults() -> Settings:
     )
 
 
-def fleet() -> Fleet:
-    return Fleet(
-        3, 5760, Spot(-35.3632607, 149.1652351), Path.home() / "code" / "ardupilot"
+def copters() -> Settings:
+    return replace(
+        defaults(),
+        picture=Picture(Window(1000, 700, 60.0, 20), Shape(0.1, 0.35, 200)),
+        swarm=replace(defaults().swarm, count=4),
     )
 
 
-def hold() -> Hold:
-    return Hold(3.0, 1.0, 1.0)
+def kinematics(settings: Settings) -> Kinematics:
+    return Kinematics(settings.limits, 1.0 / settings.picture.window.rate)
+
+
+def sortie(settings: Settings) -> Sortie:
+    return Sortie(
+        Hangar(
+            Fleet(
+                5760,
+                Spot(-35.3632607, 149.1652351),
+                Path.home() / "code" / "ardupilot",
+            ),
+            Muster(settings.swarm.count, settings.swarm.spacing),
+        ),
+        Hold(3.0, 1.0, 1.0),
+        Pulse(settings.picture.window.rate),
+    )

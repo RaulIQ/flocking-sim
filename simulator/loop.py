@@ -16,9 +16,10 @@ from simulator.view import View
 @final
 @dataclass(frozen=True)
 class Flight:
-    """One interactive run: a window, a keyboard and a swarm behind its leader."""
+    """One interactive run: a window, a keyboard and a swarm behind its leader in one air."""
 
     settings: Settings
+    air: object
 
     def run(self) -> None:
         pygame.init()
@@ -32,7 +33,7 @@ class Flight:
         pilot = Pilot(self.settings.limits)
         aim = Aim(self.settings.limits, self.settings.picture.shape.radius)
         baton = Baton(view, self.settings.swarm.bubbles.soft)
-        stage = Stage(self.settings)
+        stage = Stage(self.settings, self.air)
         clock = pygame.time.Clock()
         flock = stage.flock()
         events = pygame.event.get()

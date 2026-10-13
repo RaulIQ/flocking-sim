@@ -3,22 +3,22 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import final
 
+from autopilot.fleet import Fleet
 from autopilot.sitl import Sitl
-from config import Fleet
 from simulator.muster import Muster
 
 
 @final
 @dataclass(frozen=True)
 class Hangar:
-    """Every simulated copter of one fleet, each standing where its kinematic twin starts.
+    """Every simulated copter of one fleet, each standing at its place in the muster.
 
     The copters run only while the hangar is open, so that none of them
     outlives the flight it was started for.
     """
 
     fleet: Fleet
-    spacing: float
+    muster: Muster
 
     def copters(self) -> tuple:
         return tuple(
@@ -28,9 +28,7 @@ class Hangar:
                 self.fleet.origin.shifted(place),
                 self.fleet.port,
             )
-            for number, place in enumerate(
-                Muster(self.fleet.count, self.spacing).places()
-            )
+            for number, place in enumerate(self.muster.places())
         )
 
     @contextmanager
