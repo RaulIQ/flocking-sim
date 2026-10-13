@@ -11,6 +11,7 @@ from agent.senses import Motion, Senses
 from agent.shield import Shield
 from agent.signals import Bearing, Range, Role, Signals
 from agent.tracker import Tracker
+from agent.neighbour import Neighbour
 from agent.tracks import Track, Tracks
 from agent.tuning import Cloud, Limits, Spring
 from agent.vector import Vector
@@ -527,11 +528,11 @@ def test_remembers_for_every_drone_the_others_it_was_told_of():
 def test_keeps_what_every_drone_remembers_through_a_handover():
     assert Flock(
         (
-            Drone(Body(Vector(1.3, 0.2), 0.0, Vector(0.0, 0.0), 0.0), Trail((), 5), True, Tracks((Track(1, Vector(-1.9, 0.7), True, False),))),
+            Drone(Body(Vector(1.3, 0.2), 0.0, Vector(0.0, 0.0), 0.0), Trail((), 5), True, Tracks((Track(1, Neighbour(Vector(-1.9, 0.7), Vector(0.0, 0.0), False), True),))),
             Drone(Body(Vector(-0.6, 0.9), 0.0, Vector(0.0, 0.0), 0.0), Trail((), 5), False),
         )
     ).passed().drones[0].memory == Tracks(
-        (Track(1, Vector(-1.9, 0.7), True, False),)
+        (Track(1, Neighbour(Vector(-1.9, 0.7), Vector(0.0, 0.0), False), True),)
     ), "a handover wipes what a drone remembers"
 
 

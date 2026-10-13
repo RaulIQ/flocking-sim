@@ -7,6 +7,7 @@ from agent.senses import Motion, Senses
 from agent.shield import Shield
 from agent.signals import Bearing, Range, Role, Signals
 from agent.tracker import Tracker
+from agent.neighbour import Neighbour
 from agent.tracks import Track, Tracks
 from agent.tuning import Cloud, Limits, Spring
 from simulator.body import Body
@@ -53,9 +54,9 @@ def test_keeps_what_it_is_reminded_of():
     assert Drone(
         Body(Vector(0.4, -0.7), 0.0, Vector(0.0, 0.0), 0.0), Trail((), 5), False
     ).reminded(
-        Tracks((Track(3, Vector(1.1, 0.2), True, False),))
+        Tracks((Track(3, Neighbour(Vector(1.1, 0.2), Vector(0.0, 0.0), False), True),))
     ).memory == Tracks(
-        (Track(3, Vector(1.1, 0.2), True, False),)
+        (Track(3, Neighbour(Vector(1.1, 0.2), Vector(0.0, 0.0), False), True),)
     ), "a drone does not keep what it is reminded of"
 
 
@@ -64,9 +65,9 @@ def test_keeps_its_memory_once_placed():
         Body(Vector(0.4, -0.7), 0.0, Vector(0.0, 0.0), 0.0),
         Trail((), 5),
         False,
-        Tracks((Track(3, Vector(1.1, 0.2), True, False),)),
+        Tracks((Track(3, Neighbour(Vector(1.1, 0.2), Vector(0.0, 0.0), False), True),)),
     ).placed(Body(Vector(1.4, -0.7), 0.0, Vector(2.0, 0.0), 0.0)).memory == Tracks(
-        (Track(3, Vector(1.1, 0.2), True, False),)
+        (Track(3, Neighbour(Vector(1.1, 0.2), Vector(0.0, 0.0), False), True),)
     ), "a new place wipes what a drone remembers"
 
 
@@ -75,7 +76,7 @@ def test_decides_by_its_mind_on_what_it_remembers_and_senses():
         Body(Vector(0.0, 0.0), 0.0, Vector(0.0, 0.0), 0.0),
         Trail((), 5),
         False,
-        Tracks((Track(1, Vector(2.2, 0.0), True, True),)),
+        Tracks((Track(1, Neighbour(Vector(2.2, 0.0), Vector(0.0, 0.0), True), True),)),
     ).command(
         Mind(
             Instinct(Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), Limits(2.0, 100.0, 1.8, 8.0)),
@@ -111,5 +112,5 @@ def test_remembers_what_it_sensed():
             Command(Vector(0.0, 0.0), 0.0),
         ),
     ).memory == Tracks(
-        (Track(1, Vector(approx(2.2), approx(0.0)), True, True),)
+        (Track(1, Neighbour(Vector(approx(2.2), approx(0.0)), Vector(0.0, 0.0), True), True),)
     ), "a drone does not remember what it sensed"
