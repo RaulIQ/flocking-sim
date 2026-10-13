@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import final
 
 from agent.tuning import Cloud, Limits, Spring
+from autopilot.hold import Hold
 from autopilot.spot import Spot
 
 
@@ -112,3 +113,7 @@ def fleet() -> Fleet:
     return Fleet(
         3, 5760, Spot(-35.3632607, 149.1652351), Path.home() / "code" / "ardupilot"
     )
+
+
+def hold() -> Hold:
+    return Hold(3.0, 1.0, 1.0)
