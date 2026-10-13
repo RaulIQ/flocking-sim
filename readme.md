@@ -16,8 +16,8 @@ slows the drone down. For now every measurement is exact and arrives every
 tick, and the camera sees all the way around; noise comes later.
 
 A drone does not obey at once. The built-in formula answers a command as
-late as an ArduPilot copter was measured to: nothing for 0.4 s, then most of
-the way within another second. The agent is told how late its drone answers,
+late as an ArduPilot copter was measured to: nothing for 0.3 s, then most of
+the way within half a second more. The agent is told how late its drone answers,
 so a follower flies along with its leader, corrects its place gently and
 keeps the room it will cover before its command takes effect.
 

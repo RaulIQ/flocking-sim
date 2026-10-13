@@ -151,19 +151,31 @@ which telemetry counts as stale comes with the safety milestone.
 
 ## Lag
 
-A SITL copter answers a speed command late. Measured on one copter at 20 Hz,
-a step of 1 m/s shows nothing for 0.2 to 0.3 s, half of the speed after 0.6 s
-and nine tenths after 1.0 s; `Body.moved` alone gets there in 0.25 s.
+A SITL copter answers a speed command late. Measured on one copter at 20 Hz
+with ArduPilot's own limits, a step of 1 m/s shows nothing for 0.2 to 0.3 s,
+half of the speed after 0.6 s and nine tenths after 1.0 s; `Body.moved` alone
+gets there in 0.25 s.
+
+`autopilot/copter.parm` is laid over ArduPilot's defaults for every copter.
+It raises the horizontal acceleration `WP_ACC` to 5 m/s/s and the jerk
+`PSC_JERK_NE` to 50 m/s/s/s, the tops of their ranges. Half of the speed then
+comes after 0.45 s and nine tenths after 0.7 s, with an overshoot of about a
+twentieth. The dead time stays. These are the names in ArduCopter 4.8; older
+versions call them `WPNAV_ACCEL` and `PSC_JERK_XY` and count in centimetres.
 
 `Lag` in `simulator/` puts the same lateness into the formula: a dead time of
-0.4 s and a first-order lag of 0.33 s, fitted to the measured answer within
-3 %. `kinematics()` in `config.py` wraps the formula in it, so the scenarios
-show in seconds what the copters show in minutes.
+0.3 s and a first-order lag of 0.2 s, fitted to the answer with the raised
+limits. `kinematics()` in `config.py` wraps the formula in it, so the
+scenarios show in seconds what the copters show in minutes.
 
 The agent is told how late its drone answers through `Swarm.reaction`, 0.7 s.
 It flies along with its leader and only corrects its place on top of that,
 its pulls and shoves are gentle, and its shield counts out the room covered
 before a command takes effect, against walls and against sighted neighbours.
+
+A loop at 50 Hz instead of 20 Hz was tried and brought nothing: the copter
+answers a step the same way, and the cloud flew no better. The rate stays at
+20 Hz.
 
 ## Expected surprises
 

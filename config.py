@@ -121,8 +121,8 @@ def kinematics(settings: Settings) -> Lag:
     return Lag(
         Kinematics(settings.limits, 1.0 / settings.picture.window.rate),
         deque(),
-        round(0.4 * settings.picture.window.rate),
-        1.0 - exp(-1.0 / (0.33 * settings.picture.window.rate)),
+        round(0.3 * settings.picture.window.rate),
+        1.0 - exp(-1.0 / (0.2 * settings.picture.window.rate)),
     )
 
 
