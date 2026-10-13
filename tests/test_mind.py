@@ -317,3 +317,38 @@ def test_asks_the_same_of_a_leader_whichever_way_it_faces():
     ).velocity == Vector(
         approx(wanted.x), approx(wanted.y)
     ), "a leader asks for something else when all it knows is turned"
+
+
+def test_cannot_pull_a_follower_into_a_wall_after_its_leader():
+    assert Mind(
+        Instinct(
+            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 0.0, 0.0, 0.0), 6),
+            Limits(2.0, 4.0, 1.8, 8.0),
+        ),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
+        Tracker(1.0 / 60),
+        False,
+    ).command(
+        Tracks((Track(1, Neighbour(Vector(3.0, 0.0), Vector(0.0, 0.0), True), True),)),
+        Senses(Motion(Vector(0.0, 0.0), 0.0), Signals((), (), ()), (Vector(0.25, 0.0),), Command(Vector(0.0, 0.0), 0.0)),
+    ).velocity == Vector(approx(0.0), approx(0.0)), "a leader pulls its follower into a wall"
+
+
+def test_cannot_pull_a_follower_into_a_peer_after_its_leader():
+    assert Mind(
+        Instinct(
+            Cloud(Spring(1.2, 0.0, 0.0, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
+            Limits(2.0, 4.0, 1.8, 8.0),
+        ),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
+        Tracker(1.0 / 60),
+        False,
+    ).command(
+        Tracks(
+            (
+                Track(1, Neighbour(Vector(3.0, 0.0), Vector(0.0, 0.0), True), True),
+                Track(2, Neighbour(Vector(0.5, 0.0), Vector(0.0, 0.0), False), True),
+            )
+        ),
+        Senses(Motion(Vector(0.0, 0.0), 0.0), Signals((), (), ()), (), Command(Vector(0.0, 0.0), 0.0)),
+    ).velocity == Vector(approx(0.0), approx(0.0)), "a leader pulls its follower into a peer"

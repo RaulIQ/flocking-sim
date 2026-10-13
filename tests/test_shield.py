@@ -1,10 +1,11 @@
 from functools import reduce
 from itertools import accumulate
-from math import pi
+from math import pi, sqrt
 
 from pytest import approx
 
 from agent.command import Command
+from agent.neighbour import Neighbour
 from agent.shield import Shield
 from agent.tuning import Limits
 from agent.vector import Vector
@@ -240,3 +241,61 @@ def test_cannot_count_out_any_room_for_a_drone_flying_away():
     ).velocity == Vector(
         approx(1.0 / 0.55), approx(0.0)
     ), "a drone flying away from a wall loses room to its own retreat"
+
+
+def test_cannot_close_on_a_neighbour_faster_than_half_the_room_allows():
+    assert Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 0.05, 0.0).kept(
+        Command(Vector(2.0, 0.3), 0.0),
+        Vector(0.0, 0.0),
+        (Neighbour(Vector(1.5, 0.0), Vector(0.0, 0.0), False),),
+    ).velocity == Vector(
+        approx(sqrt(2.0)), approx(0.3)
+    ), "a drone closes on a neighbour faster than half the room allows"
+
+
+def test_follows_a_neighbour_that_flies_away_as_fast_as_it_goes():
+    assert Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 0.05, 0.0).kept(
+        Command(Vector(2.0, 0.0), 0.0),
+        Vector(0.0, 0.0),
+        (Neighbour(Vector(1.5, 0.0), Vector(1.0, 0.0), True),),
+    ).velocity == Vector(
+        approx(2.0), approx(0.0)
+    ), "a drone is held back behind a neighbour that flies away"
+
+
+def test_stops_two_margins_short_of_a_neighbour():
+    assert Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 0.05, 0.0).kept(
+        Command(Vector(2.0, 0.0), 0.0),
+        Vector(0.0, 0.0),
+        (Neighbour(Vector(0.5, 0.0), Vector(0.0, 0.0), False),),
+    ).velocity == Vector(
+        approx(0.0), approx(0.0)
+    ), "a drone still closes on a neighbour two margins away"
+
+
+def test_gives_way_to_a_neighbour_that_comes_at_it():
+    assert Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 0.05, 0.0).kept(
+        Command(Vector(0.0, 0.0), 0.0),
+        Vector(0.0, 0.0),
+        (Neighbour(Vector(0.5, 0.0), Vector(-1.0, 0.0), False),),
+    ).velocity == Vector(
+        approx(-1.0), approx(0.0)
+    ), "a drone does not give way to a neighbour that comes at it"
+
+
+def test_counts_out_the_room_two_late_drones_close_before_they_answer():
+    assert Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 0.05, 0.5).kept(
+        Command(Vector(2.0, 0.0), 0.0),
+        Vector(1.0, 0.0),
+        (Neighbour(Vector(1.5, 0.0), Vector(0.0, 0.0), False),),
+    ).velocity == Vector(
+        approx(0.25 / 0.55), approx(0.0)
+    ), "the room two late drones close before they answer is not counted out"
+
+
+def test_cannot_change_a_request_with_no_neighbours_around():
+    assert Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 0.05, 0.5).kept(
+        Command(Vector(1.3, -0.4), 0.7), Vector(1.0, 0.0), ()
+    ) == Command(
+        Vector(1.3, -0.4), 0.7
+    ), "a drone with no neighbours around does not fly what it asks"
