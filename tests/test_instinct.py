@@ -122,3 +122,39 @@ def test_yields_to_a_wall_rather_than_to_the_leader():
     ).command((Neighbour(Vector(9.0, 0.0), Vector(0.0, 0.0), True),), (Vector(0.2, 0.0),)).velocity == Vector(
         approx(-2.0), approx(0.0)
     ), "the leader pulls a drone into a wall"
+
+
+def test_flies_along_with_its_leader():
+    assert Instinct(
+        Cloud(Spring(1.2, 2.0, 0.5, 1.0), Spring(1.2, 2.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 2),
+        Limits(2.0, 4.0, 1.8, 8.0),
+    ).command((Neighbour(Vector(1.2, 0.0), Vector(-0.7, 0.9), True),), ()).velocity == Vector(
+        approx(-0.7), approx(0.9)
+    ), "a drone in its place does not fly along with its leader"
+
+
+def test_cannot_fly_along_with_a_peer():
+    assert Instinct(
+        Cloud(Spring(1.2, 2.0, 0.5, 1.0), Spring(1.2, 2.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 2),
+        Limits(2.0, 4.0, 1.8, 8.0),
+    ).command((Neighbour(Vector(1.2, 0.0), Vector(-0.7, 0.9), False),), ()).velocity == Vector(
+        approx(0.0), approx(0.0)
+    ), "a drone flies along with a peer as if it led"
+
+
+def test_cannot_correct_its_place_faster_than_the_leader_can_pull():
+    assert Instinct(
+        Cloud(Spring(1.2, 2.0, 0.5, 1.0), Spring(1.2, 2.0, 0.4, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 2),
+        Limits(2.0, 4.0, 1.8, 8.0),
+    ).command((Neighbour(Vector(0.2, 0.0), Vector(0.0, 0.0), False),), ()).velocity == Vector(
+        approx(-0.6), approx(0.0)
+    ), "a drone corrects its place faster than its leader can pull"
+
+
+def test_corrects_its_place_on_top_of_the_flight_of_its_leader():
+    assert Instinct(
+        Cloud(Spring(1.2, 2.0, 0.5, 1.0), Spring(1.2, 2.0, 0.4, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 2),
+        Limits(2.0, 4.0, 1.8, 8.0),
+    ).command((Neighbour(Vector(9.0, 0.0), Vector(0.0, 1.0), True),), ()).velocity == Vector(
+        approx(0.6), approx(1.0)
+    ), "a drone does not correct its place on top of the flight of its leader"

@@ -13,6 +13,12 @@ from agent.vector import Vector
 class Instinct:
     """What one follower wants: its place among the nearest few, near the leader, clear of walls.
 
+    A follower flies along with its leader and only corrects its place on
+    top of that, never faster than the leader can pull it. This is the
+    velocity matching of Reynolds 1987 and Olfati-Saber 2006, kept to the
+    leader alone. It lets the pulls and the shoves stay gentle, which a drone
+    that answers late needs in order not to sway.
+
     Counting only the nearest few peers instead of everyone in range follows
     the topological neighbourhood that Ballerini 2008 measured in starlings.
     """
@@ -24,20 +30,24 @@ class Instinct:
         return Command(
             reduce(
                 Vector.plus,
-                [
-                    Bond(self.cloud.leader).velocity(neighbour.offset)
-                    for neighbour in neighbours
-                    if neighbour.leader
-                ]
-                + [
-                    Bond(self.cloud.peers).velocity(neighbour.offset)
-                    for neighbour in sorted(
-                        (peer for peer in neighbours if not peer.leader),
-                        key=lambda peer: peer.offset.length(),
-                    )[: self.cloud.crowd]
-                ]
-                + [Bond(self.cloud.walls).velocity(offset) for offset in obstacles],
-                Vector(0.0, 0.0),
+                [neighbour.velocity for neighbour in neighbours if neighbour.leader],
+                reduce(
+                    Vector.plus,
+                    [
+                        Bond(self.cloud.leader).velocity(neighbour.offset)
+                        for neighbour in neighbours
+                        if neighbour.leader
+                    ]
+                    + [
+                        Bond(self.cloud.peers).velocity(neighbour.offset)
+                        for neighbour in sorted(
+                            (peer for peer in neighbours if not peer.leader),
+                            key=lambda peer: peer.offset.length(),
+                        )[: self.cloud.crowd]
+                    ]
+                    + [Bond(self.cloud.walls).velocity(offset) for offset in obstacles],
+                    Vector(0.0, 0.0),
+                ).capped(self.cloud.leader.pull * self.cloud.leader.reach),
             ).capped(self.limits.speed),
             0.0,
         )
