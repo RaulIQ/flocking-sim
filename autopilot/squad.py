@@ -27,3 +27,20 @@ class Squad:
 
     def bodies(self) -> tuple:
         return tuple(link.telemetry().body(self.origin) for link in self.links)
+
+    def lift(self, altitude: float, patience: float) -> None:
+        for link in self.links:
+            Copter(link).guide()
+            Patience(patience, 0.05).until(
+                Copter(link).guided, f"Copter {link.system} is not guided"
+            )
+            Copter(link).arm()
+            Patience(patience, 0.05).until(
+                Copter(link).armed, f"Copter {link.system} is not armed"
+            )
+            Copter(link).rise(altitude)
+        for link in self.links:
+            Patience(patience, 0.05).until(
+                lambda: Copter(link).height() >= 0.95 * altitude,
+                f"Copter {link.system} is not at {altitude} metres",
+            )

@@ -24,6 +24,16 @@ class Link:
     wire: object
     system: int
 
+    def order(self, command: int, *values: float) -> None:
+        self.wire.mav.command_long_send(
+            self.system,
+            mavutil.mavlink.MAV_COMP_ID_AUTOPILOT1,
+            command,
+            0,
+            *values,
+            *(0,) * (7 - len(values)),
+        )
+
     def subscribe(self, rate: float) -> None:
         if "HEARTBEAT" not in self.heard():
             raise LookupError(f"Copter {self.system} has not sent a heartbeat yet")
@@ -32,19 +42,7 @@ class Link:
             mavutil.mavlink.MAVLINK_MSG_ID_ATTITUDE,
             mavutil.mavlink.MAVLINK_MSG_ID_EKF_STATUS_REPORT,
         ):
-            self.wire.mav.command_long_send(
-                self.system,
-                mavutil.mavlink.MAV_COMP_ID_AUTOPILOT1,
-                mavutil.mavlink.MAV_CMD_SET_MESSAGE_INTERVAL,
-                0,
-                kind,
-                1e6 / rate,
-                0,
-                0,
-                0,
-                0,
-                0,
-            )
+            self.order(mavutil.mavlink.MAV_CMD_SET_MESSAGE_INTERVAL, kind, 1e6 / rate)
 
     def expect(self, kind: str, patience: float) -> None:
         if kind not in self.heard():

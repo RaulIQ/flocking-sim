@@ -41,6 +41,21 @@ class Decoy:
         self.wire.recv_msg()
         self.wire.mav.attitude_send(0, 0.0, 0.0, yaw, 0.0, 0.0, rate)
 
+    def state(self, mode: int, armed: bool) -> None:
+        self.wire.recv_msg()
+        self.wire.mav.heartbeat_send(
+            mavutil.mavlink.MAV_TYPE_QUADROTOR,
+            mavutil.mavlink.MAV_AUTOPILOT_ARDUPILOTMEGA,
+            mavutil.mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED
+            | (mavutil.mavlink.MAV_MODE_FLAG_SAFETY_ARMED if armed else 0),
+            mode,
+            0,
+        )
+
+    def climb(self, height: int) -> None:
+        self.wire.recv_msg()
+        self.wire.mav.global_position_int_send(0, 0, 0, 0, height, 0, 0, 0, 0)
+
     def estimate(self, flags: int) -> None:
         self.wire.recv_msg()
         self.wire.mav.ekf_status_report_send(flags, 0.0, 0.0, 0.0, 0.0, 0.0)

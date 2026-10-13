@@ -81,3 +81,49 @@ def test_cannot_tune_a_copter_that_never_learns_where_it_is():
         Squad((link,), Spot(uniform(-60.0, 60.0), uniform(-170.0, 170.0))).tune(
             uniform(10.0, 50.0), 0.2
         )
+
+
+def test_lifts_every_copter_that_obeys():
+    decoys = tuple(
+        Decoy(mavutil.mavlink_connection("tcpin:127.0.0.1:0", source_system=system))
+        for system in (1, 2)
+    )
+    links = tuple(decoy.link(system) for system, decoy in enumerate(decoys, 1))
+    for decoy in decoys:
+        decoy.state(4, True)
+        decoy.climb(3000)
+    Squad(links, Spot(uniform(-60.0, 60.0), uniform(-170.0, 170.0))).lift(3.0, 5.0)
+    assert [
+        [decoy.asked().command for ask in range(3)] for decoy in decoys
+    ] == [
+        [
+            mavutil.mavlink.MAV_CMD_DO_SET_MODE,
+            mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
+            mavutil.mavlink.MAV_CMD_NAV_TAKEOFF,
+        ]
+    ] * 2, "a copter is not guided, armed and sent up in this order"
+
+
+def test_cannot_lift_a_copter_that_refuses_the_guided_mode():
+    decoy = Decoy(mavutil.mavlink_connection("tcpin:127.0.0.1:0", source_system=2))
+    link = decoy.link(2)
+    decoy.state(0, False)
+    with raises(TimeoutError, match="Copter 2 is not guided after 0.2 seconds"):
+        Squad((link,), Spot(uniform(-60.0, 60.0), uniform(-170.0, 170.0))).lift(3.0, 0.2)
+
+
+def test_cannot_lift_a_copter_that_refuses_to_arm():
+    decoy = Decoy(mavutil.mavlink_connection("tcpin:127.0.0.1:0", source_system=2))
+    link = decoy.link(2)
+    decoy.state(4, False)
+    with raises(TimeoutError, match="Copter 2 is not armed after 0.2 seconds"):
+        Squad((link,), Spot(uniform(-60.0, 60.0), uniform(-170.0, 170.0))).lift(3.0, 0.2)
+
+
+def test_cannot_lift_a_copter_that_stays_low():
+    decoy = Decoy(mavutil.mavlink_connection("tcpin:127.0.0.1:0", source_system=2))
+    link = decoy.link(2)
+    decoy.state(4, True)
+    decoy.climb(1200)
+    with raises(TimeoutError, match="Copter 2 is not at 3.0 metres after 0.2 seconds"):
+        Squad((link,), Spot(uniform(-60.0, 60.0), uniform(-170.0, 170.0))).lift(3.0, 0.2)
