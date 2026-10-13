@@ -18,7 +18,7 @@ def test_flies_a_follower_after_its_leader():
             Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
-        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
         Tracker(1.0 / 60),
         False,
     ).command(
@@ -33,7 +33,7 @@ def test_cannot_fly_a_follower_on_the_request_of_the_pilot():
             Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
-        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
         Tracker(1.0 / 60),
         False,
     ).command(
@@ -48,7 +48,7 @@ def test_keeps_a_follower_clear_of_a_wall():
             Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
-        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
         Tracker(1.0 / 60),
         False,
     ).command(
@@ -63,7 +63,7 @@ def test_cannot_pull_a_follower_toward_a_leader_it_has_never_sighted():
             Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
-        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
         Tracker(1.0 / 60),
         False,
     ).command(
@@ -78,7 +78,7 @@ def test_cannot_shove_a_follower_away_from_a_peer_it_has_never_sighted():
             Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
-        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
         Tracker(1.0 / 60),
         False,
     ).command(
@@ -93,7 +93,7 @@ def test_slows_a_follower_near_a_neighbour_it_has_never_sighted():
             Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
-        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
         Tracker(1.0 / 60),
         False,
     ).command(
@@ -108,7 +108,7 @@ def test_stops_a_follower_two_margins_from_a_neighbour_it_has_never_sighted():
             Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
-        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
         Tracker(1.0 / 60),
         False,
     ).command(
@@ -123,7 +123,7 @@ def test_flies_a_leader_on_the_request_of_the_pilot():
             Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
-        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
         Tracker(1.0 / 60),
         True,
     ).command(
@@ -138,7 +138,7 @@ def test_cannot_pull_a_leader_toward_its_followers():
             Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
-        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
         Tracker(1.0 / 60),
         True,
     ).command(
@@ -153,7 +153,7 @@ def test_cannot_fly_a_leader_into_a_wall():
             Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
-        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
         Tracker(1.0 / 60),
         True,
     ).command(
@@ -168,7 +168,7 @@ def test_brakes_a_leader_by_its_own_velocity():
             Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 2.0, 1.8, 8.0),
         ),
-        Shield(Limits(2.0, 2.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        Shield(Limits(2.0, 2.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
         Tracker(1.0 / 60),
         True,
     ).command(
@@ -183,7 +183,7 @@ def test_slows_a_leader_near_a_neighbour_it_has_never_sighted():
             Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
-        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
         Tracker(1.0 / 60),
         True,
     ).command(
@@ -198,7 +198,7 @@ def test_takes_the_lead():
             Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
-        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
         Tracker(1.0 / 60),
         False,
     ).led(True).command(
@@ -213,7 +213,7 @@ def test_gives_the_lead_away():
             Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
-        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
         Tracker(1.0 / 60),
         True,
     ).led(False).command(
@@ -228,7 +228,7 @@ def test_remembers_a_neighbour_it_is_told_of():
             Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
-        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
         Tracker(1.0 / 60),
         False,
     ).recalled(
@@ -243,7 +243,7 @@ def test_remembers_the_same_whether_it_leads_or_follows():
             Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
-        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
         Tracker(1.0 / 60),
         True,
     ).recalled(
@@ -259,7 +259,7 @@ def test_asks_the_same_of_a_follower_whichever_way_it_faces():
             Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
-        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
         Tracker(1.0 / 60),
         False,
     )
@@ -274,7 +274,7 @@ def test_asks_the_same_of_a_follower_whichever_way_it_faces():
             Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
-        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
         Tracker(1.0 / 60),
         False,
     ).command(
@@ -292,7 +292,7 @@ def test_asks_the_same_of_a_leader_whichever_way_it_faces():
             Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
-        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
         Tracker(1.0 / 60),
         True,
     )
@@ -307,7 +307,7 @@ def test_asks_the_same_of_a_leader_whichever_way_it_faces():
             Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
-        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60),
+        Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
         Tracker(1.0 / 60),
         True,
     ).command(

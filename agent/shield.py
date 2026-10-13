@@ -27,6 +27,11 @@ class Shield:
     for a rounding error to tip, so the answer does not depend on which way
     the drone happens to face.
 
+    A drone that answers late keeps flying as it flew for its reaction time.
+    The room it covers meanwhile is counted out before the bound is taken, and
+    the last stretch is never closed faster than the room left in one tick and
+    one reaction, so that the late answer still comes in time.
+
     A neighbour known by its distance alone may be anywhere around, so it
     bounds the speed in every direction at once. The two drones share the
     duty: each counts on half of the room between their two margins.
@@ -35,6 +40,7 @@ class Shield:
     limits: Limits
     margin: float
     lapse: float
+    reaction: float
 
     def command(self, command: Command, velocity: Vector, obstacles: tuple) -> Command:
         return Command(
@@ -61,13 +67,16 @@ class Shield:
         )
 
     def bound(self, room: float) -> float:
-        return min(sqrt(self.limits.push * room), room / self.lapse)
+        return min(sqrt(self.limits.push * room), room / (self.lapse + self.reaction))
+
+    def room(self, distance: float, closing: float) -> float:
+        return max(0.0, distance - self.margin - max(0.0, closing) * self.reaction)
 
     def clipped(self, wanted: Vector, velocity: Vector, offset: Vector) -> Vector:
         distance = offset.length()
         if distance == 0.0:
             return wanted
-        bound = self.bound(max(0.0, distance - self.margin))
+        bound = self.bound(self.room(distance, velocity.dot(offset) / distance))
         allowed = wanted.minus(
             offset.times(max(0.0, wanted.dot(offset) / distance - bound) / distance)
         )

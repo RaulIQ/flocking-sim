@@ -79,7 +79,7 @@ def test_decides_by_its_mind_on_what_it_remembers_and_senses():
     ).command(
         Mind(
             Instinct(Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), Limits(2.0, 100.0, 1.8, 8.0)),
-            Shield(Limits(2.0, 100.0, 1.8, 8.0), 0.25, 0.5),
+            Shield(Limits(2.0, 100.0, 1.8, 8.0), 0.25, 0.5, 0.0),
             Tracker(0.5),
             True,
         ),
@@ -100,7 +100,7 @@ def test_remembers_what_it_sensed():
     ).recalled(
         Mind(
             Instinct(Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), Limits(2.0, 100.0, 1.8, 8.0)),
-            Shield(Limits(2.0, 100.0, 1.8, 8.0), 0.25, 0.5),
+            Shield(Limits(2.0, 100.0, 1.8, 8.0), 0.25, 0.5, 0.0),
             Tracker(0.5),
             False,
         ),

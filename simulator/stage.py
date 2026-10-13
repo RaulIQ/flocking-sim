@@ -54,7 +54,10 @@ class Stage:
         return Mind(
             Instinct(self.settings.swarm.cloud, self.settings.limits),
             Shield(
-                self.settings.limits, self.settings.swarm.bubbles.hard, self.lapse()
+                self.settings.limits,
+                self.settings.swarm.bubbles.hard,
+                self.lapse(),
+                0.0,
             ),
             Tracker(self.lapse()),
             False,
