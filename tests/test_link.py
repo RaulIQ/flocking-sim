@@ -114,3 +114,19 @@ def test_cannot_ask_a_copter_that_has_not_beaten_yet():
     ).link(5)
     with raises(LookupError, match="Copter 5 has not sent a heartbeat"):
         link.subscribe(uniform(10.0, 50.0))
+
+
+def test_waits_for_what_the_copter_says():
+    decoy = Decoy(mavutil.mavlink_connection("tcpin:127.0.0.1:0", source_system=7))
+    link = decoy.link(7)
+    decoy.beat()
+    link.expect("HEARTBEAT", 5.0)
+    assert "HEARTBEAT" in link.heard(), "an expected word of the copter is not heard"
+
+
+def test_cannot_wait_for_a_silent_copter_beyond_its_patience():
+    link = Decoy(
+        mavutil.mavlink_connection("tcpin:127.0.0.1:0", source_system=3)
+    ).link(3)
+    with raises(TimeoutError, match="Copter 3 sent no HEARTBEAT in 0.2 seconds"):
+        link.expect("HEARTBEAT", 0.2)

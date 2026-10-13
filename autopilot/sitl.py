@@ -4,6 +4,9 @@ from pathlib import Path
 from subprocess import STDOUT, Popen
 from typing import final
 
+from pymavlink import mavutil
+
+from autopilot.link import Link
 from autopilot.spot import Spot
 
 
@@ -43,6 +46,12 @@ class Sitl:
             f"{self.home.latitude:.7f},{self.home.longitude:.7f},0,90",
             "--defaults",
             str(self.source / "Tools" / "autotest" / "default_params" / "copter.parm"),
+        )
+
+    def link(self) -> Link:
+        return Link(
+            mavutil.mavlink_connection(f"tcp:127.0.0.1:{self.port()}"),
+            self.number + 1,
         )
 
     @contextmanager

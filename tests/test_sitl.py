@@ -1,8 +1,12 @@
 from pathlib import Path
 from random import randint, uniform
 
+from pymavlink import mavutil
+from pytest import approx
+
 from autopilot.sitl import Sitl
 from autopilot.spot import Spot
+from tests.decoy import Decoy
 from tests.stub import Stub
 
 
@@ -83,3 +87,31 @@ def test_cannot_leave_the_copter_running(tmp_path):
     ).running(tmp_path / "run") as process:
         pass
     assert process.poll() is not None, "a copter keeps running after it was left"
+
+
+def test_links_to_the_port_it_listens_on():
+    decoy = Decoy(mavutil.mavlink_connection("tcpin:127.0.0.1:0", source_system=3))
+    link = Sitl(
+        Path("/nowhere"), 2, Spot(uniform(-60.0, 60.0), uniform(-170.0, 170.0)), decoy.port() - 20
+    ).link()
+    decoy.fix(-353632607, 1491652351, 0, 0)
+    decoy.attitude(uniform(-3.0, 3.0), uniform(-2.0, 2.0))
+    assert link.telemetry().fix.spot == Spot(
+        approx(-35.3632607), approx(149.1652351)
+    ), "a copter is not linked through the port it listens on"
+
+
+def test_links_to_the_system_one_above_its_number():
+    number = randint(1, 9)
+    decoy = Decoy(mavutil.mavlink_connection("tcpin:127.0.0.1:0", source_system=number + 1))
+    assert (
+        Sitl(
+            Path("/nowhere"),
+            number,
+            Spot(uniform(-60.0, 60.0), uniform(-170.0, 170.0)),
+            decoy.port() - 10 * number,
+        )
+        .link()
+        .system
+        == number + 1
+    ), "a copter is not linked as the system one above its number"

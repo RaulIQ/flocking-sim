@@ -13,12 +13,12 @@ class Decoy:
 
     wire: object
 
+    def port(self) -> int:
+        return self.wire.listen.getsockname()[1]
+
     def link(self, system: int) -> Link:
         return Link(
-            mavutil.mavlink_connection(
-                f"tcp:127.0.0.1:{self.wire.listen.getsockname()[1]}"
-            ),
-            system,
+            mavutil.mavlink_connection(f"tcp:127.0.0.1:{self.port()}"), system
         )
 
     def beat(self) -> None:

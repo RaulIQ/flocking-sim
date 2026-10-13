@@ -45,6 +45,14 @@ class Link:
                 0,
             )
 
+    def expect(self, kind: str, patience: float) -> None:
+        if kind not in self.heard():
+            self.wire.recv_match(type=kind, blocking=True, timeout=patience)
+        if kind not in self.heard():
+            raise TimeoutError(
+                f"Copter {self.system} sent no {kind} in {patience} seconds"
+            )
+
     def heard(self) -> dict:
         while self.wire.recv_msg() is not None:
             continue
