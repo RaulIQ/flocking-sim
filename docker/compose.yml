@@ -1,0 +1,45 @@
+x-ros: &ros
+  image: flocking-ros
+  init: true
+
+x-drone: &drone
+  <<: *ros
+  entrypoint: /app/flocking/docker/drone/start.sh
+  volumes:
+    - ${ARDUPILOT:-${HOME}/code/ardupilot}/build/sitl/bin/arducopter:/app/bin/arducopter:ro
+    - ${ARDUPILOT:-${HOME}/code/ardupilot}/Tools/autotest/default_params/copter.parm:/app/defaults.parm:ro
+    - ..:/app/flocking:ro
+
+x-air: &air
+  ALTITUDE: 3.0
+  ROS_DOMAIN_ID: 7
+
+services:
+  uav1:
+    <<: *drone
+    build: .
+    environment: { <<: *air, DRONE_ID: 1 }
+  uav2:
+    <<: *drone
+    environment: { <<: *air, DRONE_ID: 2 }
+  uav3:
+    <<: *drone
+    environment: { <<: *air, DRONE_ID: 3 }
+  uav4:
+    <<: *drone
+    environment: { <<: *air, DRONE_ID: 4 }
+
+  ground:
+    <<: *ros
+    entrypoint: /app/flocking/docker/ground/start.sh
+    volumes:
+      - ..:/app/flocking:ro
+      - /tmp/.X11-unix:/tmp/.X11-unix:ro
+      - ${XAUTHORITY:-/dev/null}:/tmp/.Xauthority:ro
+    environment:
+      ROS_DOMAIN_ID: 7
+      DISPLAY: ${DISPLAY:-:0}
+      XAUTHORITY: /tmp/.Xauthority
+      SDL_VIDEODRIVER: ${SDL_VIDEODRIVER:-x11}
+      SDL_AUDIODRIVER: dummy
+      ROUTE: ${ROUTE:-}

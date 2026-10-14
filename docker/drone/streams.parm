@@ -1,0 +1,6 @@
+# What the autopilot sends MAVROS on its first MAVLink channel, in messages a second
+MAV1_POSITION    20
+MAV1_EXTRA1      20
+MAV1_EXTRA2      10
+MAV1_EXTRA3      5
+MAV1_EXT_STAT    5
