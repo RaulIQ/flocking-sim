@@ -106,9 +106,17 @@ Each step ends with something that runs and is checked by hand or by a test.
    and `ros2 topic list` answers inside a container. Done: Docker 29.8, the
    image takes 888 MB, and a shell started before the user joined the
    `docker` group reaches Docker through `sg docker -c "..."`.
+   Docker must be installed once only: a second Docker from snap took the
+   socket, and AppArmor kept it from stopping its own containers.
 2. One copter. The drone image is built, one container starts SITL from the
    mounted binary and MAVROS beside it, and MAVROS reports the autopilot as
-   connected under `/uav1`.
+   connected under `/uav1`. Done: `docker compose up` in `docker/` starts
+   `uav1`; from another container on the same network `/uav1/mavros/state`
+   reads `connected: true` and `/uav1/mavros/local_position/pose` comes at
+   20 Hz, while a container in another `ROS_DOMAIN_ID` sees none of it.
+   SITL sends nothing until asked, so `docker/drone/streams.parm` sets the
+   stream rates of its first MAVLink channel; ArduPilot 4.8 names them
+   `MAV1_POSITION`, `MAV1_EXTRA1` and so on, older versions `SR0_...`.
 3. Takeoff from ROS. A small node in the container sets GUIDED, arms, takes
    off to the altitude and holds it, through the services of MAVROS.
 4. The agent on board. The agent node wraps `Mind`: it builds `Senses` from
@@ -135,9 +143,9 @@ Each step ends with something that runs and is checked by hand or by a test.
   forward, left, up) into those of ArduPilot. The agent counts forward and
   left, which may make the sign changes of `Target` unnecessary. To be
   checked on the copter at step 4, not assumed.
-- The names of the topics and services of MAVROS, of its packages and of the
-  script that installs its geographic data are written from memory and are
-  to be checked at steps 2 and 3.
+- The topics of MAVROS live under `/uavN/mavros/`, its services for the
+  mode, arming and takeoff are `set_mode`, `cmd/arming` and `cmd/takeoff`
+  there; how they behave with ArduPilot is to be checked at step 3.
 - How the window of `viewer` reaches the screen: through the X11 socket, or
   through Wayland, which this machine may use.
 - Whether the safety milestone of `docs/SITL.md` is done first, so that the

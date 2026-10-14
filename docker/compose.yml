@@ -1,0 +1,17 @@
+x-drone: &drone
+  image: flocking-drone
+  init: true
+  volumes:
+    - ${ARDUPILOT:-${HOME}/code/ardupilot}/build/sitl/bin/arducopter:/app/bin/arducopter:ro
+    - ${ARDUPILOT:-${HOME}/code/ardupilot}/Tools/autotest/default_params/copter.parm:/app/defaults.parm:ro
+    - ../autopilot/freestyle:/app/tuning:ro
+    - ../agent:/app/agent:ro
+
+services:
+  uav1:
+    <<: *drone
+    build: ./drone
+    environment:
+      DRONE_ID: 1
+      HOME_SPOT: -35.3632607,149.1652351,0,90
+      ROS_DOMAIN_ID: 7
