@@ -4,9 +4,7 @@ x-drone: &drone
   volumes:
     - ${ARDUPILOT:-${HOME}/code/ardupilot}/build/sitl/bin/arducopter:/app/bin/arducopter:ro
     - ${ARDUPILOT:-${HOME}/code/ardupilot}/Tools/autotest/default_params/copter.parm:/app/defaults.parm:ro
-    - ../autopilot/freestyle:/app/tuning:ro
-    - ../agent:/app/agent:ro
-    - ./drone/nodes:/app/nodes:ro
+    - ..:/app/flocking:ro
     - ./drone/start.sh:/app/start.sh:ro
 
 services:
@@ -17,4 +15,5 @@ services:
       DRONE_ID: 1
       HOME_SPOT: -35.3632607,149.1652351,0,90
       ALTITUDE: 3.0
+      REQUEST: ${REQUEST:-0.0 0.0 0.0}
       ROS_DOMAIN_ID: 7
