@@ -138,7 +138,13 @@ Each step ends with something that runs and is checked by hand or by a test.
    turned at 0.30 counterclockwise. `docker/test.sh` runs the tests of the
    nodes inside the drone image, since this machine has no ROS.
 5. Four copters. Compose starts four drone containers in `/uav1` to `/uav4`,
-   each at its place in the muster, all of them airborne.
+   each at its place in the muster, all of them airborne. Done: the four
+   containers run one image and differ by `DRONE_ID` alone;
+   `docker/drone/nodes/home.py` takes the place of a drone from the same
+   `Hangar` and `Muster` as the stand without ROS. All four armed at the
+   first ask and hovered at 3.00 m within 4 cm of their places, seen from a
+   fifth container. Each container takes about 18 % of one core and
+   206 MB while it hovers.
 6. The ground. The ground container runs `world`, `pilot` and `viewer`; the
    window shows the four copters, `world` sends every drone its senses.
 7. The cloud. The leader is flown from the keyboard and three copters follow
@@ -161,6 +167,9 @@ Each step ends with something that runs and is checked by hand or by a test.
 - The topics of MAVROS live under `/uavN/mavros/`. Its position comes with
   the QoS of sensor data, best effort, and a subscriber must ask for the
   same or hear nothing.
+- Every copter counts its local position from its own home, so `world`
+  must place the drones by their latitude and longitude around the shared
+  origin, as `Spot` does, not by `local_position`.
 - How the window of `viewer` reaches the screen: through the X11 socket, or
   through Wayland, which this machine may use.
 - Whether the safety milestone of `docs/SITL.md` is done first, so that the

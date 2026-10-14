@@ -7,13 +7,22 @@ x-drone: &drone
     - ..:/app/flocking:ro
     - ./drone/start.sh:/app/start.sh:ro
 
+x-air: &air
+  ALTITUDE: 3.0
+  REQUEST: ${REQUEST:-0.0 0.0 0.0}
+  ROS_DOMAIN_ID: 7
+
 services:
   uav1:
     <<: *drone
     build: ./drone
-    environment:
-      DRONE_ID: 1
-      HOME_SPOT: -35.3632607,149.1652351,0,90
-      ALTITUDE: 3.0
-      REQUEST: ${REQUEST:-0.0 0.0 0.0}
-      ROS_DOMAIN_ID: 7
+    environment: { <<: *air, DRONE_ID: 1 }
+  uav2:
+    <<: *drone
+    environment: { <<: *air, DRONE_ID: 2 }
+  uav3:
+    <<: *drone
+    environment: { <<: *air, DRONE_ID: 3 }
+  uav4:
+    <<: *drone
+    environment: { <<: *air, DRONE_ID: 4 }
