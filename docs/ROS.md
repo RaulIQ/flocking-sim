@@ -77,8 +77,9 @@ differ only by `DRONE_ID`, from which the start script takes the instance,
 the system id, the namespace `/uavN` and the place in the muster.
 
 The SITL binary built on this machine needs glibc 2.38 and GLIBCXX 3.4.21 at
-most, which Ubuntu 24.04 under `ros:jazzy` is expected to carry; check it
-again after ArduPilot is rebuilt on a newer system.
+most; `ros:jazzy` carries glibc 2.39 and GLIBCXX 3.4.33. Mounted into that
+image, the binary starts, loads the freestyle frame from its folder and waits
+on port 5760. Check it again after ArduPilot is rebuilt on a newer system.
 
 ## Layout
 
@@ -102,7 +103,9 @@ docker/
 Each step ends with something that runs and is checked by hand or by a test.
 
 1. Access. The user can run Docker without `sudo`, `ros:jazzy` is pulled,
-   and `ros2 topic list` answers inside a container.
+   and `ros2 topic list` answers inside a container. Done: Docker 29.8, the
+   image takes 888 MB, and a shell started before the user joined the
+   `docker` group reaches Docker through `sg docker -c "..."`.
 2. One copter. The drone image is built, one container starts SITL from the
    mounted binary and MAVROS beside it, and MAVROS reports the autopilot as
    connected under `/uav1`.
