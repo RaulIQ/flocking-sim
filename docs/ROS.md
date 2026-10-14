@@ -43,19 +43,25 @@ purpose.
            │                       │           │           │
 ═══════════╧════ Docker network, ROS 2 over DDS, one ROS_DOMAIN_ID ═══════
            │
-┌─ ground container ────────────────────────────────────────────┐
-│ world  — reads where every drone is, sends each drone what    │
-│          its own sensors would measure: ranges, bearings,     │
-│          roles, the nearest points of the walls               │
-│ pilot  — keyboard → the request of the leader                 │
+┌─ ground container: one node, ground ──────────────────────────┐
+│ world  — reads where every drone is, sends each drone on      │
+│          /uavN/senses what its own sensors would measure:     │
+│          ranges, bearings, roles, the nearest points of the   │
+│          walls, whether it leads and what the pilot asks      │
+│ pilot  — the keyboard, Tab and a click pass the lead          │
 │ viewer — the window with the cloud                            │
 └───────────────────────────────────────────────────────────────┘
 ```
 
 - SITL stands in for the flight controller; MAVROS and the agent node stand
   for the companion computer, and only they would move onto a real drone.
-- The agent of drone N hears only its own MAVROS, its own senses from
-  `world`, and, for the leader, the pilot. Agents never talk to each other.
+- The agent of drone N hears only its own MAVROS and its own senses from
+  `world`. The request of the pilot comes inside the senses of every drone,
+  as it does in the simulator, and only the leader acts on it. Agents never
+  talk to each other.
+- `world`, `pilot` and `viewer` are one node in one process: pygame reads
+  the keyboard only through its window, and all three need the same picture
+  of the cloud.
 - `world` replaces the sensors SITL does not have. On real drones it goes
   away and the camera and the radio of each drone take its place.
 
@@ -71,10 +77,12 @@ change needs a restart of the containers, not a new image.
 | `autopilot/freestyle/` | the frame and its parameters |
 | `agent/` | the agent |
 
-The drone image holds ROS 2 Jazzy, MAVROS, the agent node and the start
-script, and is built once. The four drone containers run the same image and
-differ only by `DRONE_ID`, from which the start script takes the instance,
-the system id, the namespace `/uavN` and the place in the muster.
+One image, `flocking-ros`, serves the drones and the ground. It holds ROS 2
+Jazzy, MAVROS, pygame, pymavlink and the message package `flocking_msgs`,
+the one part that is built, and it is built once. The code and the start
+scripts come from the mounted repository. The four drone containers differ
+only by `DRONE_ID`, from which the start script takes the system id, the
+namespace `/uavN` and the place in the muster.
 
 The SITL binary built on this machine needs glibc 2.38 and GLIBCXX 3.4.21 at
 most; `ros:jazzy` carries glibc 2.39 and GLIBCXX 3.4.33. Mounted into that
@@ -85,17 +93,19 @@ on port 5760. Check it again after ArduPilot is rebuilt on a newer system.
 
 ```
 docker/
+  Dockerfile           the one image: ROS 2, MAVROS, pygame, the messages
   compose.yml          four drones and the ground
+  test.sh              the tests of the nodes, run inside the image
+  msgs/flocking_msgs/  Senses, Range, Bearing, Role
   drone/
-    Dockerfile         ROS 2, MAVROS, the agent node
-    start.sh           SITL, MAVROS and the agent by DRONE_ID
-    agent_node.py      Mind behind ROS 2 topics
+    start.sh           SITL, MAVROS, the liftoff and the board by DRONE_ID
+    streams.parm       what the autopilot sends MAVROS and how often
+    nodes/             liftoff.py, board.py, home.py
+    tests/
   ground/
-    Dockerfile         ROS 2, pygame
     start.sh
-    world_node.py      the virtual sensors
-    pilot_node.py      the keyboard
-    viewer_node.py     the window
+    nodes/ground.py    world, pilot and viewer in one node
+    tests/
 ```
 
 ## Steps
@@ -147,6 +157,14 @@ Each step ends with something that runs and is checked by hand or by a test.
    206 MB while it hovers.
 6. The ground. The ground container runs `world`, `pilot` and `viewer`; the
    window shows the four copters, `world` sends every drone its senses.
+   Done: the ground places the copters by their latitude and longitude,
+   builds the same `Flock` as the simulator and sends every drone its
+   `flocking_msgs/Senses` on `/uavN/senses` at 19.9 Hz, 49 to 51 ms apart,
+   for about 9 % of one core. The ranges the second drone heard, 1.21,
+   2.71 and 2.30 m, are those of the muster. The window reaches the screen
+   through the X11 socket and the Xauthority file of XWayland;
+   `SDL_VIDEODRIVER=dummy` runs the ground without one. The boards do not
+   read their senses yet.
 7. The cloud. The leader is flown from the keyboard and three copters follow
    it; the result is compared with `python -m autopilot` on the same route.
 8. A bad link. Delays and losses are put on the network of every container
@@ -156,10 +174,8 @@ Each step ends with something that runs and is checked by hand or by a test.
 
 ## Open questions
 
-- How senses travel. `Senses` has no ready ROS 2 message: either a package of
-  own messages, which needs a build step in the images, or standard messages
-  in a fixed layout. A lone copter needs none, so it is decided at step 6,
-  where `world` first sends them.
+- How senses travel is settled: the package `flocking_msgs`, built into
+  the image.
 - The frame of the speed target is settled: MAVROS takes forward, left and
   up with turns counterclockwise, the frame of the agent, and turns it into
   that of ArduPilot itself. `Target` and its sign changes are not needed on
@@ -170,7 +186,5 @@ Each step ends with something that runs and is checked by hand or by a test.
 - Every copter counts its local position from its own home, so `world`
   must place the drones by their latitude and longitude around the shared
   origin, as `Spot` does, not by `local_position`.
-- How the window of `viewer` reaches the screen: through the X11 socket, or
-  through Wayland, which this machine may use.
 - Whether the safety milestone of `docs/SITL.md` is done first, so that the
   plain SITL stand can land too.

@@ -4,6 +4,7 @@ set -e
 : "${ALTITUDE:?The drone container needs ALTITUDE, the height in metres it hovers at}"
 : "${REQUEST:?The drone container needs REQUEST, the speed forward, the speed to the left and the turn it is asked for}"
 source /opt/ros/jazzy/setup.bash
+source /ws/install/setup.bash
 export PYTHONPATH=/app/flocking:/app/flocking/docker/drone/nodes:$PYTHONPATH
 HOME_SPOT=$(python3 /app/flocking/docker/drone/nodes/home.py "$DRONE_ID")
 mkdir -p /run/sitl
