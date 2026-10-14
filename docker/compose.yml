@@ -6,6 +6,8 @@ x-drone: &drone
     - ${ARDUPILOT:-${HOME}/code/ardupilot}/Tools/autotest/default_params/copter.parm:/app/defaults.parm:ro
     - ../autopilot/freestyle:/app/tuning:ro
     - ../agent:/app/agent:ro
+    - ./drone/nodes:/app/nodes:ro
+    - ./drone/start.sh:/app/start.sh:ro
 
 services:
   uav1:
@@ -14,4 +16,5 @@ services:
     environment:
       DRONE_ID: 1
       HOME_SPOT: -35.3632607,149.1652351,0,90
+      ALTITUDE: 3.0
       ROS_DOMAIN_ID: 7

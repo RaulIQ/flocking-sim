@@ -118,7 +118,13 @@ Each step ends with something that runs and is checked by hand or by a test.
    stream rates of its first MAVLink channel; ArduPilot 4.8 names them
    `MAV1_POSITION`, `MAV1_EXTRA1` and so on, older versions `SR0_...`.
 3. Takeoff from ROS. A small node in the container sets GUIDED, arms, takes
-   off to the altitude and holds it, through the services of MAVROS.
+   off to the altitude and holds it, through the services of MAVROS. Done:
+   `docker/drone/nodes/liftoff.py` waits for MAVROS to connect and for a
+   position, then asks for GUIDED, arming and takeoff, each again every two
+   seconds until the state says it is done, each within two minutes. The
+   copter armed at the first ask, reached 2.85 m about four seconds later and
+   held 2.98 m within a centimetre. The start script and the nodes are
+   mounted, so a change to them needs a restart, not a new image.
 4. The agent on board. The agent node wraps `Mind`: it builds `Senses` from
    the topics, ticks on its own timer at 20 Hz and sends the speed target in
    the frame of the copter. With no neighbours and a fixed request, the
@@ -143,9 +149,9 @@ Each step ends with something that runs and is checked by hand or by a test.
   forward, left, up) into those of ArduPilot. The agent counts forward and
   left, which may make the sign changes of `Target` unnecessary. To be
   checked on the copter at step 4, not assumed.
-- The topics of MAVROS live under `/uavN/mavros/`, its services for the
-  mode, arming and takeoff are `set_mode`, `cmd/arming` and `cmd/takeoff`
-  there; how they behave with ArduPilot is to be checked at step 3.
+- The topics of MAVROS live under `/uavN/mavros/`. Its position comes with
+  the QoS of sensor data, best effort, and a subscriber must ask for the
+  same or hear nothing.
 - How the window of `viewer` reaches the screen: through the X11 socket, or
   through Wayland, which this machine may use.
 - Whether the safety milestone of `docs/SITL.md` is done first, so that the
