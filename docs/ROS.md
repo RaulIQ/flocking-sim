@@ -166,7 +166,24 @@ Each step ends with something that runs and is checked by hand or by a test.
    `SDL_VIDEODRIVER=dummy` runs the ground without one. The boards do not
    read their senses yet.
 7. The cloud. The leader is flown from the keyboard and three copters follow
-   it; the result is compared with `python -m autopilot` on the same route.
+   it; the result is compared with `python -m autopilot` on the same route. Done: every board takes its role and the
+   request from its senses, so one board flies a leader and a follower
+   alike. The ground flies the leader from the keyboard, or along the route
+   of a scenario from the catalogue when `ROUTE` names one, starting once the
+   whole cloud is airborne, and then logs the same report as a scenario.
+   One run of each route on four copters:
+
+   | Route | Stand | Closest pair | Breached frames | Farthest at the end | Fastest follower at the end |
+   |---|---|---|---|---|---|
+   | `cruise` | ROS | 0.81 m | 0 | 1.21 m | 0.05 m/s |
+   | `cruise` | without ROS | 0.66 m | 0 | 1.15 m | 0.02 m/s |
+   | `reverse` | ROS | 0.42 m | 6 | 1.32 m | 0.08 m/s |
+   | `reverse` | without ROS | 0.51 m | 0 | 1.42 m | 0.06 m/s |
+
+   On ROS the senses of a drone are older by up to two ticks, one on the
+   ground and one on the board, which may be why the leader flying back
+   through its cloud came closer to a follower; one run of each is not
+   enough to tell.
 8. A bad link. Delays and losses are put on the network of every container
    with `tc netem`, and the cloud is watched as they grow.
 9. Safety. A key lands every copter, a drone whose senses are older than half

@@ -42,3 +42,4 @@ services:
       XAUTHORITY: /tmp/.Xauthority
       SDL_VIDEODRIVER: ${SDL_VIDEODRIVER:-x11}
       SDL_AUDIODRIVER: dummy
+      ROUTE: ${ROUTE:-}

@@ -1,16 +1,26 @@
 from math import cos, pi, sin
 from random import uniform
 
-from geometry_msgs.msg import Pose, PoseStamped, Quaternion, Twist, TwistStamped, Vector3
+from geometry_msgs.msg import Point, Pose, PoseStamped, Quaternion, Twist, TwistStamped, Vector3
 from pytest import approx
 from sensor_msgs.msg import NavSatFix
 
 from agent.command import Command
 from agent.senses import Motion, Senses
 from agent.signals import Bearing, Range, Role, Signals
+from agent.tuning import Limits
 from agent.vector import Vector
 from autopilot.spot import Spot
-from ground import Census, Post
+from config import copters
+from ground import Census, Hands, Post, Script
+from scenarios.route import Route
+from scenarios.scenario import Scenario
+from scenarios.tally import Passage, Tally
+from simulator.body import Body
+from simulator.control import Pilot
+from simulator.drone import Drone
+from simulator.flock import Flock
+from simulator.trail import Trail
 
 
 def test_places_a_copter_at_its_metres_from_the_origin():
@@ -210,3 +220,80 @@ def test_tells_a_drone_what_the_pilot_asks():
         -0.25,
         0.75,
     ), "a drone is not told what the pilot asks"
+
+
+def test_cannot_call_the_cloud_airborne_while_a_copter_climbs():
+    assert not Census(Spot(uniform(-60.0, 60.0), uniform(-170.0, 170.0)), 2).airborne(
+        {
+            1: {"pose": PoseStamped(pose=Pose(position=Point(z=2.95)))},
+            2: {"pose": PoseStamped(pose=Pose(position=Point(z=1.5)))},
+        },
+        3.0,
+    ), "the cloud is called airborne while a copter still climbs"
+
+
+def test_calls_the_cloud_airborne_once_every_copter_is_up():
+    assert Census(Spot(uniform(-60.0, 60.0), uniform(-170.0, 170.0)), 2).airborne(
+        {
+            1: {"pose": PoseStamped(pose=Pose(position=Point(z=2.95)))},
+            2: {"pose": PoseStamped(pose=Pose(position=Point(z=2.75)))},
+        },
+        3.0,
+    ), "the cloud is not called airborne with every copter up"
+
+
+def test_keeps_the_hands_of_the_pilot_whatever_the_leader_does():
+    hands = Hands(Pilot(Limits(2.0, 4.0, 1.8, 8.0)))
+    assert hands.rest(
+        Body(Vector(uniform(-9.0, 9.0), uniform(-9.0, 9.0)), uniform(0.0, 6.0), Vector(0.0, 0.0), 0.0)
+    ) is hands, "the hands of the pilot change with the flight of the leader"
+
+
+def test_cannot_report_anything_from_the_hands_of_the_pilot():
+    assert Hands(Pilot(Limits(2.0, 4.0, 1.8, 8.0))).told(
+        250, Tally(1.0, 1.0, 0, Passage(0, 0.0)), Flock(())
+    ) == (), "the hands of the pilot report something"
+
+
+def test_flies_the_leader_toward_the_next_place_of_the_route():
+    assert Script(
+        "hop",
+        Scenario("A hop", copters(), Route((Vector(-6.0, 0.0),), 1.5, 0.3), 10.0),
+        Route((Vector(-6.0, 0.0),), 1.5, 0.3),
+    ).command(Body(Vector(0.0, 0.0), 0.0, Vector(0.0, 0.0), 0.0)).velocity == Vector(
+        approx(-1.5), approx(0.0)
+    ), "the script does not fly the leader toward the next place"
+
+
+def test_moves_on_once_the_leader_reaches_a_place():
+    assert Script(
+        "hop",
+        Scenario("A hop", copters(), Route((Vector(-6.0, 0.0), Vector(0.0, 0.0)), 1.5, 0.3), 10.0),
+        Route((Vector(-6.0, 0.0), Vector(0.0, 0.0)), 1.5, 0.3),
+    ).rest(Body(Vector(-5.9, 0.1), 0.0, Vector(0.0, 0.0), 0.0)).route.places == (
+        Vector(0.0, 0.0),
+    ), "the script does not move on once the leader reaches a place"
+
+
+def test_cannot_report_before_the_scenario_ends():
+    assert Script(
+        "hop",
+        Scenario("A hop", copters(), Route((), 1.5, 0.3), 10.0),
+        Route((), 1.5, 0.3),
+    ).told(
+        199,
+        Tally(1.0, 1.0, 0, Passage(0, 0.0)),
+        Flock((Drone(Body(Vector(0.0, 0.0), 0.0, Vector(0.0, 0.0), 0.0), Trail((), 1), True),)),
+    ) == (), "the script reports before its scenario ends"
+
+
+def test_reports_once_the_scenario_ends():
+    assert Script(
+        "hop",
+        Scenario("A hop", copters(), Route((), 1.5, 0.3), 10.0),
+        Route((), 1.5, 0.3),
+    ).told(
+        200,
+        Tally(1.0, 1.0, 0, Passage(0, 0.0)),
+        Flock((Drone(Body(Vector(0.0, 0.0), 0.0, Vector(0.0, 0.0), 0.0), Trail((), 1), True),)),
+    )[0] == "scenario: hop", "the script does not report once its scenario ends"
