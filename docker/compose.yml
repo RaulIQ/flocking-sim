@@ -12,7 +12,6 @@ x-drone: &drone
 
 x-air: &air
   ALTITUDE: 3.0
-  REQUEST: ${REQUEST:-0.0 0.0 0.0}
   ROS_DOMAIN_ID: 7
 
 services:
