@@ -134,6 +134,21 @@ Each step ends with something that runs and is checked by hand or by a test.
 4. The answer of the copter. Its answer to a step of speed is measured in
    Gazebo, and the lag of the formula and the reaction of the agent are
    fitted to it.
+   Done: measured through the whole chain, MAVROS and a loop at 20 Hz,
+   which adds about 0.3 s to both frames, for a step of 1 m/s forward:
+
+   | Copter | Nothing for | Half of the speed | Nine tenths | Back under 0.1 m/s | Peak |
+   |---|---|---|---|---|---|
+   | freestyle, SITL physics | 0.40 to 0.50 s | 0.65 to 0.70 s | 1.31 to 1.41 s | 1.13 to 1.18 s | 0.98 m/s |
+   | Iris, Gazebo, as it comes | 0.55 to 0.65 s | 0.86 to 0.96 s | 1.16 to 1.26 s | 1.18 to 1.28 s | 1.08 m/s |
+   | Iris, Gazebo, `autopilot/gazebo_iris` | 0.45 to 0.55 s | 0.71 to 0.81 s | 0.86 to 0.96 s | 0.88 to 0.98 s | 1.20 m/s |
+
+   The tuned Iris takes `WP_ACC` 5, `PSC_JERK_NE` 50, `PSC_NE_VEL_P` 3 and
+   `PSC_NE_VEL_I` 1, the speed control of the freestyle frame. It starts
+   0.05 to 0.1 s later than the freestyle frame and settles sooner, so the
+   lag of the formula, 0.15 s and 0.33 s, and the reaction of the agent,
+   0.5 s, are kept. Its overshoot of a fifth did not change with
+   `PSC_NE_VEL_P` 2 or `PSC_NE_VEL_I` 0.5.
 5. Four copters and the ground. The cloud flies as it does on SITL physics;
    `cruise` and `reverse` are compared with the earlier runs. Done in part:
    the gazebo container builds its world at the start with `Arena`, which
@@ -169,6 +184,21 @@ Each step ends with something that runs and is checked by hand or by a test.
    the freestyle frame, which reaches half of a step of speed in 0.35 s,
    while the Iris needs 0.65 s and starts 0.1 s later, so the agent asks for
    less room than the Iris takes to stop; this is what step 4 is for.
+
+   With the Iris tuned at step 4, three runs of `cruise` and six of `reverse`:
+
+   | Route | Closest pair | Breached frames | Farthest at the end | Fastest follower at the end |
+   |---|---|---|---|---|
+   | `cruise` | 0.37, 0.49, 0.49 m | 15, 2, 2 | 1.31, 1.33, 1.31 m | 0.15, 0.15, 0.21 m/s |
+   | `reverse` | 0.30 to 0.39 m | 5 to 18 | 1.3 m, or 6 to 17 m | 0.05 to 0.12 m/s |
+
+   Of the six runs of `reverse`, in three the third copter ended on the ground,
+   which is what the farthest drone of 6 to 17 m shows. Logged once more, it
+   came within 0.41 m of the leader flying back through the cloud and
+   dropped half a metre a second later. The rotors of the Iris reach 0.355 m
+   from its centre, so two of them touch when their centres come within
+   0.71 m, while the hard bubble of 0.25 m lets the agent bring two drones to
+   0.5 m: the bubbles are sized for the micro drones, not for the Iris.
 6. Walls. The walls of the barrier stand in the Gazebo world where the
    virtual walls are, so a copter that misses the gap hits one.
 7. Landing. A key lands every copter, `RTL` brings them home, and stopping

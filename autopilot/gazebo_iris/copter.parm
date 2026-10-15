@@ -1,3 +1,8 @@
 # The Iris of Gazebo is an X frame
 FRAME_CLASS      1
 FRAME_TYPE       1
+# The speed control of the freestyle frame, which brings the Iris close to it
+WP_ACC           5
+PSC_JERK_NE      50
+PSC_NE_VEL_P     3
+PSC_NE_VEL_I     1
