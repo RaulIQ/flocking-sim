@@ -154,6 +154,21 @@ Each step ends with something that runs and is checked by hand or by a test.
    50 ms a step and the world crawled at 0.005 of real time. The fix waits in
    ArduPilot/ardupilot_gazebo#181 and #166, and the image builds the plugin
    from the commit of #181 until one of them is merged.
+
+   One run of each route on four copters, against the stand on SITL physics:
+
+   | Route | Stand | Closest pair | Breached frames | Farthest at the end | Fastest follower at the end |
+   |---|---|---|---|---|---|
+   | `cruise` | Gazebo, Iris | 0.31 m | 51 | 1.29 m | 0.33 m/s |
+   | `cruise` | ROS, SITL physics | 0.81 m | 0 | 1.21 m | 0.05 m/s |
+   | `reverse` | Gazebo, Iris | 0.10 m | 92 | 1.90 m | 0.75 m/s |
+   | `reverse` | ROS, SITL physics | 0.42 m | 6 | 1.32 m | 0.08 m/s |
+
+   Every copter stayed in the air at 3.0 m, but the cloud holds far worse:
+   at 0.10 m two Iris frames, 0.55 m across, touch. The agent is fitted to
+   the freestyle frame, which reaches half of a step of speed in 0.35 s,
+   while the Iris needs 0.65 s and starts 0.1 s later, so the agent asks for
+   less room than the Iris takes to stop; this is what step 4 is for.
 6. Walls. The walls of the barrier stand in the Gazebo world where the
    virtual walls are, so a copter that misses the gap hits one.
 7. Landing. A key lands every copter, `RTL` brings them home, and stopping
