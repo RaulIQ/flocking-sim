@@ -121,7 +121,15 @@ def frames() -> dict:
     return {
         "freestyle": copters(),
         "iris": replace(
-            copters(), swarm=replace(copters().swarm, bubbles=Bubbles(0.4, 0.6))
+            copters(),
+            swarm=replace(
+                copters().swarm,
+                bubbles=Bubbles(0.4, 0.6),
+                cloud=replace(
+                    copters().swarm.cloud,
+                    leader=replace(copters().swarm.cloud.leader, rest=2.0),
+                ),
+            ),
         ),
     }
 

@@ -221,7 +221,32 @@ Each step ends with something that runs and is checked by hand or by a test.
    to a neighbour, trusting the neighbour with the other half, while the
    leader flies what its pilot asks and gives way to no sighted neighbour,
    so a leader flying back through its cloud leaves a follower half the room
-   it needs. Which of them gives way is for the user to decide.
+   it needs.
+
+   That reading was wrong: halving the room makes a follower more careful,
+   not less. The leader turns back and speeds up at a follower 1.2 m away,
+   and a follower that answers half a second late cannot get out of its way
+   in time. The user chose that the followers give way to the leader, so
+   the followers of the Iris keep 2.0 m from it instead of 1.2 m, and the
+   leader still flies what its pilot asks. In the formula, with the bubbles
+   of the Iris:
+
+   | Followers from the leader | `cruise` | `reverse` |
+   |---|---|---|
+   | 1.2 m | 0.58 m, 18 frames | 0.52 m, 49 frames |
+   | 1.6 m | 0.89 m, 0 frames | 0.71 m, 18 frames |
+   | 2.0 m | 1.04 m, 0 frames | 0.93 m, 0 frames |
+   | 1.2 m, the leader giving way too | 0.97 m, 0 frames | 0.80 m, 3 frames |
+
+   In Gazebo with 2.0 m, closest pair and breached frames:
+
+   | Route | Runs | Every copter in the air |
+   |---|---|---|
+   | `cruise` | 0.92 m, 0; 0.87 m, 0 | yes |
+   | `reverse` | 0.72 m, 6; 0.80 m, 0; 0.38 m, 74 | yes |
+
+   The third run of `reverse` still brought two copters within 0.38 m for a
+   long while; which pair it was is not known yet.
 6. Walls. The walls of the barrier stand in the Gazebo world where the
    virtual walls are, so a copter that misses the gap hits one.
 7. Landing. A key lands every copter, `RTL` brings them home, and stopping

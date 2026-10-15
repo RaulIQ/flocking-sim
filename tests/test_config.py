@@ -19,3 +19,9 @@ def test_keeps_the_hard_bubble_inside_the_soft_one():
 def test_keeps_the_hard_bubbles_apart_at_the_rest_distance():
     frame = frames()[choice(("freestyle", "iris"))]
     assert 2.0 * frame.swarm.bubbles.hard < frame.swarm.cloud.peers.rest, "two hard bubbles overlap at the rest distance"
+
+
+def test_keeps_the_followers_of_the_iris_farther_from_its_leader():
+    assert (
+        frames()["iris"].swarm.cloud.leader.rest > frames()["freestyle"].swarm.cloud.leader.rest
+    ), "the followers of the Iris keep no more room to give way to their leader"
