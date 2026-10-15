@@ -44,3 +44,21 @@ services:
       SDL_VIDEODRIVER: ${SDL_VIDEODRIVER:-x11}
       SDL_AUDIODRIVER: dummy
       ROUTE: ${ROUTE:-}
+
+  gazebo:
+    image: flocking-gazebo
+    build: ./gazebo
+    init: true
+    profiles: [gazebo]
+    entrypoint: /app/flocking/docker/gazebo/start.sh
+    devices:
+      - /dev/dri:/dev/dri
+    volumes:
+      - ..:/app/flocking:ro
+      - /tmp/.X11-unix:/tmp/.X11-unix:ro
+      - ${XAUTHORITY:-/dev/null}:/tmp/.Xauthority:ro
+    environment:
+      ROS_DOMAIN_ID: 7
+      DISPLAY: ${DISPLAY:-:0}
+      XAUTHORITY: /tmp/.Xauthority
+      HEADLESS: ${HEADLESS:-}
