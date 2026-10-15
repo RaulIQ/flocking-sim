@@ -1,5 +1,3 @@
-from os import environ
-
 from config import copters, sortie
 from flocking_ros.ground.census import Census
 from flocking_ros.ground.ground import Ground
@@ -14,8 +12,10 @@ from simulator.stage import Stage
 
 def main() -> None:
     rclpy.init()
+    node = rclpy.create_node('ground')
+    route = node.declare_parameter('route', '').value
     Ground(
-        rclpy.create_node('ground'),
+        node,
         copters(),
         Census(sortie(copters()).hangar.fleet.origin, copters().swarm.muster.count),
         {},
@@ -23,16 +23,16 @@ def main() -> None:
         Stage(copters(), None).flock(),
         Stage(copters(), None).walls(),
         Script(
-            environ['ROUTE'],
+            route,
             Scenario(
-                catalogue()[environ['ROUTE']].story,
+                catalogue()[route].story,
                 copters(),
-                catalogue()[environ['ROUTE']].route,
-                catalogue()[environ['ROUTE']].seconds,
+                catalogue()[route].route,
+                catalogue()[route].seconds,
             ),
-            catalogue()[environ['ROUTE']].route,
+            catalogue()[route].route,
         )
-        if environ.get('ROUTE')
+        if route
         else Hands(Pilot(copters().limits)),
         sortie(copters()).hold.altitude,
     )

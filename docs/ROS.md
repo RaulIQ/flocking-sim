@@ -119,7 +119,10 @@ docker/
 ```
 
 The package follows `drone-control-ros2`: one class per file, entry points
-run by `ros2 run flocking_ros ...`, and the checks of ament. The flight classes
+run by `ros2 run flocking_ros ...`, and the checks of ament. The nodes read their settings from `config.py` or
+from ROS parameters: the ground takes the parameter `route`, which
+`ROUTE=cruise docker compose up` passes on; without it the keyboard flies
+the leader. The flight classes
 are those of `drone-control-ros2`, with two differences. `Placed` waits for
 a position estimate before it asks for GUIDED, which ArduCopter refuses
 without one, and counts a takeoff done only at the altitude. `ClientLink`
