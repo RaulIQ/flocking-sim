@@ -57,6 +57,22 @@ Four copters start, learn where they are and take off, which takes about a
 minute, and then the window opens. The plan of this stage lives in
 [docs/SITL.md](docs/SITL.md).
 
+To fly four Iris copters in one Gazebo world, every one in a container of its
+own with ArduPilot, MAVROS and its agent, run from `docker/`:
+
+```bash
+GAZEBO=gazebo docker compose --profile gazebo up
+```
+
+It needs Docker, ArduPilot built for SITL in `~/code/ardupilot` (or where
+`ARDUPILOT` points) and the local image `jazzy-gz` with ROS 2 Jazzy and
+Gazebo Harmonic. Two windows open: Gazebo with the copters and the ground
+station with the bubbles, flown with the same keys. The copters hover about
+a minute after the start. `ROUTE=cruise` in front of the command flies the
+leader along a scenario instead of the keyboard, and
+`docker compose --profile gazebo down` stops the stand. The plan of this
+stage lives in [docs/GAZEBO.md](docs/GAZEBO.md).
+
 ## Keys
 
 | Control | Meaning |
@@ -125,5 +141,5 @@ into the hard bubble of a drone. New scenarios go into
 | `scenarios/` | scripted flights and their logs |
 | `tests/` | one test file per feature file |
 | `agent/tuning.py` | the kinds of numbers the agent is tuned by, so that it needs nothing from outside |
-| `config.py` | every tunable number: `defaults()` for the agent and the simulator, `kinematics()` for how late the formula answers, `copters()` and `sortie()` for a flight on SITL |
+| `config.py` | every tunable number: `defaults()` for the agent and the simulator, `kinematics()` for how late the formula answers, `copters()` and `sortie()` for a flight on SITL, `frames()` for the settings of each copter frame |
 | `run.py` | the interactive run on the built-in formula |

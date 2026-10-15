@@ -9,10 +9,11 @@ x-drone: &drone
     - ${ARDUPILOT:-${HOME}/code/ardupilot}/build/sitl/bin/arducopter:/app/bin/arducopter:ro
     - ${ARDUPILOT:-${HOME}/code/ardupilot}/Tools/autotest/default_params/copter.parm:/app/defaults.parm:ro
     - ..:/app/flocking:ro
+    - ./src:/ws/src:ro
 
 x-air: &air
-  ALTITUDE: 3.0
   ROS_DOMAIN_ID: 7
+  GAZEBO: ${GAZEBO:-}
 
 services:
   uav1:
@@ -34,6 +35,7 @@ services:
     entrypoint: /app/flocking/docker/ground/start.sh
     volumes:
       - ..:/app/flocking:ro
+      - ./src:/ws/src:ro
       - /tmp/.X11-unix:/tmp/.X11-unix:ro
       - ${XAUTHORITY:-/dev/null}:/tmp/.Xauthority:ro
     environment:
@@ -43,3 +45,22 @@ services:
       SDL_VIDEODRIVER: ${SDL_VIDEODRIVER:-x11}
       SDL_AUDIODRIVER: dummy
       ROUTE: ${ROUTE:-}
+      GAZEBO: ${GAZEBO:-}
+
+  gazebo:
+    image: flocking-gazebo
+    build: ./gazebo
+    init: true
+    profiles: [gazebo]
+    entrypoint: /app/flocking/docker/gazebo/start.sh
+    devices:
+      - /dev/dri:/dev/dri
+    volumes:
+      - ..:/app/flocking:ro
+      - /tmp/.X11-unix:/tmp/.X11-unix:ro
+      - ${XAUTHORITY:-/dev/null}:/tmp/.Xauthority:ro
+    environment:
+      ROS_DOMAIN_ID: 7
+      DISPLAY: ${DISPLAY:-:0}
+      XAUTHORITY: /tmp/.Xauthority
+      HEADLESS: ${HEADLESS:-}

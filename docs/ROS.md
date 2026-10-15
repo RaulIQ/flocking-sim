@@ -91,22 +91,46 @@ on port 5760. Check it again after ArduPilot is rebuilt on a newer system.
 
 ## Layout
 
+The ROS side is a colcon workspace in `docker/src`, built into the image with
+`--symlink-install`. The compose file mounts `docker/src` over it, so a change
+to the code needs a restart; a new node or message needs a new image.
+
 ```
 docker/
-  Dockerfile           the one image: ROS 2, MAVROS, pygame, the messages
+  Dockerfile           the one image: ROS 2, MAVROS, pygame, the workspace
   compose.yml          four drones and the ground
-  test.sh              the tests of the nodes, run inside the image
-  msgs/flocking_msgs/  Senses, Range, Bearing, Role
+  test.sh              the tests and the style checks, run inside the image
   drone/
     start.sh           SITL, MAVROS, the liftoff and the board by DRONE_ID
     streams.parm       what the autopilot sends MAVROS and how often
-    nodes/             liftoff.py, board.py, home.py
-    tests/
   ground/
     start.sh
-    nodes/ground.py    world, pilot and viewer in one node
-    tests/
+  src/
+    flocking_msgs/     Senses, Range, Bearing, Role
+    flocking_ros/
+      flocking_ros/
+        board/         Board, Duty
+        flight/        Vehicle, MavrosVehicle, Online, Placed, Latest,
+                       Link, ClientLink, Maneuver, Takeoff, Refusal
+        ground/        Census, Post, Helm, Hands, Script, Ground
+        nodes/         the entry points: board, ground, liftoff, home
+      test/            one test file per class, on Hamcrest, and the
+                       flake8, pep257, mypy and xmllint checks
 ```
+
+The package follows `drone-control-ros2`: one class per file, entry points
+run by `ros2 run flocking_ros ...`, and the checks of ament. The nodes read their settings from `config.py` or
+from ROS parameters: the ground takes the parameter `route`, which
+`ROUTE=cruise docker compose up` passes on; without it the keyboard flies
+the leader. The flight classes
+are those of `drone-control-ros2`, with three differences. `Latest` keeps
+both the state of the autopilot and its position, which `Status` alone
+kept there. `Placed` waits for
+a position estimate before it asks for GUIDED, which ArduCopter refuses
+without one, and counts a takeoff done only at the altitude. `ClientLink`
+takes an empty answer as silence, since the client of Jazzy returns nothing
+when a call times out instead of raising. The altitude comes from
+`config.py`, the same for the liftoff and the board.
 
 ## Steps
 
