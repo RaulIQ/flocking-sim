@@ -89,7 +89,22 @@ Each step ends with something that runs and is checked by hand or by a test.
    `docker compose --profile gazebo up gazebo`.
 2. One copter. A copter model in the world, SITL in the drone container
    taking its physics from Gazebo; the copter takes off through `liftoff`
-   and hovers.
+   and hovers. Done: `docker/gazebo/worlds/cloud.sdf` is the runway world of
+   the plugin with its origin on the shared spot and one copter,
+   `docker/gazebo/models/cloud_iris`, a copy of `iris_with_ardupilot` whose
+   plugin listens on every address instead of the local host only. With
+   `GAZEBO` naming the gazebo host, the drone starts SITL as
+   `--model JSON:<address of that host>` with `autopilot/gazebo_iris`, the X
+   frame of the Iris, and the copter took off to 3.18 m and held it.
+
+   Three things were found on the way. The runway model is also the ground:
+   a world without it lets the copter fall forever. ArduCopter refuses to
+   arm before its checks pass, so `Placed` now waits for the bit of
+   `sys_status` that says they did. And it refuses a takeoff for a while
+   after those checks pass, with no sign of when it will accept one, while
+   it disarms idle motors after some seconds on the ground; `Persistent`
+   flies the whole takeoff again, three seconds apart, for up to two
+   minutes.
 3. The time of the simulation. The board and the ground tick by `/clock`;
    slowing Gazebo down slows the cloud down with it, without a breach.
 4. The answer of the copter. Its answer to a step of speed is measured in
@@ -116,6 +131,10 @@ Each step ends with something that runs and is checked by hand or by a test.
   SITL talk over the local host, so the address of the gazebo container and
   a port per copter are to be set on both sides; the names of these settings
   are to be checked at step 2.
+- With the JSON physics, the position of a copter comes from Gazebo and
+  is counted from the home given to SITL. Whether every copter then needs
+  the shared origin as its home, rather than its place in the muster, is to
+  be settled at step 5.
 - Where the shared origin lies: the world of Gazebo has its own origin, and
   the homes of the copters and `Census` must agree with where the models
   stand.

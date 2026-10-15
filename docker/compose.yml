@@ -13,6 +13,7 @@ x-drone: &drone
 
 x-air: &air
   ROS_DOMAIN_ID: 7
+  GAZEBO: ${GAZEBO:-}
 
 services:
   uav1:

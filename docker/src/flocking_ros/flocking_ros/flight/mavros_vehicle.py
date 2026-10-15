@@ -31,5 +31,8 @@ class MavrosVehicle(Vehicle):
         self.status.expect(lambda state: state.armed, 'Autopilot did not report armed motors')
 
     def ascend(self, altitude: float) -> None:
-        if not self.takeoff.ask(CommandTOL.Request(altitude=altitude)).success:
-            raise Refusal(f'Autopilot refused to take off to {altitude} meters')
+        answer = self.takeoff.ask(CommandTOL.Request(altitude=altitude))
+        if not answer.success:
+            raise Refusal(
+                f'Autopilot refused to take off to {altitude} meters with result {answer.result}'
+            )
