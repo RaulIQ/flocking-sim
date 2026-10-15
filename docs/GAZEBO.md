@@ -170,6 +170,18 @@ Each step ends with something that runs and is checked by hand or by a test.
    ArduPilot/ardupilot_gazebo#181 and #166, and the image builds the plugin
    from the commit of #181 until one of them is merged.
 
+   The stand took 131 to 143 s from the start until all four hovered,
+   against 47 s on SITL physics, since the world ran at 0.13 of real time
+   while the copters stood on the ground and at 1.00 once they flew. Gazebo
+   spends its time on the contacts of the standing copters, and the world
+   had two planes for them: the runway and a `ground` model that came in
+   with the first world by mistake. Gazebo alone, with no autopilots and no
+   limit on its pace, ran four copters on the ground at 0.14 of real time
+   with both planes and at 0.48 with the runway alone, and at 10.8 with the
+   copters held in the air. Without the second plane all four hovered 46 s
+   after the start. The collision detector `bullet` instead of `ode` ran the
+   copters on the runway at 2.24 of real time but is not needed now.
+
    One run of each route on four copters, against the stand on SITL physics:
 
    | Route | Stand | Closest pair | Breached frames | Farthest at the end | Fastest follower at the end |
