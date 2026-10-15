@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 from typing import final
 
+from flocking_ros.flight.latest import Latest
 from flocking_ros.flight.link import Link
 from flocking_ros.flight.refusal import Refusal
-from flocking_ros.flight.status import Status
 from flocking_ros.flight.vehicle import Vehicle
 from mavros_msgs.srv import CommandBool, CommandTOL, SetMode
 
@@ -16,7 +16,7 @@ class MavrosVehicle(Vehicle):
     mode: Link
     arming: Link
     takeoff: Link
-    status: Status
+    status: Latest
 
     def switch(self, mode: str) -> None:
         if not self.mode.ask(SetMode.Request(custom_mode=mode)).mode_sent:

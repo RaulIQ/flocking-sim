@@ -2,11 +2,10 @@ from threading import Thread
 
 from config import copters, sortie
 from flocking_ros.flight.client_link import ClientLink
-from flocking_ros.flight.estimate import Estimate
+from flocking_ros.flight.latest import Latest
 from flocking_ros.flight.mavros_vehicle import MavrosVehicle
 from flocking_ros.flight.online import Online
 from flocking_ros.flight.placed import Placed
-from flocking_ros.flight.status import Status
 from flocking_ros.flight.takeoff import Takeoff
 from geometry_msgs.msg import PoseStamped
 from mavros_msgs.msg import State
@@ -19,8 +18,8 @@ from rclpy.qos import qos_profile_sensor_data
 def main() -> None:
     rclpy.init()
     node = rclpy.create_node('liftoff')
-    status = Status(30.0)
-    estimate = Estimate(120.0)
+    status = Latest(30.0)
+    estimate = Latest(120.0)
     node.create_subscription(State, 'mavros/state', status.record, qos_profile_sensor_data)
     node.create_subscription(
         PoseStamped, 'mavros/local_position/pose', estimate.record, qos_profile_sensor_data

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import final
 
-from flocking_ros.flight.estimate import Estimate
+from flocking_ros.flight.latest import Latest
 from flocking_ros.flight.vehicle import Vehicle
 
 
@@ -18,7 +18,7 @@ class Placed(Vehicle):
     """
 
     origin: Vehicle
-    estimate: Estimate
+    estimate: Latest
 
     def switch(self, mode: str) -> None:
         self.estimate.expect(lambda pose: True, 'Autopilot does not know where it is')

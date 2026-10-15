@@ -3,9 +3,9 @@ from typing import Any
 from uuid import uuid4
 
 from fake_link import FakeLink
+from flocking_ros.flight.latest import Latest
 from flocking_ros.flight.mavros_vehicle import MavrosVehicle
 from flocking_ros.flight.refusal import Refusal
-from flocking_ros.flight.status import Status
 from hamcrest import assert_that, calling, contains_exactly, raises
 from mavros_msgs.msg import State
 from mavros_msgs.srv import CommandBool, CommandTOL, SetMode
@@ -14,7 +14,7 @@ from mavros_msgs.srv import CommandBool, CommandTOL, SetMode
 def test_requests_given_mode() -> None:
     requests: list[Any] = []
     mode = uuid4().hex
-    status = Status(0.1)
+    status = Latest(0.1)
     status.record(State(mode=mode))
     MavrosVehicle(
         FakeLink(SetMode.Response(mode_sent=True), requests),
@@ -31,7 +31,7 @@ def test_requests_given_mode() -> None:
 
 def test_cannot_switch_when_mode_is_rejected() -> None:
     mode = uuid4().hex
-    status = Status(0.1)
+    status = Latest(0.1)
     status.record(State(mode=mode))
     assert_that(
         calling(
@@ -49,7 +49,7 @@ def test_cannot_switch_when_mode_is_rejected() -> None:
 
 def test_cannot_switch_when_mode_is_never_entered() -> None:
     mode = uuid4().hex
-    status = Status(0.1)
+    status = Latest(0.1)
     status.record(State(mode=uuid4().hex))
     assert_that(
         calling(
@@ -67,7 +67,7 @@ def test_cannot_switch_when_mode_is_never_entered() -> None:
 
 def test_requests_arming() -> None:
     requests: list[Any] = []
-    status = Status(0.1)
+    status = Latest(0.1)
     status.record(State(armed=True))
     MavrosVehicle(
         FakeLink(SetMode.Response(), []),
@@ -83,7 +83,7 @@ def test_requests_arming() -> None:
 
 
 def test_cannot_arm_when_arming_is_rejected() -> None:
-    status = Status(0.1)
+    status = Latest(0.1)
     status.record(State(armed=True))
     assert_that(
         calling(
@@ -100,7 +100,7 @@ def test_cannot_arm_when_arming_is_rejected() -> None:
 
 
 def test_cannot_arm_when_motors_stay_disarmed() -> None:
-    status = Status(0.1)
+    status = Latest(0.1)
     status.record(State(armed=False))
     assert_that(
         calling(
@@ -123,7 +123,7 @@ def test_requests_takeoff_to_given_altitude() -> None:
         FakeLink(SetMode.Response(), []),
         FakeLink(CommandBool.Response(), []),
         FakeLink(CommandTOL.Response(success=True), requests),
-        Status(0.1)
+        Latest(0.1)
     ).ascend(altitude)
     assert_that(
         [request.altitude for request in requests],
@@ -139,7 +139,7 @@ def test_cannot_ascend_when_takeoff_is_rejected() -> None:
                 FakeLink(SetMode.Response(), []),
                 FakeLink(CommandBool.Response(), []),
                 FakeLink(CommandTOL.Response(success=False), []),
-                Status(0.1)
+                Latest(0.1)
             ).ascend
         ).with_args(random.uniform(5.0, 10.0)),
         raises(Refusal, pattern='take off'),

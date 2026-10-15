@@ -110,7 +110,7 @@ docker/
     flocking_ros/
       flocking_ros/
         board/         Board, Duty
-        flight/        Vehicle, MavrosVehicle, Online, Placed, Status, Estimate,
+        flight/        Vehicle, MavrosVehicle, Online, Placed, Latest,
                        Link, ClientLink, Maneuver, Takeoff, Refusal
         ground/        Census, Post, Helm, Hands, Script, Ground
         nodes/         the entry points: board, ground, liftoff, home
@@ -123,7 +123,9 @@ run by `ros2 run flocking_ros ...`, and the checks of ament. The nodes read thei
 from ROS parameters: the ground takes the parameter `route`, which
 `ROUTE=cruise docker compose up` passes on; without it the keyboard flies
 the leader. The flight classes
-are those of `drone-control-ros2`, with two differences. `Placed` waits for
+are those of `drone-control-ros2`, with three differences. `Latest` keeps
+both the state of the autopilot and its position, which `Status` alone
+kept there. `Placed` waits for
 a position estimate before it asks for GUIDED, which ArduCopter refuses
 without one, and counts a takeoff done only at the altitude. `ClientLink`
 takes an empty answer as silence, since the client of Jazzy returns nothing

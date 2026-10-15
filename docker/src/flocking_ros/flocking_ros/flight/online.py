@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import final
 
-from flocking_ros.flight.status import Status
+from flocking_ros.flight.latest import Latest
 from flocking_ros.flight.vehicle import Vehicle
 
 
@@ -11,7 +11,7 @@ class Online(Vehicle):
     """Vehicle that obeys only while the autopilot stays connected."""
 
     origin: Vehicle
-    status: Status
+    status: Latest
 
     def switch(self, mode: str) -> None:
         self.status.expect(lambda state: state.connected, 'Autopilot is not connected')

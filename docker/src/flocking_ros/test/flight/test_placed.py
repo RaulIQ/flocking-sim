@@ -2,7 +2,7 @@ import random
 from uuid import uuid4
 
 from fake_vehicle import FakeVehicle
-from flocking_ros.flight.estimate import Estimate
+from flocking_ros.flight.latest import Latest
 from flocking_ros.flight.placed import Placed
 from flocking_ros.flight.refusal import Refusal
 from geometry_msgs.msg import Point, Pose, PoseStamped
@@ -13,7 +13,7 @@ def test_passes_steps_once_it_knows_where_it_is() -> None:
     steps: list[str] = []
     mode = uuid4().hex
     altitude = random.uniform(5.0, 10.0)
-    estimate = Estimate(0.1)
+    estimate = Latest(0.1)
     estimate.record(PoseStamped(pose=Pose(position=Point(z=altitude))))
     vehicle = Placed(FakeVehicle(frozenset(), steps), estimate)
     vehicle.switch(mode)
@@ -28,7 +28,7 @@ def test_passes_steps_once_it_knows_where_it_is() -> None:
 
 def test_cannot_switch_without_a_position() -> None:
     assert_that(
-        calling(Placed(FakeVehicle(frozenset(), []), Estimate(0.1)).switch).with_args(
+        calling(Placed(FakeVehicle(frozenset(), []), Latest(0.1)).switch).with_args(
             uuid4().hex
         ),
         raises(Refusal, pattern='where it is'),
@@ -39,7 +39,7 @@ def test_cannot_switch_without_a_position() -> None:
 def test_does_not_ask_for_a_mode_without_a_position() -> None:
     steps: list[str] = []
     try:
-        Placed(FakeVehicle(frozenset(), steps), Estimate(0.1)).switch(uuid4().hex)
+        Placed(FakeVehicle(frozenset(), steps), Latest(0.1)).switch(uuid4().hex)
     except Refusal:
         pass
     assert_that(steps, empty(), 'Placed asked for a mode without knowing where it is')
@@ -47,7 +47,7 @@ def test_does_not_ask_for_a_mode_without_a_position() -> None:
 
 def test_cannot_count_a_climb_done_below_the_altitude() -> None:
     altitude = random.uniform(5.0, 10.0)
-    estimate = Estimate(0.1)
+    estimate = Latest(0.1)
     estimate.record(PoseStamped(pose=Pose(position=Point(z=0.8 * altitude))))
     assert_that(
         calling(Placed(FakeVehicle(frozenset(), []), estimate).ascend).with_args(altitude),
