@@ -64,7 +64,11 @@ physics. When Gazebo is slower than real time, the whole world slows down,
 while the board and the ground now tick by the wall clock and would run
 ahead of it. They move to the time of the simulation: Gazebo publishes its
 clock, a bridge brings it into ROS as `/clock`, and every node runs with
-`use_sim_time`.
+`use_sim_time`. Gazebo publishes its clock on every step of the physics, a
+thousand times a second, while the nodes tick twenty times a second; every
+message woke every node and the whole machine lagged. The bridge therefore
+writes `/gazebo/clock`, and `throttle` of `topic_tools` passes a hundred of
+them a second on to `/clock`.
 
 ## The machine
 
