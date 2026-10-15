@@ -1,4 +1,8 @@
-FROM jazzy-gz
+FROM ros:jazzy
+
+RUN apt-get update \
+ && apt-get install -y ros-jazzy-ros-gz \
+ && rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev \

@@ -64,8 +64,8 @@ own with ArduPilot, MAVROS and its agent, run from `docker/`:
 GAZEBO=gazebo docker compose --profile gazebo up
 ```
 
-It needs Docker, ArduPilot built for SITL in `~/code/ardupilot` (or where
-`ARDUPILOT` points) and the local image `jazzy-gz` with ROS 2 Jazzy and
+It needs Docker and ArduPilot built for SITL in `~/code/ardupilot` (or where
+`ARDUPILOT` points); the image of Gazebo builds itself on ROS 2 Jazzy with
 Gazebo Harmonic. Two windows open: Gazebo with the copters and the ground
 station with the bubbles, flown with the same keys. The copters hover about
 a minute after the start. `ROUTE=cruise` in front of the command flies the

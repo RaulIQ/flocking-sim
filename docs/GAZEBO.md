@@ -79,8 +79,8 @@ Each step ends with something that runs and is checked by hand or by a test.
 
 1. Gazebo in a container. An image with Gazebo Harmonic and the ArduPilot
    plugin; an empty world opens in a window on the screen. Done in part:
-   `docker/gazebo/Dockerfile` builds `flocking-gazebo` on the local image
-   `jazzy-gz` (ROS 2 Jazzy desktop-full with `ros-gz`, Gazebo Sim 8.11) and
+   `docker/gazebo/Dockerfile` builds `flocking-gazebo` on the official
+   `ros:jazzy` with `ros-gz` (Gazebo Harmonic) installed over it and
    compiles `ardupilot_gazebo` from source, which needs the development
    files of GStreamer for its camera plugin. The service `gazebo` runs only
    under the profile `gazebo` until the copters fly in it; headless, its
@@ -254,10 +254,6 @@ Each step ends with something that runs and is checked by hand or by a test.
    `LAND` and `RTL` is brought over for it.
 
 ## Open questions
-
-- The image stands on `jazzy-gz`, which lives only on this machine. Another
-  machine needs the same image first, or the Dockerfile moves onto an
-  official base such as `osrf/ros:jazzy-desktop-full`.
 
 - Which copter model to fly: the Iris that comes with the plugin, or a
   small frame closer to the micro drones. The answer of the copter, and with
