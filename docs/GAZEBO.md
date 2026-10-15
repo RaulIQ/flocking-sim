@@ -135,7 +135,25 @@ Each step ends with something that runs and is checked by hand or by a test.
    Gazebo, and the lag of the formula and the reaction of the agent are
    fitted to it.
 5. Four copters and the ground. The cloud flies as it does on SITL physics;
-   `cruise` and `reverse` are compared with the earlier runs.
+   `cruise` and `reverse` are compared with the earlier runs. Done in part:
+   the gazebo container builds its world at the start with `Arena`, which
+   lays one copy of `cloud_iris` into `cloud.sdf` at every place of the
+   muster, named `uav1` to `uav4`, the plugin of each on its own port from
+   9002 by tens; the drone passes its port to SITL as `--sim-port-out`. The
+   plugin tells SITL the position of a copter in the world, not its
+   latitude and longitude, and SITL adds it to its home, so under Gazebo
+   every drone takes the shared origin as its home from the node `origin`,
+   and the world alone sets the places. All four took off, hovered at
+   3.0 m and gathered into a cloud around the leader, with Gazebo at a real
+   time factor of 1.00; their positions from MAVROS matched those in Gazebo
+   within 0.1 m.
+
+   The plugin of `main` sent the state of every copter to the container that
+   spoke last: it kept the address of its autopilot in the one buffer of
+   `inet_ntoa` that the whole process shares, so every other copter waited
+   50 ms a step and the world crawled at 0.005 of real time. The fix waits in
+   ArduPilot/ardupilot_gazebo#181 and #166, and the image builds the plugin
+   from the commit of #181 until one of them is merged.
 6. Walls. The walls of the barrier stand in the Gazebo world where the
    virtual walls are, so a copter that misses the gap hits one.
 7. Landing. A key lands every copter, `RTL` brings them home, and stopping
@@ -151,16 +169,11 @@ Each step ends with something that runs and is checked by hand or by a test.
 - Which copter model to fly: the Iris that comes with the plugin, or a
   small frame closer to the micro drones. The answer of the copter, and with
   it step 4, depends on it.
-- How SITL finds its copter across containers: by default the plugin and
-  SITL talk over the local host, so the address of the gazebo container and
-  a port per copter are to be set on both sides; the names of these settings
-  are to be checked at step 2.
-- With the JSON physics, the position of a copter comes from Gazebo and
-  is counted from the home given to SITL. Whether every copter then needs
-  the shared origin as its home, rather than its place in the muster, is to
-  be settled at step 5.
-- Where the shared origin lies: the world of Gazebo has its own origin, and
-  the homes of the copters and `Census` must agree with where the models
-  stand.
+- How SITL finds its copter across containers is settled: the plugin
+  listens on every address at its own port, and SITL sends to the gazebo
+  host at that port.
+- The homes are settled: every drone takes the shared origin as its home,
+  which is the origin of the world, and the copters stand at their places
+  in the world, so `Census` reads them as it did.
 - Whether the ground keeps its own window once Gazebo shows the cloud, or
   draws only the bubbles over it.

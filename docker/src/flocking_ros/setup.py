@@ -22,6 +22,7 @@ setup(
             'ground = flocking_ros.nodes.ground:main',
             'liftoff = flocking_ros.nodes.liftoff:main',
             'home = flocking_ros.nodes.home:main',
+            'origin = flocking_ros.nodes.origin:main',
         ],
     },
 )
