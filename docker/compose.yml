@@ -9,6 +9,7 @@ x-drone: &drone
     - ${ARDUPILOT:-${HOME}/code/ardupilot}/build/sitl/bin/arducopter:/app/bin/arducopter:ro
     - ${ARDUPILOT:-${HOME}/code/ardupilot}/Tools/autotest/default_params/copter.parm:/app/defaults.parm:ro
     - ..:/app/flocking:ro
+    - ./src:/ws/src:ro
 
 x-air: &air
   ALTITUDE: 3.0
@@ -34,6 +35,7 @@ services:
     entrypoint: /app/flocking/docker/ground/start.sh
     volumes:
       - ..:/app/flocking:ro
+      - ./src:/ws/src:ro
       - /tmp/.X11-unix:/tmp/.X11-unix:ro
       - ${XAUTHORITY:-/dev/null}:/tmp/.Xauthority:ro
     environment:

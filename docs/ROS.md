@@ -91,22 +91,33 @@ on port 5760. Check it again after ArduPilot is rebuilt on a newer system.
 
 ## Layout
 
+The ROS side is a colcon workspace in `docker/src`, built into the image with
+`--symlink-install`. The compose file mounts `docker/src` over it, so a change
+to the code needs a restart; a new node or message needs a new image.
+
 ```
 docker/
-  Dockerfile           the one image: ROS 2, MAVROS, pygame, the messages
+  Dockerfile           the one image: ROS 2, MAVROS, pygame, the workspace
   compose.yml          four drones and the ground
-  test.sh              the tests of the nodes, run inside the image
-  msgs/flocking_msgs/  Senses, Range, Bearing, Role
+  test.sh              the tests and the style checks, run inside the image
   drone/
     start.sh           SITL, MAVROS, the liftoff and the board by DRONE_ID
     streams.parm       what the autopilot sends MAVROS and how often
-    nodes/             liftoff.py, board.py, home.py
-    tests/
   ground/
     start.sh
-    nodes/ground.py    world, pilot and viewer in one node
-    tests/
+  src/
+    flocking_msgs/     Senses, Range, Bearing, Role
+    flocking_ros/
+      flocking_ros/
+        board/         Board, Duty
+        ground/        Census, Post, Helm, Hands, Script, Ground
+        nodes/         the entry points: board, ground, liftoff, home
+      test/            one test file per class, on Hamcrest, and the
+                       flake8, pep257, mypy and xmllint checks
 ```
+
+The package follows `drone-control-ros2`: one class per file, entry points
+run by `ros2 run flocking_ros ...`, and the checks of ament.
 
 ## Steps
 
