@@ -117,6 +117,15 @@ def copters() -> Settings:
     )
 
 
+def frames() -> dict:
+    return {
+        "freestyle": copters(),
+        "iris": replace(
+            copters(), swarm=replace(copters().swarm, bubbles=Bubbles(0.4, 0.6))
+        ),
+    }
+
+
 def kinematics(settings: Settings) -> Lag:
     return Lag(
         Kinematics(settings.limits, 1.0 / settings.picture.window.rate),

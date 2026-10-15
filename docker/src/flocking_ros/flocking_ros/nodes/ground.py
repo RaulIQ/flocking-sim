@@ -1,4 +1,4 @@
-from config import copters, sortie
+from config import frames, sortie
 from flocking_ros.ground.census import Census
 from flocking_ros.ground.ground import Ground
 from flocking_ros.ground.hands import Hands
@@ -14,26 +14,27 @@ def main() -> None:
     rclpy.init()
     node = rclpy.create_node('ground')
     route = node.declare_parameter('route', '').value
+    settings = frames()[node.declare_parameter('frame', 'freestyle').value]
     Ground(
         node,
-        copters(),
-        Census(sortie(copters()).hangar.fleet.origin, copters().swarm.muster.count),
+        settings,
+        Census(sortie(settings).hangar.fleet.origin, settings.swarm.muster.count),
         {},
     ).run(
-        Stage(copters(), None).flock(),
-        Stage(copters(), None).walls(),
+        Stage(settings, None).flock(),
+        Stage(settings, None).walls(),
         Script(
             route,
             Scenario(
                 catalogue()[route].story,
-                copters(),
+                settings,
                 catalogue()[route].route,
                 catalogue()[route].seconds,
             ),
             catalogue()[route].route,
         )
         if route
-        else Hands(Pilot(copters().limits)),
-        sortie(copters()).hold.altitude,
+        else Hands(Pilot(settings.limits)),
+        sortie(settings).hold.altitude,
     )
     rclpy.shutdown()

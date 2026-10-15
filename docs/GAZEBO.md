@@ -211,6 +211,17 @@ Each step ends with something that runs and is checked by hand or by a test.
    from its centre, so two of them touch when their centres come within
    0.71 m, while the hard bubble of 0.25 m lets the agent bring two drones to
    0.5 m: the bubbles are sized for the micro drones, not for the Iris.
+
+   `frames()` in `config.py` now holds the settings of every frame, and under
+   `GAZEBO` the board and the ground take those of the Iris, with a hard
+   bubble of 0.4 m. It did not keep the copters apart: three runs of
+   `reverse` brought them to 0.37 to 0.39 m and dropped a copter in two.
+   The formula shows the same, 0.52 m in `reverse` with a hard bubble of
+   0.4 m against 0.51 m with 0.25 m. A follower counts on half of the room
+   to a neighbour, trusting the neighbour with the other half, while the
+   leader flies what its pilot asks and gives way to no sighted neighbour,
+   so a leader flying back through its cloud leaves a follower half the room
+   it needs. Which of them gives way is for the user to decide.
 6. Walls. The walls of the barrier stand in the Gazebo world where the
    virtual walls are, so a copter that misses the gap hits one.
 7. Landing. A key lands every copter, `RTL` brings them home, and stopping

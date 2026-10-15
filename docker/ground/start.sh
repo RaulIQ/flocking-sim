@@ -3,4 +3,4 @@ set -e
 source /opt/ros/jazzy/setup.bash
 source /ws/install/setup.bash
 export PYTHONPATH=/app/flocking:$PYTHONPATH
-exec ros2 run flocking_ros ground --ros-args ${ROUTE:+-p route:=$ROUTE} ${GAZEBO:+-p use_sim_time:=true}
+exec ros2 run flocking_ros ground --ros-args ${ROUTE:+-p route:=$ROUTE} ${GAZEBO:+-p use_sim_time:=true -p frame:=iris}

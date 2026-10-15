@@ -1,4 +1,4 @@
-from config import copters, sortie
+from config import frames, sortie
 from flocking_ros.board.board import Board
 from flocking_ros.board.duty import Duty
 import rclpy
@@ -7,9 +7,11 @@ from simulator.stage import Stage
 
 def main() -> None:
     rclpy.init()
+    node = rclpy.create_node('board')
+    settings = frames()[node.declare_parameter('frame', 'freestyle').value]
     Duty(
-        rclpy.create_node('board'),
-        Board(Stage(copters(), None).mind(), sortie(copters()).hold),
-        copters().picture.window.rate,
+        node,
+        Board(Stage(settings, None).mind(), sortie(settings).hold),
+        settings.picture.window.rate,
         {},
     ).run()
