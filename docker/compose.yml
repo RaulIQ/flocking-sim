@@ -12,7 +12,6 @@ x-drone: &drone
     - ./src:/ws/src:ro
 
 x-air: &air
-  ALTITUDE: 3.0
   ROS_DOMAIN_ID: 7
 
 services:

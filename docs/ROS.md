@@ -110,6 +110,8 @@ docker/
     flocking_ros/
       flocking_ros/
         board/         Board, Duty
+        flight/        Vehicle, MavrosVehicle, Online, Placed, Status, Estimate,
+                       Link, ClientLink, Maneuver, Takeoff, Refusal
         ground/        Census, Post, Helm, Hands, Script, Ground
         nodes/         the entry points: board, ground, liftoff, home
       test/            one test file per class, on Hamcrest, and the
@@ -117,7 +119,13 @@ docker/
 ```
 
 The package follows `drone-control-ros2`: one class per file, entry points
-run by `ros2 run flocking_ros ...`, and the checks of ament.
+run by `ros2 run flocking_ros ...`, and the checks of ament. The flight classes
+are those of `drone-control-ros2`, with two differences. `Placed` waits for
+a position estimate before it asks for GUIDED, which ArduCopter refuses
+without one, and counts a takeoff done only at the altitude. `ClientLink`
+takes an empty answer as silence, since the client of Jazzy returns nothing
+when a call times out instead of raising. The altitude comes from
+`config.py`, the same for the liftoff and the board.
 
 ## Steps
 
