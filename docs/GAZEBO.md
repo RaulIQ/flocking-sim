@@ -114,12 +114,23 @@ Each step ends with something that runs and is checked by hand or by a test.
    at half speed, twenty a simulated second in both, and held the copter at
    3.00 m at full speed.
 
-   Slowing Gazebo down does not work: at half speed the copter climbs at
-   0.8 to 1 m/s whatever it is asked, with the board or with targets sent by
-   hand, and with `no_time_sync` of the plugin set either way. SITL keeps the
-   pace of the wall clock while the physics runs slower. Until this is
-   understood, the stand needs Gazebo at full speed, and a drop of its real
-   time factor is to be watched for.
+   What sets the pace is not settled. Measured with one copter:
+
+   - With the world at a real time factor of 1, simulated time runs at 1.00
+     a wall second, and the copter obeys targets up and down.
+   - `SIM_SPEEDUP` of SITL set to 0.5 or to 2 through MAVROS changes nothing:
+     still 1.00, and Gazebo reports a real time factor of 0.999.
+   - The world slowed to a real time factor of 0.5 slows simulated time to
+     0.50, and then the copter climbs at 0.8 to 1 m/s whatever it is asked,
+     with the board or with targets sent by hand, with `no_time_sync` of the
+     plugin set either way.
+
+   So in this setup Gazebo, not SITL, keeps the pace, and the autopilot loses
+   its height when Gazebo runs slower than the wall clock. The documentation
+   of ArduPilot speaks of setting the world free with a real time factor of
+   0 or -1 and pacing the run with `SIM_SPEEDUP`; that way is not tried yet.
+   Until then the stand needs Gazebo at full speed, and a drop of its real
+   time factor, which Gazebo publishes on `/stats`, is to be watched for.
 4. The answer of the copter. Its answer to a step of speed is measured in
    Gazebo, and the lag of the formula and the reaction of the agent are
    fitted to it.
