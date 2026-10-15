@@ -106,7 +106,20 @@ Each step ends with something that runs and is checked by hand or by a test.
    flies the whole takeoff again, three seconds apart, for up to two
    minutes.
 3. The time of the simulation. The board and the ground tick by `/clock`;
-   slowing Gazebo down slows the cloud down with it, without a breach.
+   slowing Gazebo down slows the cloud down with it, without a breach. Done in part:
+   the gazebo container bridges its clock into ROS as `/clock`, and with
+   `GAZEBO` set the board and the ground run with `use_sim_time`; the ground
+   now keeps its beat with a `Rate` of its node instead of the clock of
+   pygame. The board sent 19.8 targets a wall second at full speed and 10.1
+   at half speed, twenty a simulated second in both, and held the copter at
+   3.00 m at full speed.
+
+   Slowing Gazebo down does not work: at half speed the copter climbs at
+   0.8 to 1 m/s whatever it is asked, with the board or with targets sent by
+   hand, and with `no_time_sync` of the plugin set either way. SITL keeps the
+   pace of the wall clock while the physics runs slower. Until this is
+   understood, the stand needs Gazebo at full speed, and a drop of its real
+   time factor is to be watched for.
 4. The answer of the copter. Its answer to a step of speed is measured in
    Gazebo, and the lag of the formula and the reaction of the agent are
    fitted to it.

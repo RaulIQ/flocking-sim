@@ -36,7 +36,9 @@ class Ground:
     the keyboard or scripted, takes over once the whole cloud is airborne,
     and from then on every frame is tallied as a scenario would be. ROS
     listens on a thread of its own, started only once every subscription and
-    publisher is made, and the window keeps the beat.
+    publisher is made. The beat comes from the clock of the node, which is the
+    wall clock, or the clock of Gazebo when the node uses the time of the
+    simulation.
     """
 
     node: Node
@@ -78,7 +80,7 @@ class Ground:
             self.settings,
         )
         baton = Baton(view, self.settings.swarm.bubbles.soft)
-        clock = pygame.time.Clock()
+        rate = self.node.create_rate(self.settings.picture.window.rate)
         events = pygame.event.get()
         frame = 0
         tally = Tally(inf, inf, 0, Passage(0, 0.0))
@@ -87,7 +89,7 @@ class Ground:
             for event in events
             if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE)
         ]:
-            clock.tick(self.settings.picture.window.rate)
+            rate.sleep()
             flock = baton.passed(flock, events)
             if self.census.complete(self.heard):
                 flock = Flock(
