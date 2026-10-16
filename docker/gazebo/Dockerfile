@@ -1,4 +1,8 @@
-FROM jazzy-gz
+FROM ros:jazzy
+
+RUN apt-get update \
+ && apt-get install -y ros-jazzy-ros-gz \
+ && rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev \
@@ -13,7 +17,7 @@ RUN git init -q /opt/ardupilot_gazebo/src \
  && cmake -S /opt/ardupilot_gazebo/src -B /opt/ardupilot_gazebo/build -DCMAKE_BUILD_TYPE=RelWithDebInfo \
  && cmake --build /opt/ardupilot_gazebo/build -j"$(nproc)"
 RUN apt-get update \
- && apt-get install -y --no-install-recommends python3-pip \
+ && apt-get install -y --no-install-recommends python3-pip ros-jazzy-topic-tools \
  && rm -rf /var/lib/apt/lists/* \
  && pip install --break-system-packages --no-cache-dir pymavlink
 

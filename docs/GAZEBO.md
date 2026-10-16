@@ -40,7 +40,7 @@ and range finders of Gazebo replace the virtual senses of `world`.
 │ ArduPilot SITL,      │ │  same   │ │  same   │ │  same   │
 │ physics from Gazebo  │ │         │ │         │ │         │
 │ MAVROS               │ │         │ │         │ │         │
-│ liftoff, board       │ │         │ │         │ │         │
+│ flight, board        │ │         │ │         │ │         │
 └──────────▲───────────┘ └───▲─────┘ └───▲─────┘ └───▲─────┘
            │                 │           │           │
 ═══════════╧══════ Docker network, ROS 2 over DDS, one ROS_DOMAIN_ID ═════
@@ -64,7 +64,11 @@ physics. When Gazebo is slower than real time, the whole world slows down,
 while the board and the ground now tick by the wall clock and would run
 ahead of it. They move to the time of the simulation: Gazebo publishes its
 clock, a bridge brings it into ROS as `/clock`, and every node runs with
-`use_sim_time`.
+`use_sim_time`. Gazebo publishes its clock on every step of the physics, a
+thousand times a second, while the nodes tick twenty times a second; every
+message woke every node and the whole machine lagged. The bridge therefore
+writes `/gazebo/clock`, and `throttle` of `topic_tools` passes a hundred of
+them a second on to `/clock`.
 
 ## The machine
 
@@ -79,8 +83,8 @@ Each step ends with something that runs and is checked by hand or by a test.
 
 1. Gazebo in a container. An image with Gazebo Harmonic and the ArduPilot
    plugin; an empty world opens in a window on the screen. Done in part:
-   `docker/gazebo/Dockerfile` builds `flocking-gazebo` on the local image
-   `jazzy-gz` (ROS 2 Jazzy desktop-full with `ros-gz`, Gazebo Sim 8.11) and
+   `docker/gazebo/Dockerfile` builds `flocking-gazebo` on the official
+   `ros:jazzy` with `ros-gz` (Gazebo Harmonic) installed over it and
    compiles `ardupilot_gazebo` from source, which needs the development
    files of GStreamer for its camera plugin. The service `gazebo` runs only
    under the profile `gazebo` until the copters fly in it; headless, its
@@ -252,12 +256,32 @@ Each step ends with something that runs and is checked by hand or by a test.
 7. Landing. A key lands every copter, `RTL` brings them home, and stopping
    the stand lands every copter; `Transition` of `drone-control-ros2` with
    `LAND` and `RTL` is brought over for it.
+   Done: the node `liftoff` became `flight`. Started with
+   `command:=takeoff` it takes off once and quits, as `liftoff` did, and the
+   board starts after it; started with no command it stays and answers the
+   words `takeoff`, `land` and `rtl` on `flight_command` through `Dispatch`
+   with `Persistent(Takeoff)` and `Transition` to `LAND` or `RTL`, both
+   brought over from `drone-control-ros2`. The keys T, L and H of the ground
+   send these words to every copter, by scancode. All four landed where they
+   were, took off again to 3.0 m and gathered into the cloud, and flew home
+   and landed.
+
+   A takeoff after a landing first failed: the board went on asking for a
+   speed, and a speed asked in GUIDED cancels the takeoff the autopilot has
+   begun. The board now asks for nothing until the autopilot says the copter
+   is in the air, through `EXTENDED_SYS_STATE`, which ArduPilot sends only
+   when asked, so `flight` asks for it five times a second after the first
+   takeoff. `RTL` brings a copter to where it last armed, since ArduPilot
+   sets its home then. Stopping the stand stops the autopilots with it, so
+   there is nothing left to land.
+
+   The words first went one at a time, and a takeoff asked while the copters
+   still came down kept switching them back to GUIDED for two minutes under
+   `Persistent`, while the landing waited behind it. Now only the first
+   takeoff is persistent, the takeoff of the key is tried once, and the
+   words run side by side, so a landing is never kept waiting.
 
 ## Open questions
-
-- The image stands on `jazzy-gz`, which lives only on this machine. Another
-  machine needs the same image first, or the Dockerfile moves onto an
-  official base such as `osrf/ros:jazzy-desktop-full`.
 
 - Which copter model to fly: the Iris that comes with the plugin, or a
   small frame closer to the micro drones. The answer of the copter, and with

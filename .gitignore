@@ -6,5 +6,6 @@ venv/
 .idea/
 .vscode/
 *.gif
+!docs/media/*.gif
 scenarios/logs/*.csv
 autopilot/logs/

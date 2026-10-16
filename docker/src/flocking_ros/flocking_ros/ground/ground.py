@@ -10,10 +10,11 @@ from config import Settings
 from flocking_msgs.msg import Senses as Letter
 from flocking_ros.ground.census import Census
 from flocking_ros.ground.helm import Helm
+from flocking_ros.ground.orders import Orders
 from flocking_ros.ground.post import Post
 from geometry_msgs.msg import PoseStamped, TwistStamped
 import pygame
-from pygame import K_ESCAPE, KEYDOWN, QUIT
+from pygame import K_ESCAPE, KEYDOWN, KSCAN_H, KSCAN_L, KSCAN_T, QUIT
 import rclpy
 from rclpy.node import Node
 from rclpy.qos import qos_profile_sensor_data
@@ -22,6 +23,7 @@ from sensor_msgs.msg import NavSatFix
 from simulator.baton import Baton
 from simulator.flock import Flock
 from simulator.view import View
+from std_msgs.msg import String
 
 
 @final
@@ -34,7 +36,8 @@ class Ground:
     have; they are sent only once every copter is heard of in full. Until
     then the window shows the drones where they are mustered. The pilot, at
     the keyboard or scripted, takes over once the whole cloud is airborne,
-    and from then on every frame is tallied as a scenario would be. ROS
+    and from then on every frame is tallied as a scenario would be. The keys
+    T, L and H tell every copter to take off, land or return home. ROS
     listens on a thread of its own, started only once every subscription and
     publisher is made. The beat comes from the clock of the node, which is the
     wall clock, or the clock of Gazebo when the node uses the time of the
@@ -63,14 +66,19 @@ class Ground:
             self.node.create_publisher(Letter, f'/uav{number}/senses', qos_profile_sensor_data)
             for number in range(1, self.census.count + 1)
         )
+        radios = tuple(
+            self.node.create_publisher(String, f'/uav{number}/flight_command', 10)
+            for number in range(1, self.census.count + 1)
+        )
         Thread(target=rclpy.spin, args=(self.node,), daemon=True).start()
-        return mails
+        return mails, radios
 
     def hear(self, number: int, kind: str, message: object) -> None:
         self.heard.setdefault(number, {})[kind] = message
 
     def run(self, flock: Flock, walls: tuple, helm: Helm, altitude: float) -> None:
-        mails = self.listen()
+        mails, radios = self.listen()
+        orders = Orders(radios, {KSCAN_T: 'takeoff', KSCAN_L: 'land', KSCAN_H: 'rtl'})
         pygame.init()
         pygame.display.set_caption('flocking-sim on ROS 2')
         view = View(
@@ -91,6 +99,7 @@ class Ground:
         ]:
             rate.sleep()
             flock = baton.passed(flock, events)
+            orders.given(events)
             if self.census.complete(self.heard):
                 flock = Flock(
                     tuple(

@@ -64,14 +64,20 @@ own with ArduPilot, MAVROS and its agent, run from `docker/`:
 GAZEBO=gazebo docker compose --profile gazebo up
 ```
 
-It needs Docker, ArduPilot built for SITL in `~/code/ardupilot` (or where
-`ARDUPILOT` points) and the local image `jazzy-gz` with ROS 2 Jazzy and
+It needs Docker and ArduPilot built for SITL in `~/code/ardupilot` (or where
+`ARDUPILOT` points); the image of Gazebo builds itself on ROS 2 Jazzy with
 Gazebo Harmonic. Two windows open: Gazebo with the copters and the ground
 station with the bubbles, flown with the same keys. The copters hover about
 a minute after the start. `ROUTE=cruise` in front of the command flies the
 leader along a scenario instead of the keyboard, and
 `docker compose --profile gazebo down` stops the stand. The plan of this
 stage lives in [docs/GAZEBO.md](docs/GAZEBO.md).
+
+[![Four Iris copters fly as a cloud in Gazebo, the ground station on the right](docs/media/gazebo-cloud.gif)](docs/media/gazebo-cloud.mp4)
+
+Four Iris copters follow their leader in Gazebo, and the window of the
+ground station on the right shows their bubbles and trails, with the leader
+in amber. The animation opens the full video.
 
 ## Keys
 
@@ -83,6 +89,9 @@ stage lives in [docs/GAZEBO.md](docs/GAZEBO.md).
 | `Tab` | pass the lead to the next drone |
 | left click | hand the lead to the drone under the pointer |
 | `Esc` | close the window |
+| `T` | take every copter off, on ROS and Gazebo only |
+| `L` | land every copter where it is, on ROS and Gazebo only |
+| `H` | fly every copter home and land it, on ROS and Gazebo only |
 
 A turning key sets the spin the drone wants, not the spin it has: the nose
 swings around under the same spin and twist limits as the rest of the flight.
