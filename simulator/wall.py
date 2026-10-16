@@ -1,8 +1,6 @@
 from dataclasses import dataclass
 from typing import final
 
-from pygame import Surface, draw
-
 from agent.vector import Vector
 
 
@@ -22,5 +20,5 @@ class Wall:
             )
         )
 
-    def drawn(self, surface: Surface, spot, scale: float) -> None:
-        draw.line(surface, (176, 182, 196), spot(self.start), spot(self.end), 3)
+    def drawn(self, canvas) -> None:
+        canvas.line(self.start, self.end)

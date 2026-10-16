@@ -1,8 +1,6 @@
 from dataclasses import dataclass
 from typing import final
 
-from pygame import Surface, draw
-
 from agent.vector import Vector
 
 
@@ -20,5 +18,5 @@ class Pillar:
             return self.centre.plus(Vector(self.radius, 0.0))
         return self.centre.plus(offset.times(self.radius / offset.length()))
 
-    def drawn(self, surface: Surface, spot, scale: float) -> None:
-        draw.circle(surface, (176, 182, 196), spot(self.centre), self.radius * scale)
+    def drawn(self, canvas) -> None:
+        canvas.disc(self.centre, self.radius)
