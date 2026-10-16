@@ -86,6 +86,19 @@ def catalogue() -> dict:
             ),
             25.0,
         ),
+        "rock": Scenario(
+            "The leader rocks 0.6 m forward and back at full speed, eight times over, and stops where it began",
+            defaults(),
+            Route(
+                (
+                    *(Vector(0.6 * side, 0.0) for side in (1, -1) * 4),
+                    Vector(0.0, 0.0),
+                ),
+                2.0,
+                0.2,
+            ),
+            25.0,
+        ),
         "pillars": Scenario(
             "The leader flies straight between two pillars and stops 4 m behind them",
             pillars(defaults()),
