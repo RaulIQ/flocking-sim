@@ -20,7 +20,7 @@ setup(
         'console_scripts': [
             'board = flocking_ros.nodes.board:main',
             'ground = flocking_ros.nodes.ground:main',
-            'liftoff = flocking_ros.nodes.liftoff:main',
+            'flight = flocking_ros.nodes.flight:main',
             'home = flocking_ros.nodes.home:main',
             'origin = flocking_ros.nodes.origin:main',
         ],

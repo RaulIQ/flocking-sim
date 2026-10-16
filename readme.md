@@ -89,6 +89,9 @@ in amber. The animation opens the full video.
 | `Tab` | pass the lead to the next drone |
 | left click | hand the lead to the drone under the pointer |
 | `Esc` | close the window |
+| `T` | take every copter off, on ROS and Gazebo only |
+| `L` | land every copter where it is, on ROS and Gazebo only |
+| `H` | fly every copter home and land it, on ROS and Gazebo only |
 
 A turning key sets the spin the drone wants, not the spin it has: the nose
 swings around under the same spin and twist limits as the rest of the flight.

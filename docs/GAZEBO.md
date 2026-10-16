@@ -40,7 +40,7 @@ and range finders of Gazebo replace the virtual senses of `world`.
 │ ArduPilot SITL,      │ │  same   │ │  same   │ │  same   │
 │ physics from Gazebo  │ │         │ │         │ │         │
 │ MAVROS               │ │         │ │         │ │         │
-│ liftoff, board       │ │         │ │         │ │         │
+│ flight, board        │ │         │ │         │ │         │
 └──────────▲───────────┘ └───▲─────┘ └───▲─────┘ └───▲─────┘
            │                 │           │           │
 ═══════════╧══════ Docker network, ROS 2 over DDS, one ROS_DOMAIN_ID ═════
@@ -256,6 +256,24 @@ Each step ends with something that runs and is checked by hand or by a test.
 7. Landing. A key lands every copter, `RTL` brings them home, and stopping
    the stand lands every copter; `Transition` of `drone-control-ros2` with
    `LAND` and `RTL` is brought over for it.
+   Done: the node `liftoff` became `flight`. Started with
+   `command:=takeoff` it takes off once and quits, as `liftoff` did, and the
+   board starts after it; started with no command it stays and answers the
+   words `takeoff`, `land` and `rtl` on `flight_command` through `Dispatch`
+   with `Persistent(Takeoff)` and `Transition` to `LAND` or `RTL`, both
+   brought over from `drone-control-ros2`. The keys T, L and H of the ground
+   send these words to every copter, by scancode. All four landed where they
+   were, took off again to 3.0 m and gathered into the cloud, and flew home
+   and landed.
+
+   A takeoff after a landing first failed: the board went on asking for a
+   speed, and a speed asked in GUIDED cancels the takeoff the autopilot has
+   begun. The board now asks for nothing until the autopilot says the copter
+   is in the air, through `EXTENDED_SYS_STATE`, which ArduPilot sends only
+   when asked, so `flight` asks for it five times a second after the first
+   takeoff. `RTL` brings a copter to where it last armed, since ArduPilot
+   sets its home then. Stopping the stand stops the autopilots with it, so
+   there is nothing left to land.
 
 ## Open questions
 
