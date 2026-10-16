@@ -14,6 +14,7 @@ from agent.vector import Vector
 from simulator.view import View
 from simulator.wall import Wall
 from simulator.muster import Muster
+from simulator.pillar import Pillar
 
 
 def test_draws_the_origin_in_the_middle_of_the_window():
@@ -227,3 +228,24 @@ def test_draws_a_wall_against_the_sky():
     assert tuple(surface.get_at((150, 20)))[:3] != tuple(surface.get_at((195, 5)))[
         :3
     ], "a wall does not show against the sky"
+
+
+def test_draws_a_pillar_against_the_sky():
+    surface = Surface((200, 200))
+    View(
+        surface,
+        Settings(
+            Limits(2.0, 4.0, 1.8, 8.0),
+            Picture(Window(200, 200, 100.0, 60), Shape(0.1, 0.35, 5)),
+            Swarm(Muster(2, 1.2), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
+            Gate(4.0, 14.0, 1.2, (0.0,)),
+        ),
+    ).show(
+        Flock(
+            (Drone(Body(Vector(0.0, 0.0), pi / 2, Vector(0.0, 0.0), 0.0), Trail((), 5), True),)
+        ),
+        (Pillar(Vector(0.5, 0.5), 0.2),),
+    )
+    assert tuple(surface.get_at((150, 50)))[:3] != tuple(surface.get_at((195, 195)))[
+        :3
+    ], "a pillar does not show against the sky"

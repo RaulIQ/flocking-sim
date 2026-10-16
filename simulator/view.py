@@ -22,9 +22,7 @@ class View:
         scale = self.settings.picture.window.scale
         self.surface.fill((18, 19, 24))
         for wall in walls:
-            draw.line(
-                self.surface, (176, 182, 196), self.spot(wall.start), self.spot(wall.end), 3
-            )
+            wall.drawn(self.surface, self.spot, scale)
         for drone in flock.drones:
             if len(drone.trail.points) > 1:
                 draw.aalines(

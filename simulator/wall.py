@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from typing import final
 
+from pygame import Surface, draw
+
 from agent.vector import Vector
 
 
@@ -19,3 +21,6 @@ class Wall:
                 max(0.0, min(1.0, place.minus(self.start).dot(span) / span.dot(span)))
             )
         )
+
+    def drawn(self, surface: Surface, spot, scale: float) -> None:
+        draw.line(surface, (176, 182, 196), spot(self.start), spot(self.end), 3)
