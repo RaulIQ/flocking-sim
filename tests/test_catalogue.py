@@ -4,6 +4,8 @@ from pytest import mark
 
 from config import kinematics
 from scenarios.catalogue import catalogue
+from scenarios.push import Push
+from scenarios.push import Push
 from scenarios.trial import Trial
 
 
@@ -86,3 +88,23 @@ def test_brings_the_whole_cloud_between_the_pillars(tmp_path):
     assert (
         Trial("pillars", catalogue()["pillars"], 6, kinematics(catalogue()["pillars"].settings)).run(tmp_path).tally.passage.count == 8
     ), "the pillars scenario leaves a drone short of the pillars"
+
+
+@mark.xfail(
+    strict=True,
+    reason="the cloud hangs on springs, not ropes: the leader drives the followers in its way ahead of it",
+)
+def test_lets_the_leader_through_its_cloud_pushing_no_follower_far(tmp_path):
+    assert (
+        Push(Trial("through", catalogue()["through"], 6, kinematics(catalogue()["through"].settings))).distance() < 1.0
+    ), "the leader drives a follower of its cloud far ahead of it"
+
+
+@mark.xfail(
+    strict=True,
+    reason="the cloud hangs on springs, not ropes: the leader drives the followers in its way ahead of it",
+)
+def test_lets_the_leader_through_its_cloud_pushing_no_follower_far(tmp_path):
+    assert (
+        Push(Trial("through", catalogue()["through"], 6, kinematics(catalogue()["through"].settings))).distance() < 1.0
+    ), "the leader drives a follower of its cloud far ahead of it"

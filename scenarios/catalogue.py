@@ -86,6 +86,12 @@ def catalogue() -> dict:
             ),
             25.0,
         ),
+        "through": Scenario(
+            "The leader flies 2 m ahead, turns back and flies straight through its cloud to 8 m behind the start",
+            defaults(),
+            Route((Vector(2.0, 0.0), Vector(-8.0, 0.0)), 1.0, 0.3),
+            30.0,
+        ),
         "rock": Scenario(
             "The leader rocks 0.6 m forward and back at full speed, eight times over, and stops where it began",
             defaults(),

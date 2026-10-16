@@ -50,6 +50,27 @@ scenario. The 2D simulator comes first: its runs take seconds.
    the leader before the leader gets in, how many followers the leader gets
    past, the closest pair and the breached frames. Measured on the cloud as it
    flies now, for eight drones and for the four Iris of the stands.
+   Done: the scenario `through` flies the leader 2 m ahead, turns it and
+   flies it at 1 m/s straight through its cloud to 8 m behind the start.
+   `Push` in `scenarios` counts how far the leader drives a follower ahead of
+   it: while a follower is ahead of the flying leader and within the length of
+   its rope from the line of its flight, its move along that flight adds up,
+   and the longest such stretch is the push. On the formula, as the cloud
+   flies now, with the closest pair, the breached frames and the push:
+
+   | Scenario | Eight drones | Four freestyle | Four Iris |
+   |---|---|---|---|
+   | `through` | 0.23 m, 179, 9.4 m | 0.67 m, 0, 5.0 m | 1.04 m, 0, 7.7 m |
+   | `rock` | 0.07 m, 313, 0.9 m | 0.65 m, 0, 1.0 m | 1.07 m, 0, 1.2 m |
+   | `reverse` | 0.34 m, 55, 7.0 m | 0.51 m, 0, 0.4 m | 0.93 m, 0, 3.5 m |
+   | `cruise` | 0.30 m, 38, 11.4 m | 0.60 m, 0, 0.4 m | 1.04 m, 0, 3.0 m |
+   | `gap` | 0.28 m, 123, 1.7 m | 0.72 m, 0, 1.9 m | 0.86 m, 0, 2.2 m |
+   | `pillars` | 0.36 m, 123, 3.8 m | 0.69 m, 0, 1.5 m | 0.88 m, 0, 1.5 m |
+
+   Most followers are passed untouched; the one on the line of the leader is
+   driven ahead of it for metres, which is the blade the pilot sees. A test of
+   the catalogue asks for a push under 1 m in `through` and is marked as
+   expected to fail until the ropes hold.
 2. A slack rope: the spring to the leader stops shoving, and pulls only
    beyond its length.
 3. Matching on a taut rope only: a follower takes on the velocity of its
