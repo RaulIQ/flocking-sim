@@ -16,7 +16,8 @@ class Instinct:
 
     A follower flies along with its leader and only corrects its place on
     top of that, never faster than the leader can pull it, unless it stands
-    in the way of the leader and steps aside. This is the
+    in the way of the leader and steps aside. The turn its pilot asks of the
+    leader reaches the follower too and bends that way. This is the
     velocity matching of Reynolds 1987 and Olfati-Saber 2006, kept to the
     leader alone. It lets the pulls and the shoves stay gentle, which a drone
     that answers late needs in order not to sway.
@@ -28,19 +29,19 @@ class Instinct:
     cloud: Cloud
     limits: Limits
 
-    def command(self, neighbours: tuple, obstacles: tuple) -> Command:
+    def command(self, neighbours: tuple, obstacles: tuple, turn: float) -> Command:
         return Command(
             reduce(
                 Vector.plus,
                 [
-                    Tow(self.cloud.leader, self.limits).carry(neighbour)
+                    Tow(self.cloud.leader, self.limits, turn).carry(neighbour)
                     for neighbour in neighbours
                     if neighbour.leader
                 ],
                 reduce(
                     Vector.plus,
                     [
-                        Tow(self.cloud.leader, self.limits).hold(neighbour)
+                        Tow(self.cloud.leader, self.limits, turn).hold(neighbour)
                         for neighbour in neighbours
                         if neighbour.leader
                     ]

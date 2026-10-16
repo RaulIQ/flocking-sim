@@ -9,7 +9,7 @@ from agent.signals import Bearing, Range, Role, Signals
 from agent.tracker import Tracker
 from agent.neighbour import Neighbour
 from agent.tracks import Track, Tracks
-from agent.tuning import Cloud, Limits, Rope, Spring
+from agent.tuning import Cloud, Limits, Rope, Spring, Wedge
 from simulator.body import Body
 from simulator.drone import Drone
 from simulator.trail import Trail
@@ -79,7 +79,7 @@ def test_decides_by_its_mind_on_what_it_remembers_and_senses():
         Tracks((Track(1, Neighbour(Vector(2.2, 0.0), Vector(0.0, 0.0), True), True),)),
     ).command(
         Mind(
-            Instinct(Cloud(Spring(1.2, 4.0, 0.5, 1.0), Rope(Spring(1.2, 4.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6), Limits(2.0, 100.0, 1.8, 8.0)),
+            Instinct(Cloud(Spring(1.2, 4.0, 0.5, 1.0), Rope(Spring(1.2, 4.0, 1.5, 1.5), Wedge(0.8, 4.0, 0.6, 0.6), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6), Limits(2.0, 100.0, 1.8, 8.0)),
             Shield(Limits(2.0, 100.0, 1.8, 8.0), 0.25, 0.5, 0.0),
             Tracker(0.5),
             True,
@@ -100,7 +100,7 @@ def test_remembers_what_it_sensed():
         Body(Vector(0.0, 0.0), 0.0, Vector(0.0, 0.0), 0.0), Trail((), 5), False
     ).recalled(
         Mind(
-            Instinct(Cloud(Spring(1.2, 4.0, 0.5, 1.0), Rope(Spring(1.2, 4.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6), Limits(2.0, 100.0, 1.8, 8.0)),
+            Instinct(Cloud(Spring(1.2, 4.0, 0.5, 1.0), Rope(Spring(1.2, 4.0, 1.5, 1.5), Wedge(0.8, 4.0, 0.6, 0.6), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6), Limits(2.0, 100.0, 1.8, 8.0)),
             Shield(Limits(2.0, 100.0, 1.8, 8.0), 0.25, 0.5, 0.0),
             Tracker(0.5),
             False,

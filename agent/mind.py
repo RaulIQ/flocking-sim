@@ -39,7 +39,9 @@ class Mind:
                 senses.request
                 if self.leader
                 else self.shield.kept(
-                    self.instinct.command(tracks.sighted(), senses.obstacles),
+                    self.instinct.command(
+                        tracks.sighted(), senses.obstacles, senses.request.spin
+                    ),
                     senses.motion.velocity,
                     tracks.sighted(),
                 ),

@@ -1,10 +1,10 @@
 from collections import deque
 from dataclasses import dataclass, replace
-from math import exp
+from math import exp, pi
 from pathlib import Path
 from typing import final
 
-from agent.tuning import Cloud, Limits, Rope, Spring
+from agent.tuning import Cloud, Limits, Rope, Spring, Wedge
 from autopilot.fleet import Fleet
 from autopilot.hangar import Hangar
 from autopilot.hold import Hold
@@ -89,7 +89,7 @@ def defaults() -> Settings:
             Bubbles(0.25, 0.6),
             Cloud(
                 Spring(1.2, 0.5, 0.15, 1.0),
-                Rope(Spring(1.2, 1.0, 0.4, 1.5), 1.5, 2.0),
+                Rope(Spring(1.2, 1.0, 0.4, 1.5), Wedge(pi / 4, 4.0, 0.6, 0.6), 1.5, 2.0),
                 Spring(0.6, 1.0, 0.0, 0.0),
                 6,
             ),
@@ -106,33 +106,14 @@ def pillars(settings: Settings) -> Settings:
     )
 
 
-def rope(settings: Settings, length: float) -> Settings:
-    return replace(
-        settings,
-        swarm=replace(
-            settings.swarm,
-            cloud=replace(
-                settings.swarm.cloud,
-                leader=replace(
-                    settings.swarm.cloud.leader,
-                    spring=replace(settings.swarm.cloud.leader.spring, rest=length),
-                ),
-            ),
-        ),
-    )
-
-
 def copters() -> Settings:
     return pillars(
-        rope(
-            replace(
-                defaults(),
-                picture=Picture(Window(1000, 700, 60.0, 20), Shape(0.1, 0.35, 200)),
-                swarm=replace(
-                    defaults().swarm, muster=replace(defaults().swarm.muster, count=4)
-                ),
+        replace(
+            defaults(),
+            picture=Picture(Window(1000, 700, 60.0, 20), Shape(0.1, 0.35, 200)),
+            swarm=replace(
+                defaults().swarm, muster=replace(defaults().swarm.muster, count=4)
             ),
-            2.0,
         )
     )
 
@@ -140,10 +121,7 @@ def copters() -> Settings:
 def frames() -> dict:
     return {
         "freestyle": copters(),
-        "iris": rope(
-            replace(copters(), swarm=replace(copters().swarm, bubbles=Bubbles(0.4, 0.6))),
-            3.0,
-        ),
+        "iris": replace(copters(), swarm=replace(copters().swarm, bubbles=Bubbles(0.4, 0.6))),
     }
 
 

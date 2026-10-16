@@ -113,7 +113,65 @@ scenario. The 2D simulator comes first: its runs take seconds.
 5. The other scenarios: `cruise`, `reverse`, `rock`, `gap` and `pillars` do
    not get worse, and the tests of the catalogue still pass.
 6. Gazebo: the four Iris fly through the cloud, along `rock`, and from the
-   keyboard.
+   keyboard. Tried before the wedge: the copters swayed and two of them
+   breached, because the tracker takes the velocity of a neighbour from the
+   difference of two measurements, which turns their centimetre of noise into
+   half a metre a second. Left for later; the 2D simulator comes first.
+7. A wedge instead of a ring, asked for after the pilot flew the eight drones
+   of the simulator: the followers stood too far from the leader, and those on
+   the side it turned to got in its way. Done in `agent`:
+
+   - `Wings`: behind a flying leader the followers are pulled, at the pull of
+     the `Wedge`, toward the nearest point of two wings that leave its line of
+     flight backward at 45°, start a spring rest behind it and run for 4 m.
+     The wing on the inside of a turn folds toward the track of the leader, the
+     more the harder the pilot turns, and lies right behind it at the top spin.
+     A hovering leader still holds its followers around it by the spring.
+   - `Way`: the way of the leader bends into the arc of the turn the pilot
+     asks for. Every drone hears the pilot, so a follower knows the bend as
+     soon as the leader does.
+   - `Sweep`: while the pilot holds a turn, a follower inside the circle the
+     leader goes round, widened by the clearance of the `Wedge`, flies along
+     and moves straight out of it.
+   - All ropes are 1.2 m again, for the Iris as well.
+
+   In the prototype, with no wall, eight drones and four Iris fly U-turns of
+   1.1 to 6 m radius, a left and right zigzag and two full circles in a row at
+   full speed with no breached frame. With walls the wedge is often worse: its
+   wings spread the cloud sideways and press it into the wall beside a gap.
+   The catalogue, closest pair and breached frames, before and after:
+
+   | Scenario | Ring | Wedge |
+   |---|---|---|
+   | `cruise` | 0.26 m, 120 | 0.16 m, 106 |
+   | `reverse` | 0.14 m, 69 | 0.09 m, 24 |
+   | `gap` | 0.21 m, 149 | 0.36 m, 62 |
+   | `gap_fast` | 0.54 m, 0 | 0.18 m, 76 |
+   | `gap_ten` | 0.26 m, 103 | 0.43 m, 42 |
+   | `gap_sideways` | 0.14 m, 180 | 0.05 m, 93 |
+   | `gap_back` | 0.24 m, 25 | 0.21 m, 183 |
+   | `two_gaps` | 0.45 m, 69 | 0.28 m, 93 |
+   | `rock` | 0.01 m, 124 | 0.22 m, 184 |
+   | `pillars` | 0.38 m, 58 | 0.32 m, 176 |
+   | `wall` | 0.44 m, 41 | 0.56 m, 0 |
+
+   Two tests are marked as expected to fail: in `wall` a follower slips
+   through the gap beside the wall, and in `Flock` a leader flown back through
+   its wedge at full speed brings two followers 0.44 m apart.
+
+## Where to pick up
+
+- Put the scenarios of the prototype into the catalogue: U-turns, the
+  zigzag and full circles, on open ground with no wall. They need a helm
+  that turns, which `Route` cannot, and a course with nothing in it.
+- Narrow the wedge near walls, so that the cloud passes a gap as it did
+  before.
+- Tune the wedge for eight drones flying straight and stopping, `cruise`
+  and `through`.
+- The Iris at 1.2 m: after the leader stops, the shield can pin a follower
+  between the leader and a peer, since its hard bubble of 0.4 m leaves the
+  shield little room.
+- Gazebo: the noise of the measured velocity, then the four Iris.
 
 ## Open questions
 

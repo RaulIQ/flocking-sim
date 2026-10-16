@@ -3,59 +3,83 @@ from typing import final
 
 from agent.bond import Bond
 from agent.neighbour import Neighbour
+from agent.sweep import Sweep
 from agent.tuning import Limits, Rope
 from agent.vector import Vector
+from agent.way import Way
+from agent.wings import Wings
 
 
 @final
 @dataclass(frozen=True)
 class Tow:
-    """How a leader moves one follower: it carries it along on a rope and lets it step out of its way.
+    """How a leader moves one follower: it carries it along, draws it into a wedge behind, and lets it out of its way.
 
-    A follower behind its leader, beside its way or far ahead of it flies
-    along with the leader and is held by the spring of the rope. A follower
-    that stands in the way of a flying leader is neither carried ahead of it
-    nor shoved along its line, as a rope hanging slack would neither drag nor
-    push; it steps off the line to the side it already stands on, at least as
-    fast as the leader comes. The way is as wide as the rest of the spring on
-    either side of the leader's line and reaches as far ahead as the leader
-    flies in the horizon of the rope. This is our own choice; it lets the
-    leader fly through its cloud, which then closes up behind it.
+    A follower of a hovering leader is held around it by the spring of the
+    rope. A follower of a flying leader flies along with it and is pulled
+    toward the nearest point of the wedge behind it. A follower that stands
+    in the way of the leader is neither carried ahead nor pulled; it steps
+    off the way to the side it already stands on, at least as fast as the
+    leader comes. The way bends with the turn the pilot asks for and reaches
+    as far as the leader flies in the horizon of the rope, plus the rest of
+    its spring. A follower inside the circle a turning leader goes round is
+    not pulled either; it flies along and moves straight out of the circle
+    widened by the clearance of the wedge. This is our own choice; it keeps
+    the leader first and leaves it free to turn.
     """
 
     rope: Rope
     limits: Limits
+    turn: float
 
     def carry(self, leader: Neighbour) -> Vector:
-        if not self.blocks(leader):
-            return leader.velocity
-        ahead = leader.velocity.times(1.0 / leader.velocity.length())
-        place = Vector(0.0, 0.0).minus(leader.offset)
-        lateral = place.minus(ahead.times(place.dot(ahead)))
-        return (
-            lateral.times(1.0 / lateral.length())
-            if lateral.length() > 0.0
-            else Vector(-ahead.y, ahead.x)
-        ).times(
-            min(
-                self.limits.speed,
-                self.rope.gain * (self.rope.spring.rest - lateral.length())
-                + leader.velocity.length(),
+        if self.blocks(leader):
+            ahead = leader.velocity.times(1.0 / leader.velocity.length())
+            away = Vector(0.0, 0.0).minus(self.way(leader).nearest())
+            return (
+                away.times(1.0 / away.length())
+                if away.length() > 0.0
+                else Vector(-ahead.y, ahead.x)
+            ).times(
+                min(
+                    self.limits.speed,
+                    self.rope.gain * (self.rope.spring.rest - away.length())
+                    + leader.velocity.length(),
+                )
             )
-        )
+        return leader.velocity.plus(
+            self.exit(leader).times(self.rope.gain)
+        ).capped(self.limits.speed)
 
     def hold(self, leader: Neighbour) -> Vector:
-        if self.blocks(leader):
+        if leader.velocity.length() < 0.1:
+            return Bond(self.rope.spring).velocity(leader.offset)
+        if self.blocks(leader) or self.exit(leader).length() > 0.0:
             return Vector(0.0, 0.0)
-        return Bond(self.rope.spring).velocity(leader.offset)
+        place = Wings(self.rope, self.limits, self.turn).place(leader)
+        if place.length() == 0.0:
+            return place
+        return place.times(
+            self.rope.wedge.pull
+            * min(place.length(), self.rope.spring.reach)
+            / place.length()
+        )
 
     def blocks(self, leader: Neighbour) -> bool:
-        speed = leader.velocity.length()
-        place = Vector(0.0, 0.0).minus(leader.offset)
-        if speed < 0.1 or place.dot(leader.velocity) <= 0.0:
-            return False
-        along = place.dot(leader.velocity) / speed
         return (
-            place.minus(leader.velocity.times(along / speed)).length() < self.rope.spring.rest
-            and along < self.rope.spring.rest + speed * self.rope.horizon
+            leader.velocity.length() >= 0.1
+            and self.way(leader).along() > 0.0
+            and self.way(leader).nearest().length() < self.rope.spring.rest
+        )
+
+    def exit(self, leader: Neighbour) -> Vector:
+        if leader.velocity.length() < 0.1:
+            return Vector(0.0, 0.0)
+        return Sweep(leader, self.turn).exit(self.rope.wedge.clearance)
+
+    def way(self, leader: Neighbour) -> Way:
+        return Way(
+            leader,
+            self.turn,
+            self.rope.spring.rest + leader.velocity.length() * self.rope.horizon,
         )

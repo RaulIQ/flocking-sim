@@ -26,14 +26,31 @@ class Spring:
 
 @final
 @dataclass(frozen=True)
+class Wedge:
+    """The shape a cloud takes behind a flying leader, in radians and metres.
+
+    The angle lies between the line of flight and either wing, the length
+    runs along a wing, the pull is the gain toward the nearest point of a
+    wing, and the clearance widens the circle a turning leader flies.
+    """
+
+    angle: float
+    length: float
+    pull: float
+    clearance: float
+
+
+@final
+@dataclass(frozen=True)
 class Rope:
-    """What ties a follower to its leader: a spring, and how early and how briskly it steps out of the leader's way.
+    """What ties a follower to its leader: a spring, a wedge, and how early and how briskly it steps out of the leader's way.
 
     The horizon is in seconds of the leader's flight, the gain in metres a
     second for every metre the follower still stands inside the way.
     """
 
     spring: Spring
+    wedge: Wedge
     horizon: float
     gain: float
 
