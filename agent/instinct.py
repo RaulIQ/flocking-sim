@@ -34,7 +34,7 @@ class Instinct:
                 reduce(
                     Vector.plus,
                     [
-                        Bond(self.cloud.leader).velocity(neighbour.offset)
+                        Bond(self.cloud.leader.spring).velocity(neighbour.offset)
                         for neighbour in neighbours
                         if neighbour.leader
                     ]
@@ -47,7 +47,7 @@ class Instinct:
                     ]
                     + [Bond(self.cloud.walls).velocity(offset) for offset in obstacles],
                     Vector(0.0, 0.0),
-                ).capped(self.cloud.leader.pull * self.cloud.leader.reach),
+                ).capped(self.cloud.leader.spring.pull * self.cloud.leader.spring.reach),
             ).capped(self.limits.speed),
             0.0,
         )

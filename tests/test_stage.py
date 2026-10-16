@@ -3,7 +3,7 @@ from itertools import combinations
 from pytest import approx
 
 from agent.command import Command
-from agent.tuning import Cloud, Limits, Spring
+from agent.tuning import Cloud, Limits, Rope, Spring
 from agent.vector import Vector
 from config import Bubbles, Picture, Settings, Shape, Swarm, Window
 from simulator.gate import Gate
@@ -18,7 +18,7 @@ def test_musters_as_many_drones_as_the_settings_ask():
             Settings(
                 Limits(2.0, 4.0, 1.8, 8.0),
                 Picture(Window(1000, 700, 60.0, 60), Shape(0.1, 0.35, 7)),
-                Swarm(Muster(5, 1.3), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
+                Swarm(Muster(5, 1.3), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Rope(Spring(1.2, 4.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
                 Gate(4.0, 14.0, 1.2, (0.0,)),
             ),
             Kinematics(Limits(2.0, 4.0, 1.8, 8.0), 1.0 / 60),
@@ -36,7 +36,7 @@ def test_musters_the_drones_a_spacing_apart():
                 Settings(
                     Limits(2.0, 4.0, 1.8, 8.0),
                     Picture(Window(1000, 700, 60.0, 60), Shape(0.1, 0.35, 7)),
-                    Swarm(Muster(5, 1.3), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
+                    Swarm(Muster(5, 1.3), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Rope(Spring(1.2, 4.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
                     Gate(4.0, 14.0, 1.2, (0.0,)),
                 ),
                 Kinematics(Limits(2.0, 4.0, 1.8, 8.0), 1.0 / 60),
@@ -55,7 +55,7 @@ def test_gives_the_lead_to_the_first_drone():
             Settings(
                 Limits(2.0, 4.0, 1.8, 8.0),
                 Picture(Window(1000, 700, 60.0, 60), Shape(0.1, 0.35, 7)),
-                Swarm(Muster(3, 1.3), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
+                Swarm(Muster(3, 1.3), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Rope(Spring(1.2, 4.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
                 Gate(4.0, 14.0, 1.2, (0.0,)),
             ),
             Kinematics(Limits(2.0, 4.0, 1.8, 8.0), 1.0 / 60),
@@ -70,7 +70,7 @@ def test_builds_the_walls_of_its_barrier():
         Settings(
             Limits(2.0, 4.0, 1.8, 8.0),
             Picture(Window(1000, 700, 60.0, 60), Shape(0.1, 0.35, 7)),
-            Swarm(Muster(3, 1.3), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
+            Swarm(Muster(3, 1.3), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Rope(Spring(1.2, 4.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
             Gate(3.5, 14.0, 1.2, (0.0,)),
         ),
         Kinematics(Limits(2.0, 4.0, 1.8, 8.0), 1.0 / 60),
@@ -84,7 +84,7 @@ def test_ticks_as_often_as_the_window_refreshes():
         Settings(
             Limits(2.0, 4.0, 1.8, 8.0),
             Picture(Window(1000, 700, 60.0, 25), Shape(0.1, 0.35, 7)),
-            Swarm(Muster(3, 1.3), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
+            Swarm(Muster(3, 1.3), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Rope(Spring(1.2, 4.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
             Gate(4.0, 14.0, 1.2, (0.0,)),
         ),
         Kinematics(Limits(2.0, 4.0, 1.8, 8.0), 1.0 / 25),
@@ -96,7 +96,7 @@ def test_flies_the_leader_on_a_request():
         Settings(
             Limits(2.0, 100.0, 1.8, 8.0),
             Picture(Window(1000, 700, 60.0, 4), Shape(0.1, 0.35, 7)),
-            Swarm(Muster(3, 1.3), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
+            Swarm(Muster(3, 1.3), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Rope(Spring(1.2, 4.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
             Gate(40.0, 14.0, 1.2, (0.0,)),
         ),
         Kinematics(Limits(2.0, 100.0, 1.8, 8.0), 1.0 / 4),
@@ -113,7 +113,7 @@ def test_cannot_fly_the_leader_into_a_wall():
         Settings(
             Limits(2.0, 100.0, 1.8, 8.0),
             Picture(Window(1000, 700, 60.0, 4), Shape(0.1, 0.35, 7)),
-            Swarm(Muster(1, 1.3), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
+            Swarm(Muster(1, 1.3), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Rope(Spring(1.2, 4.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
             Gate(0.2, 14.0, 0.0, (0.0,)),
         ),
         Kinematics(Limits(2.0, 100.0, 1.8, 8.0), 1.0 / 4),
@@ -130,7 +130,7 @@ def test_hands_the_shield_the_reaction_of_the_swarm():
         Settings(
             Limits(2.0, 4.0, 1.8, 8.0),
             Picture(Window(1000, 700, 60.0, 60), Shape(0.1, 0.35, 7)),
-            Swarm(Muster(3, 1.3), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.65),
+            Swarm(Muster(3, 1.3), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Rope(Spring(1.2, 4.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.65),
             Gate(4.0, 14.0, 1.2, (0.0,)),
         ),
         Kinematics(Limits(2.0, 4.0, 1.8, 8.0), 1.0 / 60),

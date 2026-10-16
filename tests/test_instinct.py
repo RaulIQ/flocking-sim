@@ -2,13 +2,13 @@ from pytest import approx
 
 from agent.instinct import Instinct
 from agent.neighbour import Neighbour
-from agent.tuning import Cloud, Limits, Spring
+from agent.tuning import Cloud, Limits, Rope, Spring
 from agent.vector import Vector
 
 
 def test_cannot_want_to_fly_alone():
     assert Instinct(
-        Cloud(Spring(1.2, 2.0, 0.5, 1.0), Spring(1.2, 2.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 2),
+        Cloud(Spring(1.2, 2.0, 0.5, 1.0), Rope(Spring(1.2, 2.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 2),
         Limits(2.0, 4.0, 1.8, 8.0),
     ).command((), ()).velocity == Vector(
         approx(0.0), approx(0.0)
@@ -17,7 +17,7 @@ def test_cannot_want_to_fly_alone():
 
 def test_follows_the_leader():
     assert Instinct(
-        Cloud(Spring(1.2, 2.0, 0.5, 1.0), Spring(1.2, 2.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 2),
+        Cloud(Spring(1.2, 2.0, 0.5, 1.0), Rope(Spring(1.2, 2.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 2),
         Limits(2.0, 4.0, 1.8, 8.0),
     ).command((Neighbour(Vector(2.2, 0.0), Vector(0.0, 0.0), True),), ()).velocity == Vector(
         approx(1.5), approx(0.0)
@@ -26,7 +26,7 @@ def test_follows_the_leader():
 
 def test_follows_the_leader_rather_than_a_peer():
     assert Instinct(
-        Cloud(Spring(1.2, 2.0, 0.5, 1.0), Spring(1.2, 2.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 2),
+        Cloud(Spring(1.2, 2.0, 0.5, 1.0), Rope(Spring(1.2, 2.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 2),
         Limits(2.0, 4.0, 1.8, 8.0),
     ).command(
         (Neighbour(Vector(2.2, 0.0), Vector(0.0, 0.0), True), Neighbour(Vector(-2.2, 0.0), Vector(0.0, 0.0), False)),
@@ -38,7 +38,7 @@ def test_follows_the_leader_rather_than_a_peer():
 
 def test_backs_away_from_a_close_peer():
     assert Instinct(
-        Cloud(Spring(1.2, 2.0, 0.5, 1.0), Spring(1.2, 2.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 2),
+        Cloud(Spring(1.2, 2.0, 0.5, 1.0), Rope(Spring(1.2, 2.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 2),
         Limits(2.0, 4.0, 1.8, 8.0),
     ).command((Neighbour(Vector(0.0, 0.8), Vector(0.0, 0.0), False),), ()).velocity == Vector(
         approx(0.0), approx(-1.0)
@@ -47,7 +47,7 @@ def test_backs_away_from_a_close_peer():
 
 def test_cannot_feel_peers_beyond_its_nearest_few():
     assert Instinct(
-        Cloud(Spring(1.2, 2.0, 0.5, 1.0), Spring(1.2, 2.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 2),
+        Cloud(Spring(1.2, 2.0, 0.5, 1.0), Rope(Spring(1.2, 2.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 2),
         Limits(2.0, 4.0, 1.8, 8.0),
     ).command(
         (
@@ -63,7 +63,7 @@ def test_cannot_feel_peers_beyond_its_nearest_few():
 
 def test_feels_the_leader_however_crowded_it_gets():
     assert Instinct(
-        Cloud(Spring(1.2, 2.0, 0.5, 1.0), Spring(1.2, 2.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 0),
+        Cloud(Spring(1.2, 2.0, 0.5, 1.0), Rope(Spring(1.2, 2.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 0),
         Limits(2.0, 4.0, 1.8, 8.0),
     ).command((Neighbour(Vector(2.2, 0.0), Vector(0.0, 0.0), True),), ()).velocity == Vector(
         approx(1.5), approx(0.0)
@@ -72,7 +72,7 @@ def test_feels_the_leader_however_crowded_it_gets():
 
 def test_cannot_want_more_than_the_top_speed():
     assert Instinct(
-        Cloud(Spring(1.2, 2.0, 0.5, 1.0), Spring(1.2, 2.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 2),
+        Cloud(Spring(1.2, 2.0, 0.5, 1.0), Rope(Spring(1.2, 2.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 2),
         Limits(2.0, 4.0, 1.8, 8.0),
     ).command((Neighbour(Vector(0.0, -9.0), Vector(0.0, 0.0), True),), ()).velocity == Vector(
         approx(0.0), approx(-2.0)
@@ -81,7 +81,7 @@ def test_cannot_want_more_than_the_top_speed():
 
 def test_cannot_want_to_turn():
     assert Instinct(
-        Cloud(Spring(1.2, 2.0, 0.5, 1.0), Spring(1.2, 2.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 2),
+        Cloud(Spring(1.2, 2.0, 0.5, 1.0), Rope(Spring(1.2, 2.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 2),
         Limits(2.0, 4.0, 1.8, 8.0),
     ).command((Neighbour(Vector(2.2, 1.0), Vector(0.0, 0.0), True),), ()).spin == approx(
         0.0
@@ -90,7 +90,7 @@ def test_cannot_want_to_turn():
 
 def test_backs_away_from_a_close_wall():
     assert Instinct(
-        Cloud(Spring(1.2, 2.0, 0.5, 1.0), Spring(1.2, 2.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 2),
+        Cloud(Spring(1.2, 2.0, 0.5, 1.0), Rope(Spring(1.2, 2.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 2),
         Limits(2.0, 4.0, 1.8, 8.0),
     ).command((), (Vector(0.0, 0.5),)).velocity == Vector(
         approx(0.0), approx(-1.6)
@@ -99,7 +99,7 @@ def test_backs_away_from_a_close_wall():
 
 def test_cannot_feel_a_wall_out_of_reach():
     assert Instinct(
-        Cloud(Spring(1.2, 2.0, 0.5, 1.0), Spring(1.2, 2.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 2),
+        Cloud(Spring(1.2, 2.0, 0.5, 1.0), Rope(Spring(1.2, 2.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 2),
         Limits(2.0, 4.0, 1.8, 8.0),
     ).command((), (Vector(0.0, 0.9),)).velocity == Vector(
         approx(0.0), approx(0.0)
@@ -108,7 +108,7 @@ def test_cannot_feel_a_wall_out_of_reach():
 
 def test_holds_the_middle_between_two_walls():
     assert Instinct(
-        Cloud(Spring(1.2, 2.0, 0.5, 1.0), Spring(1.2, 2.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 2),
+        Cloud(Spring(1.2, 2.0, 0.5, 1.0), Rope(Spring(1.2, 2.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 2),
         Limits(2.0, 4.0, 1.8, 8.0),
     ).command((), (Vector(0.0, 0.4), Vector(0.0, -0.4))).velocity == Vector(
         approx(0.0), approx(0.0)
@@ -117,7 +117,7 @@ def test_holds_the_middle_between_two_walls():
 
 def test_yields_to_a_wall_rather_than_to_the_leader():
     assert Instinct(
-        Cloud(Spring(1.2, 2.0, 0.5, 1.0), Spring(1.2, 2.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 2),
+        Cloud(Spring(1.2, 2.0, 0.5, 1.0), Rope(Spring(1.2, 2.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 2),
         Limits(2.0, 4.0, 1.8, 8.0),
     ).command((Neighbour(Vector(9.0, 0.0), Vector(0.0, 0.0), True),), (Vector(0.2, 0.0),)).velocity == Vector(
         approx(-2.0), approx(0.0)
@@ -126,7 +126,7 @@ def test_yields_to_a_wall_rather_than_to_the_leader():
 
 def test_flies_along_with_its_leader():
     assert Instinct(
-        Cloud(Spring(1.2, 2.0, 0.5, 1.0), Spring(1.2, 2.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 2),
+        Cloud(Spring(1.2, 2.0, 0.5, 1.0), Rope(Spring(1.2, 2.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 2),
         Limits(2.0, 4.0, 1.8, 8.0),
     ).command((Neighbour(Vector(1.2, 0.0), Vector(-0.7, 0.9), True),), ()).velocity == Vector(
         approx(-0.7), approx(0.9)
@@ -135,7 +135,7 @@ def test_flies_along_with_its_leader():
 
 def test_cannot_fly_along_with_a_peer():
     assert Instinct(
-        Cloud(Spring(1.2, 2.0, 0.5, 1.0), Spring(1.2, 2.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 2),
+        Cloud(Spring(1.2, 2.0, 0.5, 1.0), Rope(Spring(1.2, 2.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 2),
         Limits(2.0, 4.0, 1.8, 8.0),
     ).command((Neighbour(Vector(1.2, 0.0), Vector(-0.7, 0.9), False),), ()).velocity == Vector(
         approx(0.0), approx(0.0)
@@ -144,7 +144,7 @@ def test_cannot_fly_along_with_a_peer():
 
 def test_cannot_correct_its_place_faster_than_the_leader_can_pull():
     assert Instinct(
-        Cloud(Spring(1.2, 2.0, 0.5, 1.0), Spring(1.2, 2.0, 0.4, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 2),
+        Cloud(Spring(1.2, 2.0, 0.5, 1.0), Rope(Spring(1.2, 2.0, 0.4, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 2),
         Limits(2.0, 4.0, 1.8, 8.0),
     ).command((Neighbour(Vector(0.2, 0.0), Vector(0.0, 0.0), False),), ()).velocity == Vector(
         approx(-0.6), approx(0.0)
@@ -153,7 +153,7 @@ def test_cannot_correct_its_place_faster_than_the_leader_can_pull():
 
 def test_corrects_its_place_on_top_of_the_flight_of_its_leader():
     assert Instinct(
-        Cloud(Spring(1.2, 2.0, 0.5, 1.0), Spring(1.2, 2.0, 0.4, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 2),
+        Cloud(Spring(1.2, 2.0, 0.5, 1.0), Rope(Spring(1.2, 2.0, 0.4, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 2),
         Limits(2.0, 4.0, 1.8, 8.0),
     ).command((Neighbour(Vector(9.0, 0.0), Vector(0.0, 1.0), True),), ()).velocity == Vector(
         approx(0.6), approx(1.0)

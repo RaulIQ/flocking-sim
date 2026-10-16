@@ -17,7 +17,7 @@ class Push:
     trial: object
 
     def distance(self) -> float:
-        reach = self.trial.scenario.settings.swarm.cloud.leader.rest
+        reach = self.trial.scenario.settings.swarm.cloud.leader.spring.rest
         stretches: dict = {}
         places: dict = {}
         worst = 0.0

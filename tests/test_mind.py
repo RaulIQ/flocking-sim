@@ -9,14 +9,14 @@ from agent.signals import Bearing, Range, Role, Signals
 from agent.tracker import Tracker
 from agent.neighbour import Neighbour
 from agent.tracks import Track, Tracks
-from agent.tuning import Cloud, Limits, Spring
+from agent.tuning import Cloud, Limits, Rope, Spring
 from agent.vector import Vector
 
 
 def test_flies_a_follower_after_its_leader():
     assert Mind(
         Instinct(
-            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
+            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Rope(Spring(1.2, 4.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
         Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
@@ -31,7 +31,7 @@ def test_flies_a_follower_after_its_leader():
 def test_cannot_fly_a_follower_on_the_request_of_the_pilot():
     assert Mind(
         Instinct(
-            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
+            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Rope(Spring(1.2, 4.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
         Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
@@ -46,7 +46,7 @@ def test_cannot_fly_a_follower_on_the_request_of_the_pilot():
 def test_keeps_a_follower_clear_of_a_wall():
     assert Mind(
         Instinct(
-            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
+            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Rope(Spring(1.2, 4.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
         Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
@@ -61,7 +61,7 @@ def test_keeps_a_follower_clear_of_a_wall():
 def test_cannot_pull_a_follower_toward_a_leader_it_has_never_sighted():
     assert Mind(
         Instinct(
-            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
+            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Rope(Spring(1.2, 4.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
         Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
@@ -76,7 +76,7 @@ def test_cannot_pull_a_follower_toward_a_leader_it_has_never_sighted():
 def test_cannot_shove_a_follower_away_from_a_peer_it_has_never_sighted():
     assert Mind(
         Instinct(
-            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
+            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Rope(Spring(1.2, 4.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
         Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
@@ -91,7 +91,7 @@ def test_cannot_shove_a_follower_away_from_a_peer_it_has_never_sighted():
 def test_slows_a_follower_near_a_neighbour_it_has_never_sighted():
     assert Mind(
         Instinct(
-            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
+            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Rope(Spring(1.2, 4.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
         Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
@@ -106,7 +106,7 @@ def test_slows_a_follower_near_a_neighbour_it_has_never_sighted():
 def test_stops_a_follower_two_margins_from_a_neighbour_it_has_never_sighted():
     assert Mind(
         Instinct(
-            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
+            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Rope(Spring(1.2, 4.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
         Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
@@ -121,7 +121,7 @@ def test_stops_a_follower_two_margins_from_a_neighbour_it_has_never_sighted():
 def test_flies_a_leader_on_the_request_of_the_pilot():
     assert Mind(
         Instinct(
-            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
+            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Rope(Spring(1.2, 4.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
         Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
@@ -136,7 +136,7 @@ def test_flies_a_leader_on_the_request_of_the_pilot():
 def test_cannot_pull_a_leader_toward_its_followers():
     assert Mind(
         Instinct(
-            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
+            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Rope(Spring(1.2, 4.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
         Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
@@ -151,7 +151,7 @@ def test_cannot_pull_a_leader_toward_its_followers():
 def test_cannot_fly_a_leader_into_a_wall():
     assert Mind(
         Instinct(
-            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
+            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Rope(Spring(1.2, 4.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
         Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
@@ -166,7 +166,7 @@ def test_cannot_fly_a_leader_into_a_wall():
 def test_brakes_a_leader_by_its_own_velocity():
     assert Mind(
         Instinct(
-            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
+            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Rope(Spring(1.2, 4.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 2.0, 1.8, 8.0),
         ),
         Shield(Limits(2.0, 2.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
@@ -181,7 +181,7 @@ def test_brakes_a_leader_by_its_own_velocity():
 def test_slows_a_leader_near_a_neighbour_it_has_never_sighted():
     assert Mind(
         Instinct(
-            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
+            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Rope(Spring(1.2, 4.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
         Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
@@ -196,7 +196,7 @@ def test_slows_a_leader_near_a_neighbour_it_has_never_sighted():
 def test_takes_the_lead():
     assert Mind(
         Instinct(
-            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
+            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Rope(Spring(1.2, 4.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
         Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
@@ -211,7 +211,7 @@ def test_takes_the_lead():
 def test_gives_the_lead_away():
     assert Mind(
         Instinct(
-            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
+            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Rope(Spring(1.2, 4.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
         Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
@@ -226,7 +226,7 @@ def test_gives_the_lead_away():
 def test_remembers_a_neighbour_it_is_told_of():
     assert Mind(
         Instinct(
-            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
+            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Rope(Spring(1.2, 4.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
         Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
@@ -241,7 +241,7 @@ def test_remembers_a_neighbour_it_is_told_of():
 def test_remembers_the_same_whether_it_leads_or_follows():
     assert Mind(
         Instinct(
-            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
+            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Rope(Spring(1.2, 4.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
         Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
@@ -257,7 +257,7 @@ def test_asks_the_same_of_a_follower_whichever_way_it_faces():
     wanted = (
         Mind(
         Instinct(
-            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
+            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Rope(Spring(1.2, 4.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
         Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
@@ -272,7 +272,7 @@ def test_asks_the_same_of_a_follower_whichever_way_it_faces():
     )
     assert Mind(
         Instinct(
-            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
+            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Rope(Spring(1.2, 4.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
         Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
@@ -290,7 +290,7 @@ def test_asks_the_same_of_a_leader_whichever_way_it_faces():
     wanted = (
         Mind(
         Instinct(
-            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
+            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Rope(Spring(1.2, 4.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
         Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
@@ -305,7 +305,7 @@ def test_asks_the_same_of_a_leader_whichever_way_it_faces():
     )
     assert Mind(
         Instinct(
-            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
+            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Rope(Spring(1.2, 4.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
         Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
@@ -322,7 +322,7 @@ def test_asks_the_same_of_a_leader_whichever_way_it_faces():
 def test_cannot_pull_a_follower_into_a_wall_after_its_leader():
     assert Mind(
         Instinct(
-            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 0.0, 0.0, 0.0), 6),
+            Cloud(Spring(1.2, 4.0, 0.5, 1.0), Rope(Spring(1.2, 4.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 0.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
         Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),
@@ -337,7 +337,7 @@ def test_cannot_pull_a_follower_into_a_wall_after_its_leader():
 def test_cannot_pull_a_follower_into_a_peer_after_its_leader():
     assert Mind(
         Instinct(
-            Cloud(Spring(1.2, 0.0, 0.0, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6),
+            Cloud(Spring(1.2, 0.0, 0.0, 1.0), Rope(Spring(1.2, 4.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6),
             Limits(2.0, 4.0, 1.8, 8.0),
         ),
         Shield(Limits(2.0, 4.0, 1.8, 8.0), 0.25, 1.0 / 60, 0.0),

@@ -5,7 +5,7 @@ from agent.instinct import Instinct
 from agent.mind import Mind
 from agent.shield import Shield
 from agent.tracker import Tracker
-from agent.tuning import Cloud, Limits, Spring
+from agent.tuning import Cloud, Limits, Rope, Spring
 from autopilot.hold import Hold
 from flocking_ros.board.board import Board
 
@@ -28,7 +28,7 @@ class Kit:
                 Instinct(
                     Cloud(
                         Spring(1.2, 0.5, 0.15, 1.0),
-                        Spring(1.2, 1.0, 0.4, 1.5),
+                        Rope(Spring(1.2, 1.0, 0.4, 1.5), 1.5, 2.0),
                         Spring(0.6, 1.0, 0.0, 0.0),
                         6,
                     ),

@@ -3,7 +3,7 @@ from math import pi
 from pygame import Surface
 from pytest import approx
 
-from agent.tuning import Cloud, Limits, Spring
+from agent.tuning import Cloud, Limits, Rope, Spring
 from config import Bubbles, Picture, Settings, Shape, Swarm, Window
 from simulator.gate import Gate
 from simulator.body import Body
@@ -23,7 +23,7 @@ def test_draws_the_origin_in_the_middle_of_the_window():
         Settings(
             Limits(2.0, 4.0, 1.8, 8.0),
             Picture(Window(1000, 700, 60.0, 60), Shape(0.1, 0.35, 600)),
-            Swarm(Muster(8, 1.2), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 2.0, 0.5, 1.0), Spring(1.2, 2.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
+            Swarm(Muster(8, 1.2), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 2.0, 0.5, 1.0), Rope(Spring(1.2, 2.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
             Gate(4.0, 14.0, 1.2, (0.0,)),
         ),
     ).spot(Vector(0.0, 0.0)) == (
@@ -38,7 +38,7 @@ def test_draws_a_northern_place_above_the_middle():
         Settings(
             Limits(2.0, 4.0, 1.8, 8.0),
             Picture(Window(1000, 700, 60.0, 60), Shape(0.1, 0.35, 600)),
-            Swarm(Muster(8, 1.2), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 2.0, 0.5, 1.0), Spring(1.2, 2.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
+            Swarm(Muster(8, 1.2), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 2.0, 0.5, 1.0), Rope(Spring(1.2, 2.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
             Gate(4.0, 14.0, 1.2, (0.0,)),
         ),
     ).spot(Vector(0.0, 1.0)) == (
@@ -53,7 +53,7 @@ def test_reads_the_middle_of_the_window_as_the_origin():
         Settings(
             Limits(2.0, 4.0, 1.8, 8.0),
             Picture(Window(1000, 700, 60.0, 60), Shape(0.1, 0.35, 600)),
-            Swarm(Muster(8, 1.2), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 2.0, 0.5, 1.0), Spring(1.2, 2.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
+            Swarm(Muster(8, 1.2), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 2.0, 0.5, 1.0), Rope(Spring(1.2, 2.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
             Gate(4.0, 14.0, 1.2, (0.0,)),
         ),
     ).place((500, 350)) == Vector(
@@ -67,7 +67,7 @@ def test_reads_a_pixel_right_of_the_middle_as_an_eastern_place():
         Settings(
             Limits(2.0, 4.0, 1.8, 8.0),
             Picture(Window(1000, 700, 60.0, 60), Shape(0.1, 0.35, 600)),
-            Swarm(Muster(8, 1.2), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 2.0, 0.5, 1.0), Spring(1.2, 2.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
+            Swarm(Muster(8, 1.2), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 2.0, 0.5, 1.0), Rope(Spring(1.2, 2.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
             Gate(4.0, 14.0, 1.2, (0.0,)),
         ),
     ).place((560, 350)) == Vector(
@@ -81,7 +81,7 @@ def test_reads_a_pixel_above_the_middle_as_a_northern_place():
         Settings(
             Limits(2.0, 4.0, 1.8, 8.0),
             Picture(Window(1000, 700, 60.0, 60), Shape(0.1, 0.35, 600)),
-            Swarm(Muster(8, 1.2), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 2.0, 0.5, 1.0), Spring(1.2, 2.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
+            Swarm(Muster(8, 1.2), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 2.0, 0.5, 1.0), Rope(Spring(1.2, 2.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
             Gate(4.0, 14.0, 1.2, (0.0,)),
         ),
     ).place((500, 290)) == Vector(
@@ -96,7 +96,7 @@ def test_paints_the_leader_in_its_own_colour():
         Settings(
             Limits(2.0, 4.0, 1.8, 8.0),
             Picture(Window(200, 200, 100.0, 60), Shape(0.1, 0.35, 5)),
-            Swarm(Muster(2, 1.2), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 2.0, 0.5, 1.0), Spring(1.2, 2.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
+            Swarm(Muster(2, 1.2), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 2.0, 0.5, 1.0), Rope(Spring(1.2, 2.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
             Gate(4.0, 14.0, 1.2, (0.0,)),
         ),
     ).show(
@@ -120,7 +120,7 @@ def test_paints_a_follower_brighter_than_the_sky():
         Settings(
             Limits(2.0, 4.0, 1.8, 8.0),
             Picture(Window(200, 200, 100.0, 60), Shape(0.1, 0.35, 5)),
-            Swarm(Muster(2, 1.2), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 2.0, 0.5, 1.0), Spring(1.2, 2.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
+            Swarm(Muster(2, 1.2), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 2.0, 0.5, 1.0), Rope(Spring(1.2, 2.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
             Gate(4.0, 14.0, 1.2, (0.0,)),
         ),
     ).show(
@@ -144,7 +144,7 @@ def test_rings_a_drone_with_its_hard_bubble():
         Settings(
             Limits(2.0, 4.0, 1.8, 8.0),
             Picture(Window(200, 200, 100.0, 60), Shape(0.1, 0.35, 5)),
-            Swarm(Muster(2, 1.2), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 2.0, 0.5, 1.0), Spring(1.2, 2.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
+            Swarm(Muster(2, 1.2), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 2.0, 0.5, 1.0), Rope(Spring(1.2, 2.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
             Gate(4.0, 14.0, 1.2, (0.0,)),
         ),
     ).show(
@@ -168,7 +168,7 @@ def test_rings_a_drone_with_its_soft_bubble():
         Settings(
             Limits(2.0, 4.0, 1.8, 8.0),
             Picture(Window(200, 200, 100.0, 60), Shape(0.1, 0.35, 5)),
-            Swarm(Muster(2, 1.2), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 2.0, 0.5, 1.0), Spring(1.2, 2.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
+            Swarm(Muster(2, 1.2), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 2.0, 0.5, 1.0), Rope(Spring(1.2, 2.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
             Gate(4.0, 14.0, 1.2, (0.0,)),
         ),
     ).show(
@@ -192,7 +192,7 @@ def test_paints_the_two_bubbles_in_different_colours():
         Settings(
             Limits(2.0, 4.0, 1.8, 8.0),
             Picture(Window(200, 200, 100.0, 60), Shape(0.1, 0.35, 5)),
-            Swarm(Muster(2, 1.2), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 2.0, 0.5, 1.0), Spring(1.2, 2.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
+            Swarm(Muster(2, 1.2), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 2.0, 0.5, 1.0), Rope(Spring(1.2, 2.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
             Gate(4.0, 14.0, 1.2, (0.0,)),
         ),
     ).show(
@@ -216,7 +216,7 @@ def test_draws_a_wall_against_the_sky():
         Settings(
             Limits(2.0, 4.0, 1.8, 8.0),
             Picture(Window(200, 200, 100.0, 60), Shape(0.1, 0.35, 5)),
-            Swarm(Muster(2, 1.2), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
+            Swarm(Muster(2, 1.2), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Rope(Spring(1.2, 4.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
             Gate(4.0, 14.0, 1.2, (0.0,)),
         ),
     ).show(
@@ -237,7 +237,7 @@ def test_draws_a_pillar_against_the_sky():
         Settings(
             Limits(2.0, 4.0, 1.8, 8.0),
             Picture(Window(200, 200, 100.0, 60), Shape(0.1, 0.35, 5)),
-            Swarm(Muster(2, 1.2), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
+            Swarm(Muster(2, 1.2), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Rope(Spring(1.2, 4.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
             Gate(4.0, 14.0, 1.2, (0.0,)),
         ),
     ).show(

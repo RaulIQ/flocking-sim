@@ -26,10 +26,24 @@ class Spring:
 
 @final
 @dataclass(frozen=True)
+class Rope:
+    """What ties a follower to its leader: a spring, and how early and how briskly it steps out of the leader's way.
+
+    The horizon is in seconds of the leader's flight, the gain in metres a
+    second for every metre the follower still stands inside the way.
+    """
+
+    spring: Spring
+    horizon: float
+    gain: float
+
+
+@final
+@dataclass(frozen=True)
 class Cloud:
     """How a follower is tied to its peers and its leader, shoved by walls, and how many peers it counts."""
 
     peers: Spring
-    leader: Spring
+    leader: Rope
     walls: Spring
     crowd: int

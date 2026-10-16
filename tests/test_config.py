@@ -25,7 +25,7 @@ def test_keeps_the_hard_bubbles_apart_at_the_rest_distance():
 
 def test_keeps_the_followers_of_the_iris_farther_from_its_leader():
     assert (
-        frames()["iris"].swarm.cloud.leader.rest > frames()["freestyle"].swarm.cloud.leader.rest
+        frames()["iris"].swarm.cloud.leader.spring.rest > frames()["freestyle"].swarm.cloud.leader.spring.rest
     ), "the followers of the Iris keep no more room to give way to their leader"
 
 

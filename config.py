@@ -4,7 +4,7 @@ from math import exp
 from pathlib import Path
 from typing import final
 
-from agent.tuning import Cloud, Limits, Spring
+from agent.tuning import Cloud, Limits, Rope, Spring
 from autopilot.fleet import Fleet
 from autopilot.hangar import Hangar
 from autopilot.hold import Hold
@@ -89,7 +89,7 @@ def defaults() -> Settings:
             Bubbles(0.25, 0.6),
             Cloud(
                 Spring(1.2, 0.5, 0.15, 1.0),
-                Spring(1.2, 1.0, 0.4, 1.5),
+                Rope(Spring(1.2, 1.0, 0.4, 1.5), 1.5, 2.0),
                 Spring(0.6, 1.0, 0.0, 0.0),
                 6,
             ),
@@ -128,7 +128,10 @@ def frames() -> dict:
                 bubbles=Bubbles(0.4, 0.6),
                 cloud=replace(
                     copters().swarm.cloud,
-                    leader=replace(copters().swarm.cloud.leader, rest=2.0),
+                    leader=replace(
+                        copters().swarm.cloud.leader,
+                        spring=replace(copters().swarm.cloud.leader.spring, rest=2.0),
+                    ),
                 ),
             ),
         ),
