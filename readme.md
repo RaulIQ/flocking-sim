@@ -73,11 +73,11 @@ leader along a scenario instead of the keyboard, and
 `docker compose --profile gazebo down` stops the stand. The plan of this
 stage lives in [docs/GAZEBO.md](docs/GAZEBO.md).
 
-[![Four Iris copters fly as a cloud in Gazebo, the ground station on the right](docs/media/gazebo-cloud.png)](docs/media/gazebo-cloud.mp4)
+[![Four Iris copters fly as a cloud in Gazebo, the ground station on the right](docs/media/gazebo-cloud.gif)](docs/media/gazebo-cloud.mp4)
 
-The picture opens the video: four Iris copters follow their leader in
-Gazebo, and the window of the ground station on the right shows their
-bubbles and trails, with the leader in amber.
+Four Iris copters follow their leader in Gazebo, and the window of the
+ground station on the right shows their bubbles and trails, with the leader
+in amber. The animation opens the full video.
 
 ## Keys
 
