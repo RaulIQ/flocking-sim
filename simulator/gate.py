@@ -2,28 +2,38 @@ from dataclasses import dataclass
 from typing import final
 
 from agent.vector import Vector
-from config import Barrier
+from simulator.course import Course
 from simulator.wall import Wall
 
 
 @final
 @dataclass(frozen=True)
-class Gate:
-    """A wall across the flight path, split into pieces by the gaps in it."""
+class Gate(Course):
+    """A wall standing across the x axis, split into pieces by the gaps in it.
 
-    barrier: Barrier
+    It stands at x across, reaches span along y, and every gap is gap wide
+    around one of the centres.
+    """
+
+    across: float
+    span: float
+    gap: float
+    centres: tuple
 
     def walls(self) -> tuple:
         edges = (
-            -self.barrier.span / 2,
+            -self.span / 2,
             *(
-                centre + side * self.barrier.gap / 2
-                for centre in sorted(self.barrier.centres)
+                centre + side * self.gap / 2
+                for centre in sorted(self.centres)
                 for side in (-1, 1)
             ),
-            self.barrier.span / 2,
+            self.span / 2,
         )
         return tuple(
-            Wall(Vector(self.barrier.across, low), Vector(self.barrier.across, high))
+            Wall(Vector(self.across, low), Vector(self.across, high))
             for low, high in zip(edges[::2], edges[1::2])
         )
+
+    def passed(self, place: Vector) -> bool:
+        return place.x > self.across

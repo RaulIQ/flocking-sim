@@ -11,6 +11,8 @@ from autopilot.hold import Hold
 from autopilot.pulse import Pulse
 from autopilot.sortie import Sortie
 from autopilot.spot import Spot
+from simulator.course import Course
+from simulator.gate import Gate
 from simulator.kinematics import Kinematics
 from simulator.lag import Lag
 from simulator.muster import Muster
@@ -68,24 +70,13 @@ class Swarm:
 
 @final
 @dataclass(frozen=True)
-class Barrier:
-    """A wall standing across the x axis: where it stands, how long it is, how wide its gaps are and where."""
-
-    across: float
-    span: float
-    gap: float
-    centres: tuple
-
-
-@final
-@dataclass(frozen=True)
 class Settings:
     """Every tunable number of the simulation."""
 
     limits: Limits
     picture: Picture
     swarm: Swarm
-    barrier: Barrier
+    barrier: Course
 
 
 def defaults() -> Settings:
@@ -103,7 +94,7 @@ def defaults() -> Settings:
             ),
             0.5,
         ),
-        Barrier(4.0, 14.0, 1.2, (0.0,)),
+        Gate(4.0, 14.0, 1.2, (0.0,)),
     )
 
 

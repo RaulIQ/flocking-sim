@@ -5,7 +5,6 @@ from typing import final
 
 from config import Settings
 from simulator.flock import Flock
-from simulator.gate import Gate
 
 
 @final
@@ -43,12 +42,12 @@ class Tally:
             (
                 wall.nearest(drone.body.position).minus(drone.body.position).length()
                 for drone in flock.drones
-                for wall in Gate(settings.barrier).walls()
+                for wall in settings.barrier.walls()
             ),
             default=inf,
         )
         count = sum(
-            drone.body.position.x > settings.barrier.across for drone in flock.drones
+            settings.barrier.passed(drone.body.position) for drone in flock.drones
         )
         return Tally(
             min(self.pair, pair),
