@@ -80,3 +80,9 @@ def test_cannot_fly_the_leader_through_a_follower_inside_the_gap(tmp_path):
     assert (
         Trial("gap_back", catalogue()["gap_back"], 6, kinematics(catalogue()["gap_back"].settings)).run(tmp_path).tally.pair > 0.5
     ), "the leader turning back into the gap breaches the hard bubble of a follower"
+
+
+def test_brings_the_whole_cloud_between_the_pillars(tmp_path):
+    assert (
+        Trial("pillars", catalogue()["pillars"], 6, kinematics(catalogue()["pillars"].settings)).run(tmp_path).tally.passage.count == 8
+    ), "the pillars scenario leaves a drone short of the pillars"

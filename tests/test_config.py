@@ -1,5 +1,7 @@
 from random import choice
 
+from pytest import approx
+
 from config import copters, frames
 
 
@@ -25,3 +27,16 @@ def test_keeps_the_followers_of_the_iris_farther_from_its_leader():
     assert (
         frames()["iris"].swarm.cloud.leader.rest > frames()["freestyle"].swarm.cloud.leader.rest
     ), "the followers of the Iris keep no more room to give way to their leader"
+
+
+def test_makes_the_pillars_as_wide_as_the_soft_bubble_of_a_drone():
+    frame = frames()[choice(("freestyle", "iris"))]
+    assert frame.barrier.walls()[0].radius == frame.swarm.bubbles.soft, "a pillar is not as wide as the soft bubble"
+
+
+def test_leaves_one_and_a_half_soft_bubbles_between_the_pillars():
+    frame = frames()[choice(("freestyle", "iris"))]
+    lower, upper = frame.barrier.walls()
+    assert upper.nearest(lower.centre).minus(lower.nearest(upper.centre)).length() == approx(
+        3.0 * frame.swarm.bubbles.soft
+    ), "the pillars do not leave one and a half soft bubbles between them"

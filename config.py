@@ -11,9 +11,12 @@ from autopilot.hold import Hold
 from autopilot.pulse import Pulse
 from autopilot.sortie import Sortie
 from autopilot.spot import Spot
+from simulator.course import Course
+from simulator.gate import Gate
 from simulator.kinematics import Kinematics
 from simulator.lag import Lag
 from simulator.muster import Muster
+from simulator.posts import Posts
 
 
 @final
@@ -68,24 +71,13 @@ class Swarm:
 
 @final
 @dataclass(frozen=True)
-class Barrier:
-    """A wall standing across the x axis: where it stands, how long it is, how wide its gaps are and where."""
-
-    across: float
-    span: float
-    gap: float
-    centres: tuple
-
-
-@final
-@dataclass(frozen=True)
 class Settings:
     """Every tunable number of the simulation."""
 
     limits: Limits
     picture: Picture
     swarm: Swarm
-    barrier: Barrier
+    barrier: Course
 
 
 def defaults() -> Settings:
@@ -103,17 +95,26 @@ def defaults() -> Settings:
             ),
             0.5,
         ),
-        Barrier(4.0, 14.0, 1.2, (0.0,)),
+        Gate(4.0, 14.0, 1.2, (0.0,)),
+    )
+
+
+def pillars(settings: Settings) -> Settings:
+    return replace(
+        settings,
+        barrier=Posts(4.0, 3.0 * settings.swarm.bubbles.soft, settings.swarm.bubbles.soft),
     )
 
 
 def copters() -> Settings:
-    return replace(
-        defaults(),
-        picture=Picture(Window(1000, 700, 60.0, 20), Shape(0.1, 0.35, 200)),
-        swarm=replace(
-            defaults().swarm, muster=replace(defaults().swarm.muster, count=4)
-        ),
+    return pillars(
+        replace(
+            defaults(),
+            picture=Picture(Window(1000, 700, 60.0, 20), Shape(0.1, 0.35, 200)),
+            swarm=replace(
+                defaults().swarm, muster=replace(defaults().swarm.muster, count=4)
+            ),
+        )
     )
 
 

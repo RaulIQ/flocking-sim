@@ -22,9 +22,7 @@ class View:
         scale = self.settings.picture.window.scale
         self.surface.fill((18, 19, 24))
         for wall in walls:
-            draw.line(
-                self.surface, (176, 182, 196), self.spot(wall.start), self.spot(wall.end), 3
-            )
+            wall.drawn(self)
         for drone in flock.drones:
             if len(drone.trail.points) > 1:
                 draw.aalines(
@@ -58,6 +56,17 @@ class View:
                 self.spot(drone.body.position),
                 max(3.0, shape.radius * scale),
             )
+
+    def line(self, start: Vector, end: Vector) -> None:
+        draw.line(self.surface, (176, 182, 196), self.spot(start), self.spot(end), 3)
+
+    def disc(self, centre: Vector, radius: float) -> None:
+        draw.circle(
+            self.surface,
+            (176, 182, 196),
+            self.spot(centre),
+            radius * self.settings.picture.window.scale,
+        )
 
     def spot(self, place: Vector) -> tuple:
         window = self.settings.picture.window

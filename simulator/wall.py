@@ -19,3 +19,6 @@ class Wall:
                 max(0.0, min(1.0, place.minus(self.start).dot(span) / span.dot(span)))
             )
         )
+
+    def drawn(self, canvas) -> None:
+        canvas.line(self.start, self.end)

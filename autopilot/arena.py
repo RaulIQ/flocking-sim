@@ -4,12 +4,13 @@ from typing import final
 from xml.etree import ElementTree
 
 from agent.vector import Vector
+from autopilot.scene import Scene
 from simulator.muster import Muster
 
 
 @final
 @dataclass(frozen=True)
-class Arena:
+class Arena(Scene):
     """The world of Gazebo with every copter of a swarm standing at its place in the muster.
 
     Gazebo takes its world from one file, while the copters differ by their

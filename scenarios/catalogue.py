@@ -1,7 +1,7 @@
 from dataclasses import replace
 
 from agent.vector import Vector
-from config import defaults
+from config import defaults, pillars
 from scenarios.route import Route
 from scenarios.scenario import Scenario
 
@@ -85,6 +85,12 @@ def catalogue() -> dict:
                 0.3,
             ),
             25.0,
+        ),
+        "pillars": Scenario(
+            "The leader flies straight between two pillars and stops 4 m behind them",
+            pillars(defaults()),
+            Route((Vector(8.0, 0.0),), 1.0, 0.3),
+            40.0,
         ),
         "wall": Scenario(
             "The leader is flown at full speed into the solid wall beside the gap",

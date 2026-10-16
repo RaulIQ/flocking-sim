@@ -15,7 +15,6 @@ from agent.neighbour import Neighbour
 from agent.tracks import Track, Tracks
 from agent.tuning import Cloud, Limits, Spring
 from agent.vector import Vector
-from config import Barrier
 from simulator.body import Body
 from simulator.drone import Drone
 from simulator.flock import Flock
@@ -433,7 +432,7 @@ def test_follows_the_leader_through_a_gap():
                     Tracker(1.0 / 60),
                     False,
                 ),
-                Gate(Barrier(4.0, 14.0, 1.2, (0.0,))).walls(),
+                Gate(4.0, 14.0, 1.2, (0.0,)).walls(),
                 Kinematics(Limits(2.0, 4.0, 1.8, 8.0), 1.0 / 60),
             ),
             range(900),
@@ -462,7 +461,7 @@ def test_cannot_touch_a_wall_on_the_way_through_a_gap():
                     Tracker(1.0 / 60),
                     False,
                 ),
-                Gate(Barrier(4.0, 14.0, 1.2, (0.0,))).walls(),
+                Gate(4.0, 14.0, 1.2, (0.0,)).walls(),
                 Kinematics(Limits(2.0, 4.0, 1.8, 8.0), 1.0 / 60),
             ),
             initial=Flock(
@@ -473,7 +472,7 @@ def test_cannot_touch_a_wall_on_the_way_through_a_gap():
             ),
         )
         for drone in flock.drones
-        for wall in Gate(Barrier(4.0, 14.0, 1.2, (0.0,))).walls()
+        for wall in Gate(4.0, 14.0, 1.2, (0.0,)).walls()
     ) > 0.1, "the hull of a drone touches a wall on the way through a gap"
 
 
@@ -569,7 +568,7 @@ def test_flies_the_same_whichever_way_its_drones_face():
                 Tracker(1.0 / 60),
                 False,
             ),
-            Gate(Barrier(4.0, 14.0, 1.2, (0.0,))).walls(),
+            Gate(4.0, 14.0, 1.2, (0.0,)).walls(),
             Kinematics(Limits(2.0, 4.0, 1.8, 8.0), 1.0 / 60),
         ),
         range(900),
@@ -619,7 +618,7 @@ def test_flies_the_same_wherever_in_the_world_it_is():
             ),
             tuple(
                 Wall(wall.start.plus(shift), wall.end.plus(shift))
-                for wall in Gate(Barrier(4.0, 14.0, 1.2, (0.0,))).walls()
+                for wall in Gate(4.0, 14.0, 1.2, (0.0,)).walls()
             ),
             Kinematics(Limits(2.0, 4.0, 1.8, 8.0), 1.0 / 60),
         ),

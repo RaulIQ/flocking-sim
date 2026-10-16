@@ -3,7 +3,8 @@ from pygame.event import Event
 
 from agent.tuning import Cloud, Limits, Spring
 from agent.vector import Vector
-from config import Barrier, Bubbles, Picture, Settings, Shape, Swarm, Window
+from config import Bubbles, Picture, Settings, Shape, Swarm, Window
+from simulator.gate import Gate
 from simulator.baton import Baton
 from simulator.body import Body
 from simulator.drone import Drone
@@ -23,7 +24,7 @@ def test_passes_the_lead_on_the_tab_key():
                     Limits(2.0, 4.0, 1.8, 8.0),
                     Picture(Window(200, 200, 100.0, 60), Shape(0.1, 0.35, 5)),
                     Swarm(Muster(2, 1.2), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
-                    Barrier(4.0, 14.0, 1.2, (0.0,)),
+                    Gate(4.0, 14.0, 1.2, (0.0,)),
                 ),
             ),
             0.6,
@@ -51,7 +52,7 @@ def test_passes_the_lead_once_for_every_tab():
                     Limits(2.0, 4.0, 1.8, 8.0),
                     Picture(Window(200, 200, 100.0, 60), Shape(0.1, 0.35, 5)),
                     Swarm(Muster(2, 1.2), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
-                    Barrier(4.0, 14.0, 1.2, (0.0,)),
+                    Gate(4.0, 14.0, 1.2, (0.0,)),
                 ),
             ),
             0.6,
@@ -80,7 +81,7 @@ def test_hands_the_lead_to_a_clicked_drone():
                     Limits(2.0, 4.0, 1.8, 8.0),
                     Picture(Window(200, 200, 100.0, 60), Shape(0.1, 0.35, 5)),
                     Swarm(Muster(2, 1.2), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
-                    Barrier(4.0, 14.0, 1.2, (0.0,)),
+                    Gate(4.0, 14.0, 1.2, (0.0,)),
                 ),
             ),
             0.6,
@@ -108,7 +109,7 @@ def test_cannot_hand_the_lead_with_the_right_button():
                     Limits(2.0, 4.0, 1.8, 8.0),
                     Picture(Window(200, 200, 100.0, 60), Shape(0.1, 0.35, 5)),
                     Swarm(Muster(2, 1.2), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
-                    Barrier(4.0, 14.0, 1.2, (0.0,)),
+                    Gate(4.0, 14.0, 1.2, (0.0,)),
                 ),
             ),
             0.6,
@@ -136,7 +137,7 @@ def test_cannot_pass_the_lead_on_other_events():
                     Limits(2.0, 4.0, 1.8, 8.0),
                     Picture(Window(200, 200, 100.0, 60), Shape(0.1, 0.35, 5)),
                     Swarm(Muster(2, 1.2), Bubbles(0.25, 0.6), Cloud(Spring(1.2, 4.0, 0.5, 1.0), Spring(1.2, 4.0, 1.5, 1.5), Spring(0.6, 8.0, 0.0, 0.0), 6), 0.0),
-                    Barrier(4.0, 14.0, 1.2, (0.0,)),
+                    Gate(4.0, 14.0, 1.2, (0.0,)),
                 ),
             ),
             0.6,

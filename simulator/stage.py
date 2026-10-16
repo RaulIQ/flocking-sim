@@ -11,7 +11,6 @@ from config import Settings
 from simulator.body import Body
 from simulator.drone import Drone
 from simulator.flock import Flock
-from simulator.gate import Gate
 from simulator.trail import Trail
 
 
@@ -31,7 +30,7 @@ class Stage:
         return 1.0 / self.settings.picture.window.rate
 
     def walls(self) -> tuple:
-        return Gate(self.settings.barrier).walls()
+        return self.settings.barrier.walls()
 
     def flock(self) -> Flock:
         return Flock(
