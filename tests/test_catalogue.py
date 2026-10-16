@@ -90,21 +90,19 @@ def test_brings_the_whole_cloud_between_the_pillars(tmp_path):
     ), "the pillars scenario leaves a drone short of the pillars"
 
 
-@mark.xfail(
-    strict=True,
-    reason="the cloud hangs on springs, not ropes: the leader drives the followers in its way ahead of it",
-)
 def test_lets_the_leader_through_its_cloud_pushing_no_follower_far(tmp_path):
     assert (
         Push(Trial("through", catalogue()["through"], 6, kinematics(catalogue()["through"].settings))).distance() < 1.0
     ), "the leader drives a follower of its cloud far ahead of it"
 
 
-@mark.xfail(
-    strict=True,
-    reason="the cloud hangs on springs, not ropes: the leader drives the followers in its way ahead of it",
-)
 def test_lets_the_leader_through_its_cloud_pushing_no_follower_far(tmp_path):
     assert (
         Push(Trial("through", catalogue()["through"], 6, kinematics(catalogue()["through"].settings))).distance() < 1.0
     ), "the leader drives a follower of its cloud far ahead of it"
+
+
+def test_flies_the_cloud_around_a_circle_with_no_breached_frame(tmp_path):
+    assert (
+        Trial("circle", catalogue()["circle"], 6, kinematics(catalogue()["circle"].settings)).run(tmp_path).tally.breaches == 0
+    ), "a cloud flying around a circle breaches a hard bubble"

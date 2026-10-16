@@ -2,7 +2,7 @@ from random import choice
 
 from pytest import approx
 
-from config import copters, frames
+from config import copters, defaults, frames
 
 
 def test_keeps_the_freestyle_frame_as_the_copters_fly():
@@ -40,3 +40,9 @@ def test_leaves_one_and_a_half_soft_bubbles_between_the_pillars():
     assert upper.nearest(lower.centre).minus(lower.nearest(upper.centre)).length() == approx(
         3.0 * frame.swarm.bubbles.soft
     ), "the pillars do not leave one and a half soft bubbles between them"
+
+
+def test_ties_the_copters_on_a_longer_rope_than_the_drones_of_the_simulator():
+    assert (
+        frames()["freestyle"].swarm.cloud.leader.spring.rest > defaults().swarm.cloud.leader.spring.rest
+    ), "the copters of the stands hang on no longer a rope than the drones of the simulator"

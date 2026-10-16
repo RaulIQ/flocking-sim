@@ -128,8 +128,8 @@ def test_flies_along_with_its_leader():
     assert Instinct(
         Cloud(Spring(1.2, 2.0, 0.5, 1.0), Rope(Spring(1.2, 2.0, 1.5, 1.5), 1.5, 2.0), Spring(0.6, 8.0, 0.0, 0.0), 2),
         Limits(2.0, 4.0, 1.8, 8.0),
-    ).command((Neighbour(Vector(1.2, 0.0), Vector(-0.7, 0.9), True),), ()).velocity == Vector(
-        approx(-0.7), approx(0.9)
+    ).command((Neighbour(Vector(1.2, 0.0), Vector(0.7, 0.9), True),), ()).velocity == Vector(
+        approx(0.7), approx(0.9)
     ), "a drone in its place does not fly along with its leader"
 
 

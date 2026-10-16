@@ -1,0 +1,12 @@
+scenario: circle
+story: The leader flies twice around a circle 5 m across at 1.5 m/s, with its cloud turning after it
+simulated, s: 30.0
+drones: 4
+closest pair of drones, m: 0.870
+closest drone to a wall, m: 1.276
+frames with a hard bubble breached: 0
+drones beyond the wall at the end: 0 of 4
+last change beyond the wall at, s: 0.0
+farthest drone from the leader at the end, m: 2.514
+fastest follower at the end, m/s: 0.084
+settings: Settings(limits=Limits(speed=2.0, push=4.0, spin=1.8, twist=8.0), picture=Picture(window=Window(width=1000, height=700, scale=60.0, rate=20), shape=Shape(radius=0.1, nose=0.35, trail=200)), swarm=Swarm(muster=Muster(count=4, spacing=1.2), bubbles=Bubbles(hard=0.25, soft=0.6), cloud=Cloud(peers=Spring(rest=1.2, shove=0.5, pull=0.15, reach=1.0), leader=Rope(spring=Spring(rest=2.0, shove=1.0, pull=0.4, reach=1.5), horizon=1.5, gain=2.0), walls=Spring(rest=0.6, shove=1.0, pull=0.0, reach=0.0), crowd=6), reaction=0.5), barrier=Posts(across=4.0, gap=1.7999999999999998, radius=0.6))

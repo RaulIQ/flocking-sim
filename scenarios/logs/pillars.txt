@@ -2,11 +2,11 @@ scenario: pillars
 story: The leader flies straight between two pillars and stops 4 m behind them
 simulated, s: 40.0
 drones: 8
-closest pair of drones, m: 0.364
-closest drone to a wall, m: 0.341
-frames with a hard bubble breached: 123
+closest pair of drones, m: 0.378
+closest drone to a wall, m: 0.318
+frames with a hard bubble breached: 58
 drones beyond the wall at the end: 8 of 8
-last change beyond the wall at, s: 6.5
-farthest drone from the leader at the end, m: 1.596
-fastest follower at the end, m/s: 0.004
-settings: Settings(limits=Limits(speed=2.0, push=4.0, spin=1.8, twist=8.0), picture=Picture(window=Window(width=1000, height=700, scale=60.0, rate=60), shape=Shape(radius=0.1, nose=0.35, trail=600)), swarm=Swarm(muster=Muster(count=8, spacing=1.2), bubbles=Bubbles(hard=0.25, soft=0.6), cloud=Cloud(peers=Spring(rest=1.2, shove=0.5, pull=0.15, reach=1.0), leader=Spring(rest=1.2, shove=1.0, pull=0.4, reach=1.5), walls=Spring(rest=0.6, shove=1.0, pull=0.0, reach=0.0), crowd=6), reaction=0.5), barrier=Posts(across=4.0, gap=1.7999999999999998, radius=0.6))
+last change beyond the wall at, s: 7.0
+farthest drone from the leader at the end, m: 1.646
+fastest follower at the end, m/s: 0.003
+settings: Settings(limits=Limits(speed=2.0, push=4.0, spin=1.8, twist=8.0), picture=Picture(window=Window(width=1000, height=700, scale=60.0, rate=60), shape=Shape(radius=0.1, nose=0.35, trail=600)), swarm=Swarm(muster=Muster(count=8, spacing=1.2), bubbles=Bubbles(hard=0.25, soft=0.6), cloud=Cloud(peers=Spring(rest=1.2, shove=0.5, pull=0.15, reach=1.0), leader=Rope(spring=Spring(rest=1.2, shove=1.0, pull=0.4, reach=1.5), horizon=1.5, gain=2.0), walls=Spring(rest=0.6, shove=1.0, pull=0.0, reach=0.0), crowd=6), reaction=0.5), barrier=Posts(across=4.0, gap=1.7999999999999998, radius=0.6))

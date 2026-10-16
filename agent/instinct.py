@@ -4,6 +4,7 @@ from typing import final
 
 from agent.bond import Bond
 from agent.command import Command
+from agent.tow import Tow
 from agent.tuning import Cloud, Limits
 from agent.vector import Vector
 
@@ -14,7 +15,8 @@ class Instinct:
     """What one follower wants: its place among the nearest few, near the leader, clear of walls.
 
     A follower flies along with its leader and only corrects its place on
-    top of that, never faster than the leader can pull it. This is the
+    top of that, never faster than the leader can pull it, unless it stands
+    in the way of the leader and steps aside. This is the
     velocity matching of Reynolds 1987 and Olfati-Saber 2006, kept to the
     leader alone. It lets the pulls and the shoves stay gentle, which a drone
     that answers late needs in order not to sway.
@@ -30,11 +32,15 @@ class Instinct:
         return Command(
             reduce(
                 Vector.plus,
-                [neighbour.velocity for neighbour in neighbours if neighbour.leader],
+                [
+                    Tow(self.cloud.leader, self.limits).carry(neighbour)
+                    for neighbour in neighbours
+                    if neighbour.leader
+                ],
                 reduce(
                     Vector.plus,
                     [
-                        Bond(self.cloud.leader.spring).velocity(neighbour.offset)
+                        Tow(self.cloud.leader, self.limits).hold(neighbour)
                         for neighbour in neighbours
                         if neighbour.leader
                     ]

@@ -106,14 +106,33 @@ def pillars(settings: Settings) -> Settings:
     )
 
 
+def rope(settings: Settings, length: float) -> Settings:
+    return replace(
+        settings,
+        swarm=replace(
+            settings.swarm,
+            cloud=replace(
+                settings.swarm.cloud,
+                leader=replace(
+                    settings.swarm.cloud.leader,
+                    spring=replace(settings.swarm.cloud.leader.spring, rest=length),
+                ),
+            ),
+        ),
+    )
+
+
 def copters() -> Settings:
     return pillars(
-        replace(
-            defaults(),
-            picture=Picture(Window(1000, 700, 60.0, 20), Shape(0.1, 0.35, 200)),
-            swarm=replace(
-                defaults().swarm, muster=replace(defaults().swarm.muster, count=4)
+        rope(
+            replace(
+                defaults(),
+                picture=Picture(Window(1000, 700, 60.0, 20), Shape(0.1, 0.35, 200)),
+                swarm=replace(
+                    defaults().swarm, muster=replace(defaults().swarm.muster, count=4)
+                ),
             ),
+            2.0,
         )
     )
 
@@ -121,19 +140,9 @@ def copters() -> Settings:
 def frames() -> dict:
     return {
         "freestyle": copters(),
-        "iris": replace(
-            copters(),
-            swarm=replace(
-                copters().swarm,
-                bubbles=Bubbles(0.4, 0.6),
-                cloud=replace(
-                    copters().swarm.cloud,
-                    leader=replace(
-                        copters().swarm.cloud.leader,
-                        spring=replace(copters().swarm.cloud.leader.spring, rest=2.0),
-                    ),
-                ),
-            ),
+        "iris": rope(
+            replace(copters(), swarm=replace(copters().swarm, bubbles=Bubbles(0.4, 0.6))),
+            3.0,
         ),
     }
 

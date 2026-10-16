@@ -72,12 +72,44 @@ scenario. The 2D simulator comes first: its runs take seconds.
    the catalogue asks for a push under 1 m in `through` and is marked as
    expected to fail until the ropes hold.
 2. A slack rope: the spring to the leader stops shoving, and pulls only
-   beyond its length.
+   beyond its length. Tried and dropped: with no shove the followers drift up
+   to the leader until only the shield stops them, and the breached frames
+   grow from none to hundreds, for every length of rope tried, 1.2 to 3.0 m.
+   The spring keeps its shove for a follower out of the way of the leader.
 3. Matching on a taut rope only: a follower takes on the velocity of its
    leader only as far as the leader flies away from it, not toward it.
 4. Stepping aside: a follower in the way of the leader moves off the line of
    the leader's flight, to the side it already stands on, and the shield
    gives way sideways as well.
+
+   Steps 3 and 4 are done together by `Tow` in `agent`. A follower stands in
+   the way while it is ahead of the flying leader, within the rest of the
+   spring of the line of its flight, and no farther ahead than the rest plus
+   what the leader flies in the horizon of the `Rope`, 1.5 s. Such a follower
+   is neither carried along with the leader nor held by the spring; it steps
+   off the line to its own side at the speed of the leader plus the gain of
+   the rope, 2 m/s for every metre still inside the way, no faster than a
+   drone flies. Every other follower flies along with the leader and is held
+   by the spring, as before. The shield is left as it was. The ropes grow
+   longer: 2.0 m for the copters of the stands, 3.0 m for the Iris, 1.2 m for
+   the drones of the simulator as before. The scenario `circle` flies the
+   leader twice around a circle 5 m across at 1.5 m/s. On the formula, with
+   the closest pair, the breached frames and the push:
+
+   | Scenario | Four freestyle, rope 2.0 m | Four Iris, rope 3.0 m |
+   |---|---|---|
+   | `circle` | 0.87 m, 0, 7.1 m | 0.95 m, 0, 10.4 m |
+   | `through` | 1.04 m, 0, 0.0 m | 1.13 m, 0, 0.3 m |
+   | `rock` | 1.20 m, 0, 0.5 m | 1.20 m, 0, 0.4 m |
+   | `reverse` | 0.97 m, 0, 0.0 m | 1.13 m, 0, 0.1 m |
+   | `cruise` | 1.03 m, 0, 0.0 m | 1.02 m, 0, 0.0 m |
+   | `pillars` | 0.91 m, 0, 0.0 m | 1.02 m, 0, 0.0 m |
+   | `gap` | 0.78 m, 0, 0.0 m | 0.87 m, 0, 0.0 m |
+
+   The leader flies through its cloud and no scenario breaches a bubble.
+   The push on the circle is likely the measure, not a blade: the turning
+   leader keeps flying toward the followers inside its turn. Eight drones of
+   the simulator still breach bubbles in every scenario, as they did before.
 5. The other scenarios: `cruise`, `reverse`, `rock`, `gap` and `pillars` do
    not get worse, and the tests of the catalogue still pass.
 6. Gazebo: the four Iris fly through the cloud, along `rock`, and from the
@@ -94,3 +126,6 @@ scenario. The 2D simulator comes first: its runs take seconds.
   sides: the shield must still keep it from the leader.
 - Whether the leader should slow down, as a last resort, when a follower is
   still in its way: it would break the rule that the pilot is obeyed exactly.
+- Whether a follower should rather rise out of the way than step aside, and
+  sink back to the height of the cloud once the leader has passed: it needs
+  the third dimension, which the simulator does not have yet.

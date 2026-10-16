@@ -1,7 +1,8 @@
 from dataclasses import replace
+from math import cos, pi, sin
 
 from agent.vector import Vector
-from config import defaults, pillars
+from config import copters, defaults, pillars
 from scenarios.route import Route
 from scenarios.scenario import Scenario
 
@@ -88,8 +89,21 @@ def catalogue() -> dict:
         ),
         "through": Scenario(
             "The leader flies 2 m ahead, turns back and flies straight through its cloud to 8 m behind the start",
-            defaults(),
+            copters(),
             Route((Vector(2.0, 0.0), Vector(-8.0, 0.0)), 1.0, 0.3),
+            30.0,
+        ),
+        "circle": Scenario(
+            "The leader flies twice around a circle 5 m across at 1.5 m/s, with its cloud turning after it",
+            copters(),
+            Route(
+                tuple(
+                    Vector(-2.5 + 2.5 * cos(step * pi / 8), 2.5 * sin(step * pi / 8))
+                    for step in range(1, 33)
+                ),
+                1.5,
+                0.3,
+            ),
             30.0,
         ),
         "rock": Scenario(
