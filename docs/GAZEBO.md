@@ -275,6 +275,12 @@ Each step ends with something that runs and is checked by hand or by a test.
    sets its home then. Stopping the stand stops the autopilots with it, so
    there is nothing left to land.
 
+   The words first went one at a time, and a takeoff asked while the copters
+   still came down kept switching them back to GUIDED for two minutes under
+   `Persistent`, while the landing waited behind it. Now only the first
+   takeoff is persistent, the takeoff of the key is tried once, and the
+   words run side by side, so a landing is never kept waiting.
+
 ## Open questions
 
 - Which copter model to fly: the Iris that comes with the plugin, or a

@@ -16,7 +16,7 @@ from mavros_msgs.msg import State, SysStatus
 from mavros_msgs.srv import CommandBool, CommandTOL, MessageInterval, SetMode
 from pymavlink.dialects.v20.common import MAVLINK_MSG_ID_EXTENDED_SYS_STATE
 import rclpy
-from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
+from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.qos import qos_profile_sensor_data
 from std_msgs.msg import String
@@ -50,7 +50,7 @@ def main() -> None:
         status,
     )
     maneuvers = {
-        'takeoff': Persistent(Takeoff(vehicle, sortie(copters()).hold.altitude), 120.0, 3.0),
+        'takeoff': Takeoff(vehicle, sortie(copters()).hold.altitude),
         'land': Transition(vehicle, 'LAND'),
         'rtl': Transition(vehicle, 'RTL'),
     }
@@ -59,7 +59,7 @@ def main() -> None:
     if command:
         Thread(target=executor.spin, daemon=True).start()
         node.get_logger().info(f'The flight starts with {command}')
-        maneuvers[command].fly()
+        Persistent(maneuvers[command], 120.0, 3.0).fly()
         if not ClientLink(
             node.create_client(MessageInterval, 'mavros/set_message_interval'), 10.0
         ).ask(
@@ -76,7 +76,7 @@ def main() -> None:
         'flight_command',
         Dispatch(maneuvers, node.get_logger()).receive,
         10,
-        callback_group=MutuallyExclusiveCallbackGroup(),
+        callback_group=ReentrantCallbackGroup(),
     )
     node.get_logger().info(f'The flight obeys {", ".join(maneuvers)}')
     executor.spin()
