@@ -16,6 +16,7 @@ from simulator.gate import Gate
 from simulator.kinematics import Kinematics
 from simulator.lag import Lag
 from simulator.muster import Muster
+from simulator.posts import Posts
 
 
 @final
@@ -98,13 +99,22 @@ def defaults() -> Settings:
     )
 
 
-def copters() -> Settings:
+def pillars(settings: Settings) -> Settings:
     return replace(
-        defaults(),
-        picture=Picture(Window(1000, 700, 60.0, 20), Shape(0.1, 0.35, 200)),
-        swarm=replace(
-            defaults().swarm, muster=replace(defaults().swarm.muster, count=4)
-        ),
+        settings,
+        barrier=Posts(4.0, 3.0 * settings.swarm.bubbles.soft, settings.swarm.bubbles.soft),
+    )
+
+
+def copters() -> Settings:
+    return pillars(
+        replace(
+            defaults(),
+            picture=Picture(Window(1000, 700, 60.0, 20), Shape(0.1, 0.35, 200)),
+            swarm=replace(
+                defaults().swarm, muster=replace(defaults().swarm.muster, count=4)
+            ),
+        )
     )
 
 
